@@ -11,5 +11,5 @@ public class Room {
     private String location;
     private boolean multimedia;
     private boolean projector;
-    private
+
 }
