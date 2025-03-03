@@ -14,5 +14,4 @@ public class Room {
     private boolean requireApproval;
     private boolean isRestricted;
     private String url;
-
 }
