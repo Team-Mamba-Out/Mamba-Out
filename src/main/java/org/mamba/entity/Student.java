@@ -8,7 +8,6 @@ public class Student {
     private Integer Uid;
     private String name;
     private String phone;
-    private String password;
     private Integer breakTimer;
 
 }
