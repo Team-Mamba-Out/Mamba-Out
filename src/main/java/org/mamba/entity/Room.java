@@ -7,4 +7,9 @@ public class Room {
     private Integer id;
     private String roomName;
     private Integer capacity;
+    private boolean isBusy;
+    private String location;
+    private boolean multimedia;
+    private boolean projector;
+
 }
