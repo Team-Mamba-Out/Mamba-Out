@@ -1,6 +1,6 @@
 package org.mamba.Exception;
 
-import org.example.entity.Result;
+import org.mamba.entity.Result;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
