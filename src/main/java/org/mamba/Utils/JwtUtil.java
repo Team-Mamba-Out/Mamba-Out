@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.Map;
 
 public class JwtUtil {
-    private static final String SECRET = "ananas";
+    private static final String SECRET = "mamba";
     public static String getToken(Map<String, Object> claims) {
         return JWT.create().withClaim("claims",claims)
                 .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 12))
