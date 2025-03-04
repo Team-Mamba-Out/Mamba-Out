@@ -1,5 +1,6 @@
 package org.mamba.controller;
 
+import org.mamba.entity.Record;
 import org.mamba.entity.Result;
 import org.mamba.entity.Room;
 import org.mamba.service.RoomService;
@@ -7,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -84,5 +88,34 @@ public class RoomController {
         roomService.deleteRoomById(id);
         return Result.success();
     }
+
+    /**
+     * Get the BUSY times of the room by id.
+     * Returns all the BUSY time periods of the room in the next 7 days.
+     * (including the current day)
+     *
+     * @param id the room id
+     * @return the list containing several lists, each of which contains start time and end time
+     */
+    // TODO 注脚，参数传递
+    public Result getBusyTimesById(Integer id) {
+        List<List<LocalDateTime>> busyTimesList = roomService.getBusyTimesById(id);
+        return Result.success(busyTimesList);
+    }
+
+    /**
+     * Get the FREE times of the room by id.
+     * Returns all the FREE time periods of the room in the next 7 days.
+     * (including the current day)
+     *
+     * @param id the room id
+     * @return the list containing several lists, each of which contains start time and end time
+     */
+    // TODO 注脚，参数传递
+    public Result getFreeTimesById(Integer id) {
+        List<List<LocalDateTime>> freeTimesList = roomService.getFreeTimesById(id);
+        return Result.success(freeTimesList);
+    }
+
 
 }

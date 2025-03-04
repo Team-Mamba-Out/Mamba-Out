@@ -1,17 +1,25 @@
 package org.mamba.service.impl;
 
+import org.mamba.entity.Record;
 import org.mamba.entity.Room;
 import org.mamba.mapper.RoomMapper;
 import org.mamba.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
 
 @Service
 public class RoomServiceImpl implements RoomService {
     @Autowired
     private RoomMapper roomMapper;
+
+    private final int DAILY_START_HOUR = 8;
+    private final int DAILY_END_HOUR = 22;
+    private final long PERIOD_MINUTE = 30;
 
     /**
      * Obtains the room specified by ID given.
@@ -77,5 +85,81 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void deleteRoomById(Integer id) {
         roomMapper.deleteRoomById(id);
+    }
+
+    /**
+     * Get the BUSY times of the room by id.
+     * Returns all the BUSY time periods of the room in the next 7 days.
+     * (including the current day)
+     *
+     * @param id the room id
+     * @return the list containing several lists, each of which contains start time and end time
+     */
+    @Override
+    public List<List<LocalDateTime>> getBusyTimesById(Integer id) {
+        // Get the current time
+        LocalDateTime now = LocalDateTime.now();
+        // Get all the records of the next 7 days
+        List<Record> records = roomMapper.getFutureRecords(id, now);
+
+        List<List<LocalDateTime>> busyTimes = new ArrayList<>();
+
+        // Put all the record time periods into the busy times list (each contains start/end time)
+        for (Record record : records) {
+            busyTimes.add(Arrays.asList(record.getStartTime(), record.getEndTime()));
+        }
+
+        return busyTimes;
+    }
+
+    /**
+     * Get the FREE times of the room by id.
+     * Returns all the FREE time periods of the room in the next 7 days.
+     * (including the current day)
+     *
+     * @param id the room id
+     * @return the list containing several lists, each of which contains start time and end time
+     */
+    @Override
+    public List<List<LocalDateTime>> getFreeTimesById(Integer id) {
+        // Get the current time
+        LocalDateTime now = LocalDateTime.now();
+        // Get all the records of the next 7 days
+        List<Record> records = roomMapper.getFutureRecords(id, now);
+        // Get busy times first
+        List<List<LocalDateTime>> busyTimes = new ArrayList<>();
+
+        // Put all the record time periods into the busy times list (each contains start/end time)
+        for (Record record : records) {
+            busyTimes.add(Arrays.asList(record.getStartTime(), record.getEndTime()));
+        }
+
+        Map<LocalDate, Set<LocalDateTime>> busyMap = new HashMap<>();
+        for (List<LocalDateTime> busyTimeSlot: busyTimes) {
+            if (busyTimeSlot.size() != 2) continue;
+            LocalDateTime start = busyTimeSlot.get(0);
+            LocalDate date = start.toLocalDate();
+            busyMap.computeIfAbsent(date, k -> new HashSet<>()).add(start);
+        }
+
+        List<List<LocalDateTime>> freeResult = new ArrayList<>();
+
+        // 7 consecutive days
+        for (int i = 0; i < 7; i++) {
+            LocalDate currentDate = now.toLocalDate().plusDays(i);
+            LocalDateTime dayStart = LocalDateTime.of(currentDate, LocalTime.of(DAILY_START_HOUR, 0));
+            LocalDateTime dayEnd = LocalDateTime.of(currentDate, LocalTime.of(DAILY_END_HOUR, 0));
+
+            for (LocalDateTime slotStart = dayStart; !slotStart.plusMinutes(PERIOD_MINUTE).isAfter(dayEnd); slotStart = slotStart.plusMinutes(PERIOD_MINUTE)) {
+                if (!busyMap.getOrDefault(currentDate, Collections.emptySet()).contains(slotStart)) {
+                    List<LocalDateTime> freeSlot = new ArrayList<>();
+                    freeSlot.add(slotStart);
+                    freeSlot.add(slotStart.plusMinutes(PERIOD_MINUTE));
+                    freeResult.add(freeSlot);
+                }
+            }
+        }
+
+        return freeResult;
     }
 }

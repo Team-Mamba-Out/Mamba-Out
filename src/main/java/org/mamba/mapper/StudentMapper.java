@@ -61,7 +61,7 @@ public interface StudentMapper {
                 FROM("mamba.student");
 
                 if (params.get("email") != null && !params.get("email").toString().isEmpty()) {
-                    WHERE("id = #{id}");
+                    WHERE("email = #{email}");
                 }
                 if (params.get("uid") != null) {
                     WHERE("uid = #{uid}");

@@ -2,6 +2,7 @@ package org.mamba.service;
 
 import org.mamba.entity.Room;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface RoomService {
@@ -58,5 +59,25 @@ public interface RoomService {
      * @param id the provided id
      */
     void deleteRoomById(Integer id);
+
+    /**
+     * Get the BUSY times of the room by id.
+     * Returns all the BUSY time periods of the room in the next 7 days.
+     * (including the current day)
+     *
+     * @param id the room id
+     * @return the list containing several lists, each of which contains start time and end time
+     */
+    List<List<LocalDateTime>> getBusyTimesById(Integer id);
+
+    /**
+     * Get the FREE times of the room by id.
+     * Returns all the FREE time periods of the room in the next 7 days.
+     * (including the current day)
+     *
+     * @param id the room id
+     * @return the list containing several lists, each of which contains start time and end time
+     */
+    List<List<LocalDateTime>> getFreeTimesById(Integer id);
 
 }
