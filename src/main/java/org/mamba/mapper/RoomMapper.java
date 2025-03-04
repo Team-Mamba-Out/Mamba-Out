@@ -71,7 +71,6 @@ public interface RoomMapper {
             SQL sql = new SQL() {{
                 SELECT("*");
                 FROM("mamba.room");
-                WHERE("1=1");
 
                 if (params.get("id") != null) {
                     WHERE("id = #{id}");

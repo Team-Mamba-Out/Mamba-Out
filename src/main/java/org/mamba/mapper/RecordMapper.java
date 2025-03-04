@@ -48,7 +48,6 @@ public interface RecordMapper {
             SQL sql = new SQL() {{
                 SELECT("*");
                 FROM("mamba.record");
-                WHERE("1=1");
 
                 if (params.get("id") != null) {
                     WHERE("id = #{id}");
@@ -79,6 +78,5 @@ public interface RecordMapper {
             }
             return query;
         }
-
     }
 }

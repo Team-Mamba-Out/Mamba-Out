@@ -1,6 +1,8 @@
 package org.mamba.service;
 
 import org.mamba.entity.Lecturer;
+import org.mamba.entity.Student;
+
 import java.util.List;
 
 /**
@@ -8,33 +10,42 @@ import java.util.List;
  */
 public interface LecturerService {
     /**
-     * Creates a new Lecturer record.
-     * @param lecturer Lecturer entity object
+     * Obtains the lecturer list based on the conditions given.
+     *
+     * @param email      lecturer's email
+     * @param uid        the lecturer's uid
+     * @param name       the lecturer's name
+     * @param phone      the lecturer's phone number
+     * @param pageSize   the size of each page
+     * @param offset     the offset
+     * @return the list of all the lecturers
      */
-    void createLecturer(Lecturer lecturer);
+    List<Student> getLecturers(String email, Integer uid, String name, String phone, Integer pageSize, Integer offset);
 
     /**
-     * Retrieves a Lecturer record by email.
-     * @param email Lecturer's email
-     * @return Corresponding Lecturer entity object
+     * Insert a new lecturer.
+     *
+     * @param email      lecturer's email
+     * @param uid        the lecturer's uid
+     * @param name       the lecturer's name
+     * @param phone      the lecturer's phone number
      */
-    Lecturer getLecturer(String email);
+    void createLecturer(String email, int uid, String name, String phone);
 
     /**
-     * Retrieves all Lecturer records.
-     * @return List of Lecturer entity objects
+     * Update the information of a lecturer by email.
+     *
+     * @param email      lecturer's email
+     * @param uid        the lecturer's uid
+     * @param name       the lecturer's name
+     * @param phone      the lecturer's phone number
      */
-    List<Lecturer> getAllLecturers();
+    void updateLecturerByEmail(String email, int uid, String name, String phone);
 
     /**
-     * Updates an existing Lecturer record.
-     * @param lecturer Lecturer entity object to be updated
-     */
-    void updateLecturer(Lecturer lecturer);
-
-    /**
-     * Deletes a Lecturer record by email.
-     * @param email Lecturer's email
+     * Deletes the lecturer specified by email.
+     *
+     * @param email the provided email
      */
     void deleteLecturer(String email);
 }
