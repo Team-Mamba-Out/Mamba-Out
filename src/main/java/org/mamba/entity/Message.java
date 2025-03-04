@@ -11,5 +11,5 @@ public class Message {
     private String title;
     private String text;
     private LocalDateTime createTime;
-
+    private boolean isRead;
 }
