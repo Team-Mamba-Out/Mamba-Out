@@ -61,7 +61,7 @@ public interface LecturerMapper {
                 FROM("mamba.lecturer");
 
                 if (params.get("email") != null && !params.get("email").toString().isEmpty()) {
-                    WHERE("id = #{id}");
+                    WHERE("email = #{email}");
                 }
                 if (params.get("uid") != null) {
                     WHERE("uid = #{uid}");
@@ -104,7 +104,6 @@ public interface LecturerMapper {
                 if (params.get("phone") != null && !params.get("phone").toString().isEmpty()) {
                     SET("phone = #{phone}");
                 }
-                WHERE("id = #{id}");
             }}.toString();
         }
 
