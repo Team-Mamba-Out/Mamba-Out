@@ -1,118 +1,150 @@
 package org.mamba.mapper;
 
 import org.apache.ibatis.annotations.*;
-import org.mamba.entity.Record;
+import org.apache.ibatis.jdbc.SQL;
 import org.mamba.entity.Room;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface RoomMapper {
+
     /**
-     * Obtains the room specified by ID given.
-     *
-     * @param id              the provided id
-     * @param roomName        the room name
-     * @param capacity        the capacity (the query result has to be bigger than or equal to this)
-     * @param multimedia      if the room has multimedia facilities or not
-     * @param projector       if the room has a projector or not
-     * @param requireApproval if the room requires approval from the admin when trying to book or not
-     * @param isRestricted    if the room is only available to lecturers or not
-     * @param pageSize        the size of each page
-     * @param offset          the offset
-     * @return the list of all the rooms satisfying the condition(s)
+     * Obtains the room list based on the given conditions.
      */
-    @Select({
-            "<script>",
-            "select * from mamba.room where 1=1",
-            "<if test='id != null'>",
-            "and id = #{id}",
-            "</if>",
-            "<if test='roomName != null and roomName != \"\"'>",
-            "and roomName like CONCAT('%', #{roomName}, '%')",
-            "</if>",
-            "<if test='capacity != null'>",
-            "and capacity >= #{capacity}",
-            "</if>",
-            "<if test='multimedia != null'>",
-            "and multimedia = #{multimedia}",
-            "</if>",
-            "<if test='projector != null'>",
-            "and projector = #{projector}",
-            "</if>",
-            "<if test='requireApproval != null'>",
-            "and requireApproval = #{requireApproval}",
-            "</if>",
-            "<if test='isRestricted != null'>",
-            "and isRestricted = #{isRestricted}",
-            "</if>",
-            "order by recordTime desc",
-            "<if test='pageSize != null'>",
-            "limit #{pageSize}",
-            "</if>",
-            "<if test='offset != null'>",
-            "offset #{offset}",
-            "</if>",
-            "</script>"
-    })
-    List<Room> getRooms(Integer id, String roomName, Integer capacity, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer pageSize, Integer offset);
+    @SelectProvider(type = RoomSqlBuilder.class, method = "buildGetRoomsSql")
+    List<Room> getRooms(@Param("id") Integer id,
+                        @Param("roomName") String roomName,
+                        @Param("capacity") Integer capacity,
+                        @Param("multimedia") Boolean multimedia,
+                        @Param("projector") Boolean projector,
+                        @Param("requireApproval") Boolean requireApproval,
+                        @Param("isRestricted") Boolean isRestricted,
+                        @Param("pageSize") Integer pageSize,
+                        @Param("offset") Integer offset);
 
     /**
      * Insert a new room.
-     *
-     * @param roomName        the room's name
-     * @param capacity        the capacity
-     * @param isBusy          if the room is currently (for the time being) busy or not
-     * @param location        the location of the room
-     * @param multimedia      if the room has multimedia facilities or not
-     * @param projector       if the room has a projector or not
-     * @param requireApproval if the room requires approval from the admin when trying to book or not
-     * @param isRestricted    if the room is only available to lecturers or not
-     * @param url             the description photo url of the room
      */
-    @Insert("insert into mamba.room(roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, url) values (#{roomName}, #{capacity}, #{isBusy}, #{location}, #{multimedia}, #{projector}, #{requireApproval}, #{isRestricted}, #{url})")
-    void createRoom(String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, String url);
+    @Insert("INSERT INTO mamba.room (roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, url) " +
+            "VALUES (#{roomName}, #{capacity}, #{isBusy}, #{location}, #{multimedia}, #{projector}, #{requireApproval}, #{isRestricted}, #{url})")
+    void createRoom(@Param("roomName") String roomName,
+                    @Param("capacity") Integer capacity,
+                    @Param("isBusy") Boolean isBusy,
+                    @Param("location") String location,
+                    @Param("multimedia") Boolean multimedia,
+                    @Param("projector") Boolean projector,
+                    @Param("requireApproval") Boolean requireApproval,
+                    @Param("isRestricted") Boolean isRestricted,
+                    @Param("url") String url);
 
     /**
-     * Update the information of a room by id.
-     *
-     * @param id              the id of the room with information to be updated (used for query)
-     * @param roomName        the room's name
-     * @param capacity        the capacity
-     * @param isBusy          if the room is currently (for the time being) busy or not
-     * @param location        the location of the room
-     * @param multimedia      if the room has multimedia facilities or not
-     * @param projector       if the room has a projector or not
-     * @param requireApproval if the room requires approval from the admin when trying to book or not
-     * @param isRestricted    if the room is only available to lecturers or not
-     * @param url             the description photo url of the room
+     * Update room information by ID.
      */
-    @Update({
-            "<script>",
-            "update mamba.room",
-            "<set>",
-            "<if test='roomName != null and roomName != \"\"'> roomName = #{roomName}, </if>",
-            "<if test='capacity != null'> capacity = #{capacity}, </if>",
-            "<if test='isBusy != null'> isBusy = #{isBusy}, </if>",
-            "<if test='location != null and location != \"\"'> location = #{location}, </if>",
-            "<if test='multimedia != null'> multimedia = #{multimedia}, </if>",
-            "<if test='projector != null'> projector = #{projector}, </if>",
-            "<if test='requireApproval != null'> requireApproval = #{requireApproval}, </if>",
-            "<if test='isRestricted != null'> isRestricted = #{isRestricted}, </if>",
-            "<if test='url != null and url != \"\"'> url = #{url}, </if>",
-            "</set>",
-            "where id = #{id}",
-            "</script>"
-    })
-    void updateRoomById(Integer id, String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, String url);
+    @UpdateProvider(type = RoomSqlBuilder.class, method = "buildUpdateRoomSql")
+    void updateRoomById(@Param("id") Integer id,
+                        @Param("roomName") String roomName,
+                        @Param("capacity") Integer capacity,
+                        @Param("isBusy") Boolean isBusy,
+                        @Param("location") String location,
+                        @Param("multimedia") Boolean multimedia,
+                        @Param("projector") Boolean projector,
+                        @Param("requireApproval") Boolean requireApproval,
+                        @Param("isRestricted") Boolean isRestricted,
+                        @Param("url") String url);
 
     /**
-     * Deletes the room specified by id.
-     *
-     * @param id the provided id
+     * Deletes the room specified by ID.
      */
-    @Delete("delete from mamba.room where id = #{id}")
-    void deleteRoomById(Integer id);
+    @Delete("DELETE FROM mamba.room WHERE id = #{id}")
+    void deleteRoomById(@Param("id") Integer id);
 
+    /**
+     * Static inner classes - Generate dynamic SQL
+     */
+    class RoomSqlBuilder {
+        /**
+         * Dynamic SQL: Queries the room list
+         */
+        public static String buildGetRoomsSql(Map<String, Object> params) {
+            SQL sql = new SQL() {{
+                SELECT("*");
+                FROM("mamba.room");
+                WHERE("1=1");
+
+                if (params.get("id") != null) {
+                    WHERE("id = #{id}");
+                }
+                if (params.get("roomName") != null && !params.get("roomName").toString().isEmpty()) {
+                    WHERE("roomName LIKE CONCAT('%', #{roomName}, '%')");
+                }
+                if (params.get("capacity") != null) {
+                    WHERE("capacity >= #{capacity}");
+                }
+                if (params.get("multimedia") != null) {
+                    WHERE("multimedia = #{multimedia}");
+                }
+                if (params.get("projector") != null) {
+                    WHERE("projector = #{projector}");
+                }
+                if (params.get("requireApproval") != null) {
+                    WHERE("requireApproval = #{requireApproval}");
+                }
+                if (params.get("isRestricted") != null) {
+                    WHERE("isRestricted = #{isRestricted}");
+                }
+                ORDER_BY("id ASC");
+            }};
+
+            // Deal with LIMIT and OFFSET
+            String query = sql.toString();
+            if (params.get("pageSize") != null) {
+                if (params.get("offset") != null) {
+                    query += " LIMIT #{pageSize} OFFSET #{offset}";
+                } else {
+                    query += " LIMIT #{pageSize}";
+                }
+            }
+            return query;
+        }
+
+
+        /**
+         * Dynamic SQL: Updates room information
+         */
+        public static String buildUpdateRoomSql(Map<String, Object> params) {
+            return new SQL() {{
+                UPDATE("mamba.room");
+                if (params.get("roomName") != null && !params.get("roomName").toString().isEmpty()) {
+                    SET("roomName = #{roomName}");
+                }
+                if (params.get("capacity") != null) {
+                    SET("capacity = #{capacity}");
+                }
+                if (params.get("isBusy") != null) {
+                    SET("isBusy = #{isBusy}");
+                }
+                if (params.get("location") != null && !params.get("location").toString().isEmpty()) {
+                    SET("location = #{location}");
+                }
+                if (params.get("multimedia") != null) {
+                    SET("multimedia = #{multimedia}");
+                }
+                if (params.get("projector") != null) {
+                    SET("projector = #{projector}");
+                }
+                if (params.get("requireApproval") != null) {
+                    SET("requireApproval = #{requireApproval}");
+                }
+                if (params.get("isRestricted") != null) {
+                    SET("isRestricted = #{isRestricted}");
+                }
+                if (params.get("url") != null && !params.get("url").toString().isEmpty()) {
+                    SET("url = #{url}");
+                }
+                WHERE("id = #{id}");
+            }}.toString();
+        }
+    }
 }
