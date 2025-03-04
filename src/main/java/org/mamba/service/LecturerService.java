@@ -11,12 +11,12 @@ public interface LecturerService {
     /**
      * Obtains the lecturer list based on the conditions given.
      *
-     * @param email      lecturer's email
-     * @param uid        the lecturer's uid
-     * @param name       the lecturer's name
-     * @param phone      the lecturer's phone number
-     * @param pageSize   the size of each page
-     * @param offset     the offset
+     * @param email    lecturer's email
+     * @param uid      the lecturer's uid
+     * @param name     the lecturer's name
+     * @param phone    the lecturer's phone number
+     * @param pageSize the size of each page
+     * @param offset   the offset
      * @return the list of all the lecturers
      */
     List<Lecturer> getLecturers(String email, Integer uid, String name, String phone, Integer pageSize, Integer offset);
@@ -24,20 +24,20 @@ public interface LecturerService {
     /**
      * Insert a new lecturer.
      *
-     * @param email      lecturer's email
-     * @param uid        the lecturer's uid
-     * @param name       the lecturer's name
-     * @param phone      the lecturer's phone number
+     * @param email lecturer's email
+     * @param uid   the lecturer's uid
+     * @param name  the lecturer's name
+     * @param phone the lecturer's phone number
      */
     void createLecturer(String email, int uid, String name, String phone);
 
     /**
      * Update the information of a lecturer by email.
      *
-     * @param email      lecturer's email
-     * @param uid        the lecturer's uid
-     * @param name       the lecturer's name
-     * @param phone      the lecturer's phone number
+     * @param email lecturer's email
+     * @param uid   the lecturer's uid
+     * @param name  the lecturer's name
+     * @param phone the lecturer's phone number
      */
     void updateLecturerByEmail(String email, int uid, String name, String phone);
 

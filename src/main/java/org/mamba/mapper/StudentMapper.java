@@ -14,12 +14,12 @@ public interface StudentMapper {
      */
     @SelectProvider(type = StudentMapper.StudentSqlBuilder.class, method = "buildGetStudentsSql")
     List<Student> getStudents(@Param("email") String email,
-                           @Param("uid") Integer uid,
-                           @Param("name") String name,
-                           @Param("phone") String phone,
-                           @Param("breakTimer") Integer breakTimer,
-                           @Param("pageSize") Integer pageSize,
-                           @Param("offset") Integer offset);
+                              @Param("uid") Integer uid,
+                              @Param("name") String name,
+                              @Param("phone") String phone,
+                              @Param("breakTimer") Integer breakTimer,
+                              @Param("pageSize") Integer pageSize,
+                              @Param("offset") Integer offset);
 
     /**
      * Insert a new student.
@@ -37,10 +37,10 @@ public interface StudentMapper {
      */
     @UpdateProvider(type = StudentMapper.StudentSqlBuilder.class, method = "buildUpdateStudentSql")
     void updateStudentByEmail(@Param("email") String email,
-                           @Param("uid") Integer uid,
-                           @Param("name") String name,
-                           @Param("phone") String phone,
-                           @Param("breakTimer") Integer breakTimer);
+                              @Param("uid") Integer uid,
+                              @Param("name") String name,
+                              @Param("phone") String phone,
+                              @Param("breakTimer") Integer breakTimer);
 
     /**
      * Deletes the student specified by email.

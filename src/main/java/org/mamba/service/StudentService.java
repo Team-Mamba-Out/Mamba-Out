@@ -1,6 +1,7 @@
 package org.mamba.service;
 
 import org.mamba.entity.Student;
+
 import java.util.List;
 
 public interface StudentService {
