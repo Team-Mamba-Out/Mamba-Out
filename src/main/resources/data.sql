@@ -56,5 +56,5 @@ CREATE TABLE Message (
                          text TEXT NOT NULL,
                          createTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                          isRead BOOLEAN NOT NULL DEFAULT FALSE,
-                         CONSTRAINT fk_message_user FOREIGN KEY (Uid) REFERENCES User(uid) ON DELETE CASCADE
+                         
 );
