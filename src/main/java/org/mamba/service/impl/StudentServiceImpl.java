@@ -1,6 +1,5 @@
 package org.mamba.service.impl;
 
-import org.mamba.entity.Record;
 import org.mamba.entity.Student;
 import org.mamba.mapper.StudentMapper;
 import org.mamba.service.StudentService;

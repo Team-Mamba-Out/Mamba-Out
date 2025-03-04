@@ -1,9 +1,6 @@
 package org.mamba.service;
 
-import org.mamba.entity.Record;
 import org.mamba.entity.Student;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface StudentService {

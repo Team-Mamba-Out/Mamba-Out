@@ -1,7 +1,6 @@
 package org.mamba.service;
 
 import org.mamba.entity.Lecturer;
-import org.mamba.entity.Student;
 
 import java.util.List;
 
@@ -20,7 +19,7 @@ public interface LecturerService {
      * @param offset     the offset
      * @return the list of all the lecturers
      */
-    List<Student> getLecturers(String email, Integer uid, String name, String phone, Integer pageSize, Integer offset);
+    List<Lecturer> getLecturers(String email, Integer uid, String name, String phone, Integer pageSize, Integer offset);
 
     /**
      * Insert a new lecturer.

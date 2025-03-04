@@ -1,7 +1,6 @@
 package org.mamba.service.impl;
 
 import org.mamba.entity.Lecturer;
-import org.mamba.entity.Student;
 import org.mamba.mapper.LecturerMapper;
 import org.mamba.service.LecturerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,7 @@ public class LecturerServiceImpl implements LecturerService {
      * @return the list of all the lecturers
      */
     @Override
-    public List<Student> getLecturers(String email, Integer uid, String name, String phone, Integer pageSize, Integer offset) {
+    public List<Lecturer> getLecturers(String email, Integer uid, String name, String phone, Integer pageSize, Integer offset) {
         return lecturerMapper.getLecturers(email, uid, name, phone, pageSize, offset);
     }
 

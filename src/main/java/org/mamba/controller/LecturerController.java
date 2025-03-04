@@ -2,9 +2,7 @@ package org.mamba.controller;
 
 import org.mamba.entity.Result;
 import org.mamba.entity.Lecturer;
-import org.mamba.entity.Student;
 import org.mamba.service.LecturerService;
-import org.mamba.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +30,7 @@ public class LecturerController {
      */
     // TODO 注脚，参数传递
     public Result getLecturers(String email, Integer uid, String name, String phone, Integer pageSize, Integer offset) {
-        List<Student> students = lecturerService.getLecturers(email, uid, name, phone, pageSize, offset);
+        List<Lecturer> students = lecturerService.getLecturers(email, uid, name, phone, pageSize, offset);
         return Result.success(students);
     }
 

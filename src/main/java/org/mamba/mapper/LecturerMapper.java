@@ -3,7 +3,6 @@ package org.mamba.mapper;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.jdbc.SQL;
 import org.mamba.entity.Lecturer;
-import org.mamba.entity.Student;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +16,7 @@ public interface LecturerMapper {
      * Obtains the lecturer list based on the given conditions.
      */
     @SelectProvider(type = LecturerMapper.LecturerSqlBuilder.class, method = "buildGetLecturersSql")
-    List<Student> getLecturers(@Param("email") String email,
+    List<Lecturer> getLecturers(@Param("email") String email,
                               @Param("uid") Integer uid,
                               @Param("name") String name,
                               @Param("phone") String phone,
