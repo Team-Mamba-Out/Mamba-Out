@@ -46,12 +46,8 @@ public class StudentController {
      */
     @PostMapping
     public Result createStudent(@RequestBody Student student) {
-        try {
-            studentService.createStudent(student.getEmail(), student.getUid(), student.getName(), student.getPhone(), student.getBreakTimer());
-            return Result.success();
-        } catch (IllegalArgumentException e) {
-            return Result.error(e.getMessage());
-        }
+        studentService.createStudent(student.getEmail(), student.getUid(), student.getName(), student.getPhone(), student.getBreakTimer());
+        return Result.success();
     }
 
     /**
@@ -63,12 +59,8 @@ public class StudentController {
      */
     @PutMapping("/{email}")
     public Result updateStudentByEmail(@PathVariable String email, @RequestBody Student student) {
-        try {
-            studentService.updateStudentByEmail(email, student.getUid(), student.getName(), student.getPhone(), student.getBreakTimer());
-            return Result.success();
-        } catch (IllegalArgumentException e) {
-            return Result.error(e.getMessage());
-        }
+        studentService.updateStudentByEmail(email, student.getUid(), student.getName(), student.getPhone(), student.getBreakTimer());
+        return Result.success();
     }
 
     /**

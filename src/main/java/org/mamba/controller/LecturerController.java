@@ -44,12 +44,8 @@ public class LecturerController {
      */
     @PostMapping
     public Result createLecturer(@RequestBody Lecturer lecturer) {
-        try {
-            lecturerService.createLecturer(lecturer.getEmail(), lecturer.getUid(), lecturer.getName(), lecturer.getPhone());
-            return Result.success();
-        } catch (IllegalArgumentException e) {
-            return Result.error(e.getMessage());
-        }
+        lecturerService.createLecturer(lecturer.getEmail(), lecturer.getUid(), lecturer.getName(), lecturer.getPhone());
+        return Result.success();
     }
 
     /**
@@ -61,12 +57,8 @@ public class LecturerController {
      */
     @PutMapping("/{email}")
     public Result updateLecturerByEmail(@PathVariable String email, @RequestBody Lecturer lecturer) {
-        try {
-            lecturerService.updateLecturerByEmail(email, lecturer.getUid(), lecturer.getName(), lecturer.getPhone());
-            return Result.success();
-        } catch (IllegalArgumentException e) {
-            return Result.error(e.getMessage());
-        }
+        lecturerService.updateLecturerByEmail(email, lecturer.getUid(), lecturer.getName(), lecturer.getPhone());
+        return Result.success();
     }
 
     /**
