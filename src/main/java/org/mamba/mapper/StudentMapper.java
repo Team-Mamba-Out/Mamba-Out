@@ -110,7 +110,6 @@ public interface StudentMapper {
                 if (params.get("breakTimer") != null) {
                     SET("breakTimer = #{breakTimer}");
                 }
-                WHERE("id = #{id}");
             }}.toString();
         }
 

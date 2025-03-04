@@ -104,7 +104,6 @@ public interface LecturerMapper {
                 if (params.get("phone") != null && !params.get("phone").toString().isEmpty()) {
                     SET("phone = #{phone}");
                 }
-                WHERE("id = #{id}");
             }}.toString();
         }
 
