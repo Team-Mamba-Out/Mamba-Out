@@ -2,8 +2,10 @@ package org.mamba.mapper;
 
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.jdbc.SQL;
+import org.mamba.entity.Record;
 import org.mamba.entity.Room;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +61,20 @@ public interface RoomMapper {
      */
     @Delete("DELETE FROM mamba.room WHERE id = #{id}")
     void deleteRoomById(@Param("id") Integer id);
+
+    /**
+     * Gets all the records related to a room in the next 7 days.
+     * @param id the id of the room to be checked
+     * @param now the current time
+     * @return the list containing all the records in 7 days
+     */
+    @Select("SELECT * " +
+            "FROM mamba.record r " +
+            "WHERE r.roomId = #{id} " +
+            "AND r.startTime >= #{now} " +
+            "AND r.startTime <= DATE_ADD(#{now}, INTERVAL 7 DAY) " +
+            "ORDER BY r.startTime")
+    List<Record> getFutureRecords(@Param("id") Integer id, LocalDateTime now);
 
     /**
      * Static inner classes - Generate dynamic SQL
