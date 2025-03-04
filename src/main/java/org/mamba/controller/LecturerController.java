@@ -14,60 +14,61 @@ import java.util.List;
 @RestController
 @RequestMapping("/lecturers")
 public class LecturerController {
-
     @Autowired
     private LecturerService lecturerService;
 
     /**
-     * Creates a new Lecturer record.
-     * @param lecturer Lecturer entity object
-     * @return Success result
+     * Obtains the lecturer list based on the conditions given.
+     *
+     * @param email      lecturer's email
+     * @param uid        the lecturer's uid
+     * @param name       the lecturer's name
+     * @param phone      the lecturer's phone number
+     * @param pageSize   the size of each page
+     * @param offset     the offset
+     * @return the list of all the lecturers
      */
-    @PostMapping
-    public Result createLecturer(@RequestBody Lecturer lecturer) {
-        lecturerService.createLecturer(lecturer);
+    // TODO 注脚，参数传递
+    public Result getLecturers(String email, Integer uid, String name, String phone, Integer pageSize, Integer offset) {
+        List<Lecturer> students = lecturerService.getLecturers(email, uid, name, phone, pageSize, offset);
+        return Result.success(students);
+    }
+
+    /**
+     * Insert a new lecturer.
+     *
+     * @param email      lecturer's email
+     * @param uid        the lecturer's uid
+     * @param name       the lecturer's name
+     * @param phone      the lecturer's phone number
+     */
+    // TODO 注脚，参数传递
+    public Result createLecturer(String email, int uid, String name, String phone) {
+        lecturerService.createLecturer(email, uid, name, phone);
         return Result.success();
     }
 
     /**
-     * Retrieves a Lecturer record by email.
-     * @param email Lecturer's email
-     * @return Success result with Lecturer object
+     * Update the information of a lecturer by email.
+     *
+     * @param email      lecturer's email
+     * @param uid        the lecturer's uid
+     * @param name       the lecturer's name
+     * @param phone      the lecturer's phone number
      */
-    @GetMapping("/{email}")
-    public Result getLecturer(@PathVariable String email) {
-        Lecturer lecturer = lecturerService.getLecturer(email);
-        return Result.success(lecturer);
-    }
-
-    /**
-     * Retrieves all Lecturer records.
-     * @return Success result with list of Lecturers
-     */
-    @GetMapping
-    public Result getAllLecturers() {
-        List<Lecturer> lecturers = lecturerService.getAllLecturers();
-        return Result.success(lecturers);
-    }
-
-    /**
-     * Updates an existing Lecturer record.
-     * @param lecturer Lecturer entity object
-     * @return Success result
-     */
-    @PutMapping
-    public Result updateLecturer(@RequestBody Lecturer lecturer) {
-        lecturerService.updateLecturer(lecturer);
+    // TODO 注脚，参数传递
+    public Result updateLecturerByEmail(String email, int uid, String name, String phone) {
+        lecturerService.updateLecturerByEmail(email, uid, name, phone);
         return Result.success();
     }
 
     /**
-     * Deletes a Lecturer record by email.
-     * @param email Lecturer's email
-     * @return Success result
+     * Deletes the lecturer specified by email.
+     *
+     * @param email the provided email
      */
-    @DeleteMapping("/{email}")
-    public Result deleteLecturer(@PathVariable String email) {
+    // TODO 注脚，参数传递
+    public Result deleteLecturer(String email) {
         lecturerService.deleteLecturer(email);
         return Result.success();
     }

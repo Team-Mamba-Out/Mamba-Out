@@ -7,7 +7,7 @@ CREATE TABLE Admin (
 
 CREATE TABLE Lecturer (
                           email VARCHAR(255) NOT NULL PRIMARY KEY,
-                          Uid INT NOT NULL UNIQUE,
+                          uid INT NOT NULL UNIQUE,
                           name VARCHAR(255) NOT NULL,
                           phone VARCHAR(20)
 );
@@ -27,14 +27,14 @@ CREATE TABLE Room (
 
 CREATE TABLE Student (
                          email VARCHAR(255) NOT NULL PRIMARY KEY,
-                         Uid INT NOT NULL UNIQUE,
+                         uid INT NOT NULL UNIQUE,
                          name VARCHAR(255) NOT NULL,
                          phone VARCHAR(20),
                          breakTimer INT DEFAULT 0
 );
 
 CREATE TABLE User (
-                      Uid INT NOT NULL PRIMARY KEY,
+                      uid INT NOT NULL PRIMARY KEY,
                       role ENUM('Admin', 'Lecturer', 'Student') NOT NULL,
                       authenticationToken VARCHAR(512) NOT NULL
 );
