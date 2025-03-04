@@ -9,5 +9,4 @@ public class Student {
     private String name;
     private String phone;
     private Integer breakTimer;
-
 }

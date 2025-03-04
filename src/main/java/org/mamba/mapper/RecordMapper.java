@@ -21,18 +21,20 @@ public interface RecordMapper {
                             @Param("startTime") LocalDateTime startTime,
                             @Param("endTime") LocalDateTime endTime,
                             @Param("pageSize") Integer pageSize,
-                            @Param("offset") Integer offset);
+                            @Param("offset") Integer offset,
+                            @Param("hasCheckedIn") Boolean hasCheckedIn);
 
     /**
      * Insert a new record.
      */
-    @Insert("INSERT INTO mamba.record (roomId, userId, startTime, endTime, recordTime) " +
-            "VALUES (#{roomId}, #{userId}, #{startTime}, #{endTime}, #{recordTime})")
+    @Insert("INSERT INTO mamba.record (roomId, userId, startTime, endTime, recordTime, hasCheckedIn) " +
+            "VALUES (#{roomId}, #{userId}, #{startTime}, #{endTime}, #{recordTime}, #{hasCheckedIn})")
     void createRecord(@Param("roomId") Integer roomId,
                       @Param("userId") Integer userId,
                       @Param("startTime") LocalDateTime startTime,
                       @Param("endTime") LocalDateTime endTime,
-                      @Param("recordTime") LocalDateTime recordTime);
+                      @Param("recordTime") LocalDateTime recordTime,
+                      @Param("hasCheckedIn") Boolean hasCheckedIn);
 
     /**
      * Deletes the record specified by id.
@@ -63,6 +65,9 @@ public interface RecordMapper {
                 }
                 if (params.get("endTime") != null) {
                     WHERE("endTime <= #{endTime}");
+                }
+                if (params.get("hasCheckedIn") != null) {
+                    WHERE("hasCheckedIn = #{hasCheckedIn}");
                 }
                 ORDER_BY("recordTime DESC");
             }};

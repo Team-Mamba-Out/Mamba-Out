@@ -42,10 +42,19 @@ CREATE TABLE User (
 CREATE TABLE Record (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         roomId INT NOT NULL,
-                        userId INT NOT NULL,
+                        userId INT ,
                         startTime DATETIME NOT NULL,
                         endTime DATETIME NOT NULL,
                         recordTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                        CONSTRAINT fk_record_room FOREIGN KEY (roomId) REFERENCES Room(id) ON DELETE CASCADE,
-                        CONSTRAINT fk_record_user FOREIGN KEY (userId) REFERENCES User(Uid) ON DELETE CASCADE
+                        hasCheckedIn BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE Message (
+                         id INT AUTO_INCREMENT PRIMARY KEY,
+                         Uid INT NOT NULL,
+                         title VARCHAR(255) NOT NULL,
+                         text TEXT NOT NULL,
+                         createTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                         isRead BOOLEAN NOT NULL DEFAULT FALSE,
+                         CONSTRAINT fk_message_user FOREIGN KEY (Uid) REFERENCES User(uid) ON DELETE CASCADE
 );

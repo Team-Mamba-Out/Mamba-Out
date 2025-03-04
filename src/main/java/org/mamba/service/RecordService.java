@@ -17,9 +17,10 @@ public interface RecordService {
      * @param endTime   the end time (the query result should be earlier than this)
      * @param pageSize  the size of each page
      * @param offset    the offset
+     * @param hasCheckedIn whether the user has checked in
      * @return the list of all the records
      */
-    List<Record> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Integer pageSize, Integer offset);
+    List<Record> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Integer pageSize, Integer offset, Boolean hasCheckedIn);
 
     /**
      * Insert a new record.
@@ -28,8 +29,9 @@ public interface RecordService {
      * @param userId    User ID
      * @param startTime Start Time
      * @param endTime   End Time
+     * @param hasCheckedIn whether the user has checked in
      */
-    void createRecord(int roomId, int userId, LocalDateTime startTime, LocalDateTime endTime);
+    void createRecord(int roomId, int userId, LocalDateTime startTime, LocalDateTime endTime, boolean hasCheckedIn);
 
     /**
      * Deletes the record specified by id.

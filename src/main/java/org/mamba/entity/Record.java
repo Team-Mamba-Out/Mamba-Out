@@ -12,4 +12,5 @@ public class Record {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private LocalDateTime recordTime;
+    private boolean hasCheckedIn;
 }

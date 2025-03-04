@@ -59,8 +59,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     /**
-     * Deletes the student specified by email.
-     *
+     * Deletes the student specified by email
      * @param email the provided email
      */
     @Override

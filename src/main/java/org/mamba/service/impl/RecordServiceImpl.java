@@ -2,6 +2,7 @@ package org.mamba.service.impl;
 
 import org.mamba.entity.Record;
 import org.mamba.mapper.RecordMapper;
+import org.mamba.mapper.RoomMapper;
 import org.mamba.service.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,10 @@ public class RecordServiceImpl implements RecordService {
     @Autowired
     private RecordMapper recordMapper;
 
+    @Autowired
+    private RoomMapper roomMapper;
+
+
     /**
      * Obtains the record list based on the conditions given.
      *
@@ -23,11 +28,12 @@ public class RecordServiceImpl implements RecordService {
      * @param endTime   the end time (the query result should be earlier than this)
      * @param pageSize  the size of each page
      * @param offset    the offset
+     * @param hasCheckedIn whether the user has checked in
      * @return the list of all the records
      */
     @Override
-    public List<Record> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Integer pageSize, Integer offset) {
-        return recordMapper.getRecords(id, roomId, userId, startTime, endTime, pageSize, offset);
+    public List<Record> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Integer pageSize, Integer offset, Boolean hasCheckedIn) {
+        return recordMapper.getRecords(id, roomId, userId, startTime, endTime, pageSize, offset, hasCheckedIn);
     }
 
     /**
@@ -37,12 +43,13 @@ public class RecordServiceImpl implements RecordService {
      * @param userId    User ID
      * @param startTime Start Time
      * @param endTime   End Time
+     * @param hasCheckedIn whether the user has checked in
      */
     @Override
-    public void createRecord(int roomId, int userId, LocalDateTime startTime, LocalDateTime endTime) {
+    public void createRecord(int roomId, int userId, LocalDateTime startTime, LocalDateTime endTime, boolean hasCheckedIn) {
         // Obtain the current time
         LocalDateTime recordTime = LocalDateTime.now();
-        recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime);
+        recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn);
     }
 
     /**

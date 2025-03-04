@@ -5,8 +5,7 @@ import org.mamba.entity.Result;
 import org.mamba.entity.Room;
 import org.mamba.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,13 +13,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rooms") // TODO 确认
+@RequestMapping("/rooms")
 public class RoomController {
     @Autowired
     private RoomService roomService;
 
     /**
-     * Obtains the room specified by ID given.
+     * Obtains the room list based on the conditions given.
      *
      * @param id              the provided id
      * @param roomName        the room name
@@ -33,8 +32,16 @@ public class RoomController {
      * @param offset          the offset
      * @return the list of all the rooms satisfying the condition(s)
      */
-    // TODO 注脚，参数传递
-    public Result getRooms(Integer id, String roomName, Integer capacity, boolean multimedia, boolean projector, boolean requireApproval, boolean isRestricted, int pageSize, int offset) {
+    @GetMapping
+    public Result getRooms(@RequestParam(required = false) Integer id,
+                           @RequestParam(required = false) String roomName,
+                           @RequestParam(required = false) Integer capacity,
+                           @RequestParam(required = false) Boolean multimedia,
+                           @RequestParam(required = false) Boolean projector,
+                           @RequestParam(required = false) Boolean requireApproval,
+                           @RequestParam(required = false) Boolean isRestricted,
+                           @RequestParam(required = false) Integer pageSize,
+                           @RequestParam(required = false) Integer offset) {
         List<Room> rooms = roomService.getRooms(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, pageSize, offset);
         return Result.success(rooms);
     }
@@ -42,39 +49,25 @@ public class RoomController {
     /**
      * Insert a new room.
      *
-     * @param roomName        the room's name
-     * @param capacity        the capacity
-     * @param isBusy          if the room is currently (for the time being) busy or not
-     * @param location        the location of the room
-     * @param multimedia      if the room has multimedia facilities or not
-     * @param projector       if the room has a projector or not
-     * @param requireApproval if the room requires approval from the admin when trying to book or not
-     * @param isRestricted    if the room is only available to lecturers or not
-     * @param url             the description photo url of the room
+     * @param room the room to be created
+     * @return the result of the creation operation
      */
-    // TODO 注脚，参数传递
-    public Result createRoom(String roomName, Integer capacity, boolean isBusy, String location, boolean multimedia, boolean projector, boolean requireApproval, boolean isRestricted, String url) {
-        roomService.createRoom(roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, url);
+    @PostMapping
+    public Result createRoom(@RequestBody Room room) {
+        roomService.createRoom(room.getRoomName(), room.getCapacity(), room.isBusy(), room.getLocation(), room.isMultimedia(), room.isProjector(), room.isRequireApproval(), room.isRestricted(), room.getUrl());
         return Result.success();
     }
 
     /**
      * Update the information of a room by id.
      *
-     * @param id              the id of the room with information to be updated (used for query)
-     * @param roomName        the room's name
-     * @param capacity        the capacity
-     * @param isBusy          if the room is currently (for the time being) busy or not
-     * @param location        the location of the room
-     * @param multimedia      if the room has multimedia facilities or not
-     * @param projector       if the room has a projector or not
-     * @param requireApproval if the room requires approval from the admin when trying to book or not
-     * @param isRestricted    if the room is only available to lecturers or not
-     * @param url             the description photo url of the room
+     * @param id    the id of the room with information to be updated (used for query)
+     * @param room  the room with updated information
+     * @return the result of the update operation
      */
-    // TODO 注脚，参数传递
-    public Result updateRoomById(Integer id, String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, String url) {
-        roomService.updateRoomById(id, roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, url);
+    @PutMapping("/{id}")
+    public Result updateRoomById(@PathVariable Integer id, @RequestBody Room room) {
+        roomService.updateRoomById(id,room.getRoomName(), room.getCapacity(), room.isBusy(), room.getLocation(), room.isMultimedia(), room.isProjector(), room.isRequireApproval(), room.isRestricted(), room.getUrl());
         return Result.success();
     }
 
@@ -82,9 +75,10 @@ public class RoomController {
      * Deletes the room specified by id.
      *
      * @param id the provided id
+     * @return the result of the deletion operation
      */
-    // TODO 注脚，参数传递
-    public Result deleteRoomById(Integer id) {
+    @DeleteMapping("/{id}")
+    public Result deleteRoomById(@PathVariable Integer id) {
         roomService.deleteRoomById(id);
         return Result.success();
     }
@@ -116,6 +110,5 @@ public class RoomController {
         List<List<LocalDateTime>> freeTimesList = roomService.getFreeTimesById(id);
         return Result.success(freeTimesList);
     }
-
 
 }

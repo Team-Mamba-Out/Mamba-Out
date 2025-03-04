@@ -26,8 +26,14 @@ public class StudentController {
      * @param offset     the offset
      * @return the list of all the students
      */
-    // TODO 注脚，参数传递
-    public Result getStudents(String email, Integer uid, String name, String phone, Integer breakTimer, Integer pageSize, Integer offset) {
+    @GetMapping
+    public Result getStudents(@RequestParam(required = false) String email,
+                              @RequestParam(required = false) Integer uid,
+                              @RequestParam(required = false) String name,
+                              @RequestParam(required = false) String phone,
+                              @RequestParam(required = false) Integer breakTimer,
+                              @RequestParam(required = false) Integer pageSize,
+                              @RequestParam(required = false) Integer offset) {
         List<Student> students = studentService.getStudents(email, uid, name, phone, breakTimer, pageSize, offset);
         return Result.success(students);
     }
@@ -35,30 +41,25 @@ public class StudentController {
     /**
      * Insert a new student.
      *
-     * @param email      student's email
-     * @param uid        the student's uid
-     * @param name       the student's name
-     * @param phone      the student's phone number
-     * @param breakTimer the time that the student breaks the rules
+     * @param student the student to be created
+     * @return the result of the creation operation
      */
-    // TODO 注脚，参数传递
-    public Result createStudent(String email, int uid, String name, String phone, int breakTimer) {
-        studentService.createStudent(email, uid, name, phone, breakTimer);
+    @PostMapping
+    public Result createStudent(@RequestBody Student student) {
+        studentService.createStudent(student.getEmail(), student.getUid(), student.getName(), student.getPhone(), student.getBreakTimer());
         return Result.success();
     }
 
     /**
      * Update the information of a student by email.
      *
-     * @param email      student's email
-     * @param uid        the student's uid
-     * @param name       the student's name
-     * @param phone      the student's phone number
-     * @param breakTimer the time that the student breaks the rules
+     * @param email   student's email
+     * @param student the student with updated information
+     * @return the result of the update operation
      */
-    // TODO 注脚，参数传递
-    public Result updateStudentByEmail(String email, int uid, String name, String phone, int breakTimer) {
-        studentService.updateStudentByEmail(email, uid, name, phone, breakTimer);
+    @PutMapping("/{email}")
+    public Result updateStudentByEmail(@PathVariable String email, @RequestBody Student student) {
+        studentService.updateStudentByEmail(email, student.getUid(), student.getName(), student.getPhone(), student.getBreakTimer());
         return Result.success();
     }
 
@@ -66,9 +67,10 @@ public class StudentController {
      * Deletes the student specified by email.
      *
      * @param email the provided email
+     * @return the result of the deletion operation
      */
-    // TODO 注脚，参数传递
-    public Result deleteStudent(String email) {
+    @DeleteMapping("/{email}")
+    public Result deleteStudent(@PathVariable String email) {
         studentService.deleteStudent(email);
         return Result.success();
     }

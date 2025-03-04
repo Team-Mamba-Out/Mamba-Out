@@ -158,7 +158,6 @@ public interface RoomMapper {
                 if (params.get("url") != null && !params.get("url").toString().isEmpty()) {
                     SET("url = #{url}");
                 }
-                WHERE("id = #{id}");
             }}.toString();
         }
     }

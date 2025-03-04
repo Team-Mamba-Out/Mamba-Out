@@ -8,9 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * REST controller for managing Lecturer entities.
- */
 @RestController
 @RequestMapping("/lecturers")
 public class LecturerController {
@@ -20,45 +17,47 @@ public class LecturerController {
     /**
      * Obtains the lecturer list based on the conditions given.
      *
-     * @param email      lecturer's email
-     * @param uid        the lecturer's uid
-     * @param name       the lecturer's name
-     * @param phone      the lecturer's phone number
-     * @param pageSize   the size of each page
-     * @param offset     the offset
+     * @param email    lecturer's email
+     * @param uid      the lecturer's uid
+     * @param name     the lecturer's name
+     * @param phone    the lecturer's phone number
+     * @param pageSize the size of each page
+     * @param offset   the offset
      * @return the list of all the lecturers
      */
-    // TODO 注脚，参数传递
-    public Result getLecturers(String email, Integer uid, String name, String phone, Integer pageSize, Integer offset) {
-        List<Lecturer> students = lecturerService.getLecturers(email, uid, name, phone, pageSize, offset);
-        return Result.success(students);
+    @GetMapping
+    public Result getLecturers(@RequestParam(required = false) String email,
+                               @RequestParam(required = false) Integer uid,
+                               @RequestParam(required = false) String name,
+                               @RequestParam(required = false) String phone,
+                               @RequestParam(required = false) Integer pageSize,
+                               @RequestParam(required = false) Integer offset) {
+        List<Lecturer> lecturers = lecturerService.getLecturers(email, uid, name, phone, pageSize, offset);
+        return Result.success(lecturers);
     }
 
     /**
      * Insert a new lecturer.
      *
-     * @param email      lecturer's email
-     * @param uid        the lecturer's uid
-     * @param name       the lecturer's name
-     * @param phone      the lecturer's phone number
+     * @param lecturer the lecturer to be created
+     * @return the result of the creation operation
      */
-    // TODO 注脚，参数传递
-    public Result createLecturer(String email, int uid, String name, String phone) {
-        lecturerService.createLecturer(email, uid, name, phone);
+    @PostMapping
+    public Result createLecturer(@RequestBody Lecturer lecturer) {
+        lecturerService.createLecturer(lecturer.getEmail(), lecturer.getUid(), lecturer.getName(), lecturer.getPhone());
         return Result.success();
     }
 
     /**
      * Update the information of a lecturer by email.
      *
-     * @param email      lecturer's email
-     * @param uid        the lecturer's uid
-     * @param name       the lecturer's name
-     * @param phone      the lecturer's phone number
+     * @param email    lecturer's email
+     * @param lecturer the lecturer with updated information
+     * @return the result of the update operation
      */
-    // TODO 注脚，参数传递
-    public Result updateLecturerByEmail(String email, int uid, String name, String phone) {
-        lecturerService.updateLecturerByEmail(email, uid, name, phone);
+    @PutMapping("/{email}")
+    public Result updateLecturerByEmail(@PathVariable String email, @RequestBody Lecturer lecturer) {
+        lecturerService.updateLecturerByEmail(email, lecturer.getUid(), lecturer.getName(), lecturer.getPhone());
         return Result.success();
     }
 
@@ -66,9 +65,10 @@ public class LecturerController {
      * Deletes the lecturer specified by email.
      *
      * @param email the provided email
+     * @return the result of the deletion operation
      */
-    // TODO 注脚，参数传递
-    public Result deleteLecturer(String email) {
+    @DeleteMapping("/{email}")
+    public Result deleteLecturer(@PathVariable String email) {
         lecturerService.deleteLecturer(email);
         return Result.success();
     }
