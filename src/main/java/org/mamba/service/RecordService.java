@@ -10,13 +10,13 @@ public interface RecordService {
     /**
      * Obtains the record list based on the conditions given.
      *
-     * @param id        the id (record)
-     * @param roomId    the room id
-     * @param userId    the user id
-     * @param startTime the start time (the query result should be later than this)
-     * @param endTime   the end time (the query result should be earlier than this)
-     * @param pageSize  the size of each page
-     * @param offset    the offset
+     * @param id           the id (record)
+     * @param roomId       the room id
+     * @param userId       the user id
+     * @param startTime    the start time (the query result should be later than this)
+     * @param endTime      the end time (the query result should be earlier than this)
+     * @param pageSize     the size of each page
+     * @param offset       the offset
      * @param hasCheckedIn whether the user has checked in
      * @return the list of all the records
      */
@@ -25,10 +25,10 @@ public interface RecordService {
     /**
      * Insert a new record.
      *
-     * @param roomId    Room ID
-     * @param userId    User ID
-     * @param startTime Start Time
-     * @param endTime   End Time
+     * @param roomId       Room ID
+     * @param userId       User ID
+     * @param startTime    Start Time
+     * @param endTime      End Time
      * @param hasCheckedIn whether the user has checked in
      */
     void createRecord(int roomId, int userId, LocalDateTime startTime, LocalDateTime endTime, boolean hasCheckedIn);

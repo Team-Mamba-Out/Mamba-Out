@@ -64,7 +64,8 @@ public interface RoomMapper {
 
     /**
      * Gets all the records related to a room in the next 7 days.
-     * @param id the id of the room to be checked
+     *
+     * @param id  the id of the room to be checked
      * @param now the current time
      * @return the list containing all the records in 7 days
      */

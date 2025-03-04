@@ -17,11 +17,11 @@ public interface LecturerMapper {
      */
     @SelectProvider(type = LecturerMapper.LecturerSqlBuilder.class, method = "buildGetLecturersSql")
     List<Lecturer> getLecturers(@Param("email") String email,
-                              @Param("uid") Integer uid,
-                              @Param("name") String name,
-                              @Param("phone") String phone,
-                              @Param("pageSize") Integer pageSize,
-                              @Param("offset") Integer offset);
+                                @Param("uid") Integer uid,
+                                @Param("name") String name,
+                                @Param("phone") String phone,
+                                @Param("pageSize") Integer pageSize,
+                                @Param("offset") Integer offset);
 
     /**
      * Insert a new lecturer.
@@ -29,18 +29,18 @@ public interface LecturerMapper {
     @Insert("INSERT INTO mamba.lecturer (email, uid, name, phone) " +
             "VALUES (#{email}, #{uid}, #{name}, #{phone})")
     void createLecturer(@Param("email") String email,
-                       @Param("uid") Integer uid,
-                       @Param("name") String name,
-                       @Param("phone") String phone);
+                        @Param("uid") Integer uid,
+                        @Param("name") String name,
+                        @Param("phone") String phone);
 
     /**
      * Update lecturer information by email.
      */
     @UpdateProvider(type = LecturerMapper.LecturerSqlBuilder.class, method = "buildUpdateLecturerSql")
     void updateLecturerByEmail(@Param("email") String email,
-                           @Param("uid") Integer uid,
-                           @Param("name") String name,
-                           @Param("phone") String phone);
+                               @Param("uid") Integer uid,
+                               @Param("name") String name,
+                               @Param("phone") String phone);
 
     /**
      * Deletes the lecturer specified by email.
@@ -61,7 +61,7 @@ public interface LecturerMapper {
                 FROM("mamba.lecturer");
 
                 if (params.get("email") != null && !params.get("email").toString().isEmpty()) {
-                    WHERE("id = #{id}");
+                    WHERE("email = #{email}");
                 }
                 if (params.get("uid") != null) {
                     WHERE("uid = #{uid}");

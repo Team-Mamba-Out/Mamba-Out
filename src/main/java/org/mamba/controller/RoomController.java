@@ -61,13 +61,13 @@ public class RoomController {
     /**
      * Update the information of a room by id.
      *
-     * @param id    the id of the room with information to be updated (used for query)
-     * @param room  the room with updated information
+     * @param id   the id of the room with information to be updated (used for query)
+     * @param room the room with updated information
      * @return the result of the update operation
      */
     @PutMapping("/{id}")
     public Result updateRoomById(@PathVariable Integer id, @RequestBody Room room) {
-        roomService.updateRoomById(id,room.getRoomName(), room.getCapacity(), room.isBusy(), room.getLocation(), room.isMultimedia(), room.isProjector(), room.isRequireApproval(), room.isRestricted(), room.getUrl());
+        roomService.updateRoomById(id, room.getRoomName(), room.getCapacity(), room.isBusy(), room.getLocation(), room.isMultimedia(), room.isProjector(), room.isRequireApproval(), room.isRestricted(), room.getUrl());
         return Result.success();
     }
 
