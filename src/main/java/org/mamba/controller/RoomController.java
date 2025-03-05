@@ -41,11 +41,47 @@ public class RoomController {
                            @RequestParam(required = false) Boolean projector,
                            @RequestParam(required = false) Boolean requireApproval,
                            @RequestParam(required = false) Boolean isRestricted,
+                           @RequestParam(required = false) Integer roomType,
                            @RequestParam(required = false) Integer size,
                            @RequestParam(required = false) Integer page) {
-        Map<String, Object> roomsResult = roomService.getRooms(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, size, page);
+        Map<String, Object> roomsResult = roomService.getRooms(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, roomType, size, page);
         return Result.success(roomsResult);
     }
+
+    /**
+     * Obtains the all the available rooms in a time period
+     * or obtains some available rooms based on the conditions given.
+     *
+     * @param start           (MUST PROVIDE) the start of the time period
+     * @param end             (MUST PROVIDE) the end of the time period
+     * @param id              the room id
+     * @param roomName        the room name
+     * @param capacity        the capacity (the query result has to be bigger than or equal to this)
+     * @param multimedia      if the room has multimedia facilities or not
+     * @param projector       if the room has a projector or not
+     * @param requireApproval if the room requires approval from the admin when trying to book or not
+     * @param isRestricted    if the room is only available to lecturers or not
+     * @param roomType        the type of the room
+     * @param size            the size of each page
+     * @param page            the page No.
+     */
+    @RequestMapping("/getFreeRooms")
+    public Result getFreeRooms(@RequestParam() LocalDateTime start,
+                               @RequestParam() LocalDateTime end,
+                               @RequestParam(required = false) Integer id,
+                               @RequestParam(required = false) String roomName,
+                               @RequestParam(required = false) Integer capacity,
+                               @RequestParam(required = false) Boolean multimedia,
+                               @RequestParam(required = false) Boolean projector,
+                               @RequestParam(required = false) Boolean requireApproval,
+                               @RequestParam(required = false) Boolean isRestricted,
+                               @RequestParam(required = false) Integer roomType,
+                               @RequestParam(required = false) Integer size,
+                               @RequestParam(required = false) Integer page) {
+        Map<String, Object> freeRoomsResult = roomService.getFreeRooms(start, end, id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, roomType, size, page);
+        return Result.success(freeRoomsResult);
+    }
+
 
     /**
      * Insert a new room.
@@ -55,7 +91,7 @@ public class RoomController {
      */
     @PostMapping("/addRoom")
     public Result createRoom(@RequestBody Room room) {
-        roomService.createRoom(room.getRoomName(), room.getCapacity(), room.isBusy(), room.getLocation(), room.isMultimedia(), room.isProjector(), room.isRequireApproval(), room.isRestricted(), room.getUrl());
+        roomService.createRoom(room.getRoomName(), room.getCapacity(), room.isBusy(), room.getLocation(), room.isMultimedia(), room.isProjector(), room.isRequireApproval(), room.isRestricted(), room.getRoomType(), room.getUrl());
         return Result.success();
     }
 
@@ -68,7 +104,7 @@ public class RoomController {
      */
     @PutMapping("/{id}")
     public Result updateRoomById(@PathVariable Integer id, @RequestBody Room room) {
-        roomService.updateRoomById(id, room.getRoomName(), room.getCapacity(), room.isBusy(), room.getLocation(), room.isMultimedia(), room.isProjector(), room.isRequireApproval(), room.isRestricted(), room.getUrl());
+        roomService.updateRoomById(id, room.getRoomName(), room.getCapacity(), room.isBusy(), room.getLocation(), room.isMultimedia(), room.isProjector(), room.isRequireApproval(), room.isRestricted(), room.getRoomType(), room.getUrl());
         return Result.success();
     }
 

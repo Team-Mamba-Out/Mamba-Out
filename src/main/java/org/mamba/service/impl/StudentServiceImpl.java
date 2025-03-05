@@ -31,7 +31,7 @@ public class StudentServiceImpl implements StudentService {
     public Map<String, Object> getStudents(String email, Integer uid, String name, String phone, Integer breakTimer, Integer size, Integer page) {
         // Calculate offset
         Integer offset = (page - 1) * size;
-        List<Student> studentList = studentMapper.getStudents(email, uid, name, phone, breakTimer, size, page);
+        List<Student> studentList = studentMapper.getStudents(email, uid, name, phone, breakTimer, size, offset);
         Map<String, Object> map = new HashMap<>();
         int total = studentList.size();
         int totalPage = total % size == 0 ? total / size : total / size + 1;

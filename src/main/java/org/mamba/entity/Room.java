@@ -13,5 +13,6 @@ public class Room {
     private boolean projector;
     private boolean requireApproval;
     private boolean isRestricted;
+    private Integer roomType;
     private String url;
 }

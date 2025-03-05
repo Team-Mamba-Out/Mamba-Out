@@ -22,27 +22,86 @@ public class RoomServiceImpl implements RoomService {
     private final long PERIOD_MINUTE = 30;
 
     /**
-     * Obtains the room specified by ID given.
+     * Obtains the room specified by the information given.
      *
-     * @param id              the provided id
+     * @param id              the room id
      * @param roomName        the room name
      * @param capacity        the capacity (the query result has to be bigger than or equal to this)
      * @param multimedia      if the room has multimedia facilities or not
      * @param projector       if the room has a projector or not
      * @param requireApproval if the room requires approval from the admin when trying to book or not
      * @param isRestricted    if the room is only available to lecturers or not
+     * @param roomType        the type of the room
      * @param size            the size of each page
      * @param page            the page No.
      */
     @Override
-    public Map<String, Object> getRooms(Integer id, String roomName, Integer capacity, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer size, Integer page) {
+    public Map<String, Object> getRooms(Integer id, String roomName, Integer capacity, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, Integer size, Integer page) {
         // Calculate offset
         Integer offset = (page - 1) * size;
-        List<Room> roomList = roomMapper.getRooms(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, size, page);
+        List<Room> roomList = roomMapper.getRooms(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, roomType, size, offset);
         Map<String, Object> map = new HashMap<>();
         int total = roomList.size();
         int totalPage = total % size == 0 ? total / size : total / size + 1;
         map.put("rooms", roomList);
+        map.put("totalPage", totalPage);
+        map.put("total", total);
+        map.put("pageNumber", page);
+        return map;
+    }
+
+    /**
+     * Obtains the all the available rooms in a time period
+     * or obtains some available rooms based on the conditions given.
+     *
+     * @param start           (MUST PROVIDE) the start of the time period
+     * @param end             (MUST PROVIDE) the end of the time period
+     * @param id              the room id
+     * @param roomName        the room name
+     * @param capacity        the capacity (the query result has to be bigger than or equal to this)
+     * @param multimedia      if the room has multimedia facilities or not
+     * @param projector       if the room has a projector or not
+     * @param requireApproval if the room requires approval from the admin when trying to book or not
+     * @param isRestricted    if the room is only available to lecturers or not
+     * @param roomType        the type of the room
+     * @param size            the size of each page
+     * @param page            the page No.
+     */
+    @Override
+    public Map<String, Object> getFreeRooms(LocalDateTime start, LocalDateTime end, Integer id, String roomName, Integer capacity, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, Integer size, Integer page) {
+        // Calculate offset
+        Integer offset = (page - 1) * size;
+
+        // Get the list of rooms that satisfy other search conditions first
+        List<Room> conditionRoomList = roomMapper.getRooms(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, roomType, size, offset);
+
+        List<Room> freeRoomList = new ArrayList<>();
+        boolean roomBusy = false;
+
+        // Check for the busy times of each room.
+        // If a busy period exists inside the provided time period (start/end),
+        // Then this room cannot be considered available.
+        for (Room conditionRoom : conditionRoomList) {
+            roomBusy = false;
+            Integer conditionRoomId = conditionRoom.getId();
+            List<List<LocalDateTime>> conditionRoomBusyTimeList = getBusyTimesById(conditionRoomId);
+            for (List<LocalDateTime> busyTimeSlots : conditionRoomBusyTimeList) {
+                // Check if each busy time slot occupies the given period
+                if (!busyTimeSlots.get(0).isBefore(start) && !busyTimeSlots.get(1).isAfter(end)) {
+                    roomBusy = true;
+                    break;
+                }
+            }
+            // If this room is available
+            if (!roomBusy) {
+                freeRoomList.add(conditionRoom);
+            }
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        int total = freeRoomList.size();
+        int totalPage = total % size == 0 ? total / size : total / size + 1;
+        map.put("freeRooms", freeRoomList);
         map.put("totalPage", totalPage);
         map.put("total", total);
         map.put("pageNumber", page);
@@ -60,11 +119,12 @@ public class RoomServiceImpl implements RoomService {
      * @param projector       if the room has a projector or not
      * @param requireApproval if the room requires approval from the admin when trying to book or not
      * @param isRestricted    if the room is only available to lecturers or not
+     * @param roomType        the type of the room
      * @param url             the description photo url of the room
      */
     @Override
-    public void createRoom(String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, String url) {
-        roomMapper.createRoom(roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, url);
+    public void createRoom(String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url) {
+        roomMapper.createRoom(roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url);
     }
 
     /**
@@ -79,11 +139,12 @@ public class RoomServiceImpl implements RoomService {
      * @param projector       if the room has a projector or not
      * @param requireApproval if the room requires approval from the admin when trying to book or not
      * @param isRestricted    if the room is only available to lecturers or not
+     * @param roomType        the type of the room
      * @param url             the description photo url of the room
      */
     @Override
-    public void updateRoomById(Integer id, String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, String url) {
-        roomMapper.updateRoomById(id, roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, url);
+    public void updateRoomById(Integer id, String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url) {
+        roomMapper.updateRoomById(id, roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url);
     }
 
     /**
