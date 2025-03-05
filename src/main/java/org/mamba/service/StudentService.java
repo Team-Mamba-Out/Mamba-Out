@@ -47,5 +47,4 @@ public interface StudentService {
      * @param email the provided email
      */
     void deleteStudent(String email);
-
 }
