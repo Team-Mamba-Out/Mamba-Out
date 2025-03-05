@@ -18,7 +18,7 @@ public interface MessageService {
      * @param createTime the creation time of the message
      * @param isRead the read status of the message
      */
-    void createMessage(Integer Uid, String title, String text, LocalDateTime createTime, boolean isRead);
+    void createMessage(Integer Uid, String title, String text, LocalDateTime createTime, Boolean isRead);
 
     /**
      * Deletes a message by its ID.

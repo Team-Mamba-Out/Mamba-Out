@@ -34,7 +34,6 @@ public class UserController {
 
     /**
      * Updates user information based on the user ID.
-     *
      * @param uid the user ID
      * @param user the user object containing the update information
      * @return a result object for the update operation

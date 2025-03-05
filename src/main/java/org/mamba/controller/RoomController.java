@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/rooms")
@@ -28,8 +29,8 @@ public class RoomController {
      * @param projector       if the room has a projector or not
      * @param requireApproval if the room requires approval from the admin when trying to book or not
      * @param isRestricted    if the room is only available to lecturers or not
-     * @param pageSize        the size of each page
-     * @param offset          the offset
+     * @param size            the size of each page
+     * @param page            the page No.
      * @return the list of all the rooms satisfying the condition(s)
      */
     @RequestMapping("/getRooms")
@@ -40,10 +41,10 @@ public class RoomController {
                            @RequestParam(required = false) Boolean projector,
                            @RequestParam(required = false) Boolean requireApproval,
                            @RequestParam(required = false) Boolean isRestricted,
-                           @RequestParam(required = false) Integer pageSize,
-                           @RequestParam(required = false) Integer offset) {
-        List<Room> rooms = roomService.getRooms(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, pageSize, offset);
-        return Result.success(rooms);
+                           @RequestParam(required = false) Integer size,
+                           @RequestParam(required = false) Integer page) {
+        Map<String, Object> roomsResult = roomService.getRooms(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, size, page);
+        return Result.success(roomsResult);
     }
 
     /**

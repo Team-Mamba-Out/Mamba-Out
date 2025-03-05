@@ -20,9 +20,9 @@ public interface RecordMapper {
                             @Param("userId") Integer userId,
                             @Param("startTime") LocalDateTime startTime,
                             @Param("endTime") LocalDateTime endTime,
+                            @Param("hasCheckedIn") Boolean hasCheckedIn,
                             @Param("pageSize") Integer pageSize,
-                            @Param("offset") Integer offset,
-                            @Param("hasCheckedIn") Boolean hasCheckedIn);
+                            @Param("offset") Integer offset);
 
     /**
      * Insert a new record.

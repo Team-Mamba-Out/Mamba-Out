@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/lecturers")
@@ -17,23 +18,22 @@ public class LecturerController {
     /**
      * Obtains the lecturer list based on the conditions given.
      *
-     * @param email    lecturer's email
-     * @param uid      the lecturer's uid
-     * @param name     the lecturer's name
-     * @param phone    the lecturer's phone number
-     * @param pageSize the size of each page
-     * @param offset   the offset
-     * @return the list of all the lecturers
+     * @param email lecturer's email
+     * @param uid   the lecturer's uid
+     * @param name  the lecturer's name
+     * @param phone the lecturer's phone number
+     * @param size  the size of each page
+     * @param page  the page No.
      */
     @GetMapping
     public Result getLecturers(@RequestParam(required = false) String email,
                                @RequestParam(required = false) Integer uid,
                                @RequestParam(required = false) String name,
                                @RequestParam(required = false) String phone,
-                               @RequestParam(required = false) Integer pageSize,
-                               @RequestParam(required = false) Integer offset) {
-        List<Lecturer> lecturers = lecturerService.getLecturers(email, uid, name, phone, pageSize, offset);
-        return Result.success(lecturers);
+                               @RequestParam(required = false) Integer size,
+                               @RequestParam(required = false) Integer page) {
+        Map<String, Object> lecturersResult = lecturerService.getLecturers(email, uid, name, phone, size, page);
+        return Result.success(lecturersResult);
     }
 
     /**

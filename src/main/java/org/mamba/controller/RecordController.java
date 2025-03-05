@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/records")
@@ -23,9 +24,9 @@ public class RecordController {
      * @param userId       the user id
      * @param startTime    the start time (the query result should be later than this)
      * @param endTime      the end time (the query result should be earlier than this)
-     * @param pageSize     the size of each page
-     * @param offset       the offset
      * @param hasCheckedIn whether the user has checked in
+     * @param size         the size of each page
+     * @param page         the page No.
      * @return the list of all the records
      */
     @GetMapping
@@ -34,11 +35,11 @@ public class RecordController {
                              @RequestParam(required = false) Integer userId,
                              @RequestParam(required = false) LocalDateTime startTime,
                              @RequestParam(required = false) LocalDateTime endTime,
-                             @RequestParam(required = false) Integer pageSize,
-                             @RequestParam(required = false) Integer offset,
-                             @RequestParam(required = false) Boolean hasCheckedIn) {
-        List<Record> records = recordService.getRecords(id, roomId, userId, startTime, endTime, pageSize, offset, hasCheckedIn);
-        return Result.success(records);
+                             @RequestParam(required = false) Boolean hasCheckedIn,
+                             @RequestParam(required = false) Integer size,
+                             @RequestParam(required = false) Integer page) {
+        Map<String, Object> recordsResult = recordService.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn, size, page);
+        return Result.success(recordsResult);
     }
 
     /**
