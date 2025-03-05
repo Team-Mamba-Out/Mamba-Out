@@ -2,6 +2,7 @@ package org.mamba.mapper;
 
 import org.apache.ibatis.annotations.*;
 import org.mamba.entity.Message;
+import org.mamba.entity.Record;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,13 +21,15 @@ public interface MessageMapper {
      * @param text the text of the message
      * @param createTime the creation time of the message
      * @param isRead the read status of the message
+     * @param sender the sender of the message
      */
-    @Insert("INSERT INTO mamba.message (Uid, title, text, createTime, isRead) VALUES (#{Uid}, #{title}, #{text}, #{createTime}, #{isRead})")
+    @Insert("INSERT INTO mamba.message (Uid, title, text, createTime, isRead, sender) VALUES (#{Uid}, #{title}, #{text}, #{createTime}, #{isRead}, #{sender})")
     void createMessage(@Param("Uid") Integer Uid,
                        @Param("title") String title,
                        @Param("text") String text,
                        @Param("createTime") LocalDateTime createTime,
-                       @Param("isRead") boolean isRead);
+                       @Param("isRead") boolean isRead,
+                       @Param("sender") String sender);
 
     /**
      * Deletes a message from the database by its ID.
@@ -44,4 +47,10 @@ public interface MessageMapper {
      */
     @Select("SELECT * FROM mamba.message WHERE Uid = #{Uid}")
     List<Message> getMessagesByUid(@Param("Uid") Integer Uid);
+
+    /**
+     * Obtains the list of records specified by the start time.
+     */
+    @Select("SELECT * FROM mamba.record WHERE startTime = #{startTime}")
+    List<Record> getRecordsByStartTime(@Param("startTime") LocalDateTime startTime);
 }
