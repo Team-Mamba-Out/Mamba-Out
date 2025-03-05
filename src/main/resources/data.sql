@@ -22,6 +22,7 @@ CREATE TABLE Room (
                       projector BOOLEAN NOT NULL DEFAULT FALSE,
                       requireApproval BOOLEAN NOT NULL DEFAULT FALSE,
                       isRestricted BOOLEAN NOT NULL DEFAULT FALSE,
+                      roomType INT NOT NULL,
                       url VARCHAR(500)
 );
 
