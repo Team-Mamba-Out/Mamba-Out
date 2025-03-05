@@ -24,9 +24,9 @@ public class RecordController {
      * @param userId       the user id
      * @param startTime    the start time (the query result should be later than this)
      * @param endTime      the end time (the query result should be earlier than this)
+     * @param hasCheckedIn whether the user has checked in
      * @param size         the size of each page
      * @param page         the page No.
-     * @param hasCheckedIn whether the user has checked in
      * @return the list of all the records
      */
     @GetMapping
@@ -35,9 +35,9 @@ public class RecordController {
                              @RequestParam(required = false) Integer userId,
                              @RequestParam(required = false) LocalDateTime startTime,
                              @RequestParam(required = false) LocalDateTime endTime,
+                             @RequestParam(required = false) Boolean hasCheckedIn,
                              @RequestParam(required = false) Integer size,
-                             @RequestParam(required = false) Integer page,
-                             @RequestParam(required = false) Boolean hasCheckedIn) {
+                             @RequestParam(required = false) Integer page) {
         Map<String, Object> recordsResult = recordService.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn, size, page);
         return Result.success(recordsResult);
     }
