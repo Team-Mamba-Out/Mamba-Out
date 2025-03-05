@@ -1,6 +1,7 @@
 package org.mamba.service;
 
 import org.mamba.entity.Message;
+import org.mamba.entity.Record;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,7 +19,7 @@ public interface MessageService {
      * @param createTime the creation time of the message
      * @param isRead the read status of the message
      */
-    void createMessage(Integer Uid, String title, String text, LocalDateTime createTime, Boolean isRead);
+    void createMessage(Integer Uid, String title, String text, LocalDateTime createTime, Boolean isRead,String sender);
 
     /**
      * Deletes a message by its ID.
@@ -34,4 +35,12 @@ public interface MessageService {
      * @return a list of messages
      */
     List<Message> getMessagesByUid(Integer Uid);
+
+    /**
+     * Obtains the list of records specified by the start time.
+     *
+     * @param startTime the provided start time
+     * @return the corresponding record list
+     */
+    List<Message> getRecordsByStartTime(LocalDateTime startTime);
 }

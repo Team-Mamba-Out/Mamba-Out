@@ -55,6 +55,6 @@ CREATE TABLE Message (
                          title VARCHAR(255) NOT NULL,
                          text TEXT NOT NULL,
                          createTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                         isRead BOOLEAN NOT NULL DEFAULT FALSE
-                         
+                         isRead BOOLEAN NOT NULL DEFAULT FALSE,
+                         sender VARCHAR(255) NOT NULL
 );
