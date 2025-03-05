@@ -28,7 +28,7 @@ public class MessageServiceImpl implements MessageService {
      * @param isRead the read status of the message
      */
     @Override
-    public void createMessage(Integer Uid, String title, String text, LocalDateTime createTime, boolean isRead) {
+    public void createMessage(Integer Uid, String title, String text, LocalDateTime createTime, Boolean isRead) {
         messageMapper.createMessage(Uid, title, text, createTime, isRead);
     }
 

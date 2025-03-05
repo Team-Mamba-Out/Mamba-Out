@@ -4,6 +4,7 @@ import org.mamba.entity.Room;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public interface RoomService {
     /**
@@ -16,11 +17,10 @@ public interface RoomService {
      * @param projector       if the room has a projector or not
      * @param requireApproval if the room requires approval from the admin when trying to book or not
      * @param isRestricted    if the room is only available to lecturers or not
-     * @param pageSize        the size of each page
-     * @param offset          the offset
-     * @return the list of all the rooms satisfying the condition(s)
+     * @param size            the size of each page
+     * @param page            the page No.
      */
-    List<Room> getRooms(Integer id, String roomName, Integer capacity, boolean multimedia, boolean projector, boolean requireApproval, boolean isRestricted, int pageSize, int offset);
+    Map<String, Object> getRooms(Integer id, String roomName, Integer capacity, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer size, Integer page);
 
     /**
      * Insert a new room.
@@ -35,7 +35,7 @@ public interface RoomService {
      * @param isRestricted    if the room is only available to lecturers or not
      * @param url             the description photo url of the room
      */
-    void createRoom(String roomName, Integer capacity, boolean isBusy, String location, boolean multimedia, boolean projector, boolean requireApproval, boolean isRestricted, String url);
+    void createRoom(String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, String url);
 
     /**
      * Update the information of a room by id.

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public interface RecordService {
     /**
@@ -15,12 +16,11 @@ public interface RecordService {
      * @param userId       the user id
      * @param startTime    the start time (the query result should be later than this)
      * @param endTime      the end time (the query result should be earlier than this)
-     * @param pageSize     the size of each page
-     * @param offset       the offset
      * @param hasCheckedIn whether the user has checked in
-     * @return the list of all the records
+     * @param size         the size of each page
+     * @param page         the page No.
      */
-    List<Record> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Integer pageSize, Integer offset, Boolean hasCheckedIn);
+    Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, Integer size, Integer page);
 
     /**
      * Insert a new record.
@@ -31,14 +31,14 @@ public interface RecordService {
      * @param endTime      End Time
      * @param hasCheckedIn whether the user has checked in
      */
-    void createRecord(int roomId, int userId, LocalDateTime startTime, LocalDateTime endTime, boolean hasCheckedIn);
+    void createRecord(Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn);
 
     /**
      * Deletes the record specified by id.
      *
      * @param id the provided id
      */
-    void deleteRecordById(int id);
+    void deleteRecordById(Integer id);
 }
 
 

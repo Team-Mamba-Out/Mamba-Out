@@ -1,12 +1,15 @@
 package org.mamba.service.impl;
 
+import org.mamba.entity.Room;
 import org.mamba.entity.Student;
 import org.mamba.mapper.StudentMapper;
 import org.mamba.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -21,13 +24,22 @@ public class StudentServiceImpl implements StudentService {
      * @param name       the student's name
      * @param phone      the student's phone number
      * @param breakTimer the time that the student breaks the rules
-     * @param pageSize   the size of each page
-     * @param offset     the offset
-     * @return the list of all the records
+     * @param size       the size of each page
+     * @param page       the page No.
      */
     @Override
-    public List<Student> getStudents(String email, Integer uid, String name, String phone, Integer breakTimer, Integer pageSize, Integer offset) {
-        return studentMapper.getStudents(email, uid, name, phone, breakTimer, pageSize, offset);
+    public Map<String, Object> getStudents(String email, Integer uid, String name, String phone, Integer breakTimer, Integer size, Integer page) {
+        // Calculate offset
+        Integer offset = (page - 1) * size;
+        List<Student> studentList = studentMapper.getStudents(email, uid, name, phone, breakTimer, size, page);
+        Map<String, Object> map = new HashMap<>();
+        int total = studentList.size();
+        int totalPage = total % size == 0 ? total / size : total / size + 1;
+        map.put("students", studentList);
+        map.put("totalPage", totalPage);
+        map.put("total", total);
+        map.put("pageNumber", page);
+        return map;
     }
 
     /**
@@ -40,7 +52,7 @@ public class StudentServiceImpl implements StudentService {
      * @param breakTimer the time that the student breaks the rules
      */
     @Override
-    public void createStudent(String email, int uid, String name, String phone, int breakTimer) {
+    public void createStudent(String email, Integer uid, String name, String phone, Integer breakTimer) {
         studentMapper.createStudent(email, uid, name, phone, breakTimer);
     }
 
@@ -54,12 +66,13 @@ public class StudentServiceImpl implements StudentService {
      * @param breakTimer the time that the student breaks the rules
      */
     @Override
-    public void updateStudentByEmail(String email, int uid, String name, String phone, int breakTimer) {
+    public void updateStudentByEmail(String email, Integer uid, String name, String phone, Integer breakTimer) {
         studentMapper.updateStudentByEmail(email, uid, name, phone, breakTimer);
     }
 
     /**
      * Deletes the student specified by email
+     *
      * @param email the provided email
      */
     @Override

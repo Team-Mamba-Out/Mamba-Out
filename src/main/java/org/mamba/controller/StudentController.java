@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/students")
@@ -22,8 +23,8 @@ public class StudentController {
      * @param name       the student's name
      * @param phone      the student's phone number
      * @param breakTimer the time that the student breaks the rules
-     * @param pageSize   the size of each page
-     * @param offset     the offset
+     * @param size       the size of each page
+     * @param page       the page No.
      * @return the list of all the students
      */
     @GetMapping
@@ -32,10 +33,10 @@ public class StudentController {
                               @RequestParam(required = false) String name,
                               @RequestParam(required = false) String phone,
                               @RequestParam(required = false) Integer breakTimer,
-                              @RequestParam(required = false) Integer pageSize,
-                              @RequestParam(required = false) Integer offset) {
-        List<Student> students = studentService.getStudents(email, uid, name, phone, breakTimer, pageSize, offset);
-        return Result.success(students);
+                              @RequestParam(required = false) Integer size,
+                              @RequestParam(required = false) Integer page) {
+        Map<String, Object> studentsResult = studentService.getStudents(email, uid, name, phone, breakTimer, size, page);
+        return Result.success(studentsResult);
     }
 
     /**

@@ -17,10 +17,10 @@ public class UserController {
     /**
      * 获取用户列表，根据给定的条件进行筛选。
      *
-     * @param uid 用户ID
-     * @param role 用户角色
+     * @param uid      用户ID
+     * @param role     用户角色
      * @param pageSize 每页大小
-     * @param offset 偏移量
+     * @param offset   偏移量
      * @return 包含用户列表的结果对象
      */
     @GetMapping
@@ -28,14 +28,14 @@ public class UserController {
                            @RequestParam(required = false) String role,
                            @RequestParam(required = false) Integer pageSize,
                            @RequestParam(required = false) Integer offset) {
-        List<User> users = userService.getUsers(uid, role,pageSize, offset);
+        List<User> users = userService.getUsers(uid, role, pageSize, offset);
         return Result.success(users);
     }
 
     /**
      * 根据用户ID更新用户信息。
      *
-     * @param uid 用户ID
+     * @param uid  用户ID
      * @param user 包含更新信息的用户对象
      * @return 更新操作的结果对象
      */

@@ -31,13 +31,22 @@ public class RoomServiceImpl implements RoomService {
      * @param projector       if the room has a projector or not
      * @param requireApproval if the room requires approval from the admin when trying to book or not
      * @param isRestricted    if the room is only available to lecturers or not
-     * @param pageSize        the size of each page
-     * @param offset          the offset
-     * @return the list of all the rooms satisfying the condition(s)
+     * @param size            the size of each page
+     * @param page            the page No.
      */
     @Override
-    public List<Room> getRooms(Integer id, String roomName, Integer capacity, boolean multimedia, boolean projector, boolean requireApproval, boolean isRestricted, int pageSize, int offset) {
-        return roomMapper.getRooms(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, pageSize, offset);
+    public Map<String, Object> getRooms(Integer id, String roomName, Integer capacity, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer size, Integer page) {
+        // Calculate offset
+        Integer offset = (page - 1) * size;
+        List<Room> roomList = roomMapper.getRooms(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, size, page);
+        Map<String, Object> map = new HashMap<>();
+        int total = roomList.size();
+        int totalPage = total % size == 0 ? total / size : total / size + 1;
+        map.put("rooms", roomList);
+        map.put("totalPage", totalPage);
+        map.put("total", total);
+        map.put("pageNumber", page);
+        return map;
     }
 
     /**
@@ -54,7 +63,7 @@ public class RoomServiceImpl implements RoomService {
      * @param url             the description photo url of the room
      */
     @Override
-    public void createRoom(String roomName, Integer capacity, boolean isBusy, String location, boolean multimedia, boolean projector, boolean requireApproval, boolean isRestricted, String url) {
+    public void createRoom(String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, String url) {
         roomMapper.createRoom(roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, url);
     }
 
@@ -135,7 +144,7 @@ public class RoomServiceImpl implements RoomService {
         }
 
         Map<LocalDate, Set<LocalDateTime>> busyMap = new HashMap<>();
-        for (List<LocalDateTime> busyTimeSlot: busyTimes) {
+        for (List<LocalDateTime> busyTimeSlot : busyTimes) {
             if (busyTimeSlot.size() != 2) continue;
             LocalDateTime start = busyTimeSlot.get(0);
             LocalDate date = start.toLocalDate();
