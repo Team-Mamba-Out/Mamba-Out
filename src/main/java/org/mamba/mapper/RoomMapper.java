@@ -23,6 +23,7 @@ public interface RoomMapper {
                         @Param("projector") Boolean projector,
                         @Param("requireApproval") Boolean requireApproval,
                         @Param("isRestricted") Boolean isRestricted,
+                        @Param("roomType") Integer roomType,
                         @Param("pageSize") Integer pageSize,
                         @Param("offset") Integer offset);
 
@@ -39,6 +40,7 @@ public interface RoomMapper {
                     @Param("projector") Boolean projector,
                     @Param("requireApproval") Boolean requireApproval,
                     @Param("isRestricted") Boolean isRestricted,
+                    @Param("roomType") Integer roomType,
                     @Param("url") String url);
 
     /**
@@ -54,6 +56,7 @@ public interface RoomMapper {
                         @Param("projector") Boolean projector,
                         @Param("requireApproval") Boolean requireApproval,
                         @Param("isRestricted") Boolean isRestricted,
+                        @Param("roomType") Integer roomType,
                         @Param("url") String url);
 
     /**
@@ -110,6 +113,9 @@ public interface RoomMapper {
                 if (params.get("isRestricted") != null) {
                     WHERE("isRestricted = #{isRestricted}");
                 }
+                if (params.get("roomType") != null) {
+                    WHERE("roomType = #{roomType}");
+                }
                 ORDER_BY("id ASC");
             }};
 
@@ -155,6 +161,9 @@ public interface RoomMapper {
                 }
                 if (params.get("isRestricted") != null) {
                     SET("isRestricted = #{isRestricted}");
+                }
+                if (params.get("roomType") != null) {
+                    SET("roomType = #{roomType}");
                 }
                 if (params.get("url") != null && !params.get("url").toString().isEmpty()) {
                     SET("url = #{url}");
