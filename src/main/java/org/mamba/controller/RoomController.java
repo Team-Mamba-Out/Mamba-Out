@@ -32,7 +32,7 @@ public class RoomController {
      * @param offset          the offset
      * @return the list of all the rooms satisfying the condition(s)
      */
-    @GetMapping
+    @RequestMapping("/getRooms")
     public Result getRooms(@RequestParam(required = false) Integer id,
                            @RequestParam(required = false) String roomName,
                            @RequestParam(required = false) Integer capacity,
@@ -52,7 +52,7 @@ public class RoomController {
      * @param room the room to be created
      * @return the result of the creation operation
      */
-    @PostMapping
+    @PostMapping("/addRoom")
     public Result createRoom(@RequestBody Room room) {
         roomService.createRoom(room.getRoomName(), room.getCapacity(), room.isBusy(), room.getLocation(), room.isMultimedia(), room.isProjector(), room.isRequireApproval(), room.isRestricted(), room.getUrl());
         return Result.success();
