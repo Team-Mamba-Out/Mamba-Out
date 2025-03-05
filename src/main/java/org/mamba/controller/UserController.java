@@ -15,29 +15,29 @@ public class UserController {
     private UserService userService;
 
     /**
-     * 获取用户列表，根据给定的条件进行筛选。
+     * Retrieves a list of users based on the given conditions.
      *
-     * @param uid 用户ID
-     * @param role 用户角色
-     * @param pageSize 每页大小
-     * @param offset 偏移量
-     * @return 包含用户列表的结果对象
+     * @param uid the user ID
+     * @param role the user role
+     * @param pageSize the number of records per page
+     * @param offset the offset for pagination
+     * @return a result object containing the list of users
      */
     @GetMapping
     public Result getUsers(@RequestParam(required = false) Integer uid,
                            @RequestParam(required = false) String role,
                            @RequestParam(required = false) Integer pageSize,
                            @RequestParam(required = false) Integer offset) {
-        List<User> users = userService.getUsers(uid, role,pageSize, offset);
+        List<User> users = userService.getUsers(uid, role, pageSize, offset);
         return Result.success(users);
     }
 
     /**
-     * 根据用户ID更新用户信息。
+     * Updates user information based on the user ID.
      *
-     * @param uid 用户ID
-     * @param user 包含更新信息的用户对象
-     * @return 更新操作的结果对象
+     * @param uid the user ID
+     * @param user the user object containing the update information
+     * @return a result object for the update operation
      */
     @PutMapping("/{uid}")
     public Result updateUserByUid(@PathVariable Integer uid, @RequestBody User user) {
@@ -45,4 +45,27 @@ public class UserController {
         return Result.success();
     }
 
+    /**
+     * Adds a new user.
+     *
+     * @param user the user to be created
+     * @return a success result
+     */
+    @PostMapping("/create")
+    public Result createUser(@RequestBody User user) {
+        userService.createUser(user.getUid(), user.getRole());
+        return Result.success();
+    }
+
+    /**
+     * Deletes a user by their UID.
+     *
+     * @param uid the UID of the user to delete
+     * @return a success result
+     */
+    @DeleteMapping("/delete/{uid}")
+    public Result deleteUserByUid(@PathVariable Integer uid) {
+        userService.deleteUserByUid(uid);
+        return Result.success();
+    }
 }

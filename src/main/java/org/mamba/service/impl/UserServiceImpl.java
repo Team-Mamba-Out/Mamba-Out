@@ -14,29 +14,48 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     /**
-     * 获取用户列表，根据给定的条件进行筛选。
+     * Retrieves a list of users based on the given conditions.
      *
-     * @param uid 用户ID
-     * @param role 用户角色
-     * @param pageSize 每页大小
-     * @param offset 偏移量
-     * @return 用户列表
+     * @param uid the user ID
+     * @param role the user role
+     * @param pageSize the number of records per page
+     * @param offset the offset for pagination
+     * @return a list of users
      */
     @Override
     public List<User> getUsers(Integer uid, String role, Integer pageSize, Integer offset) {
         return userMapper.getUsers(uid, role, pageSize, offset);
     }
 
-
     /**
-     * 根据用户ID更新用户信息。
+     * Updates user information based on the user ID.
      *
-     * @param uid 用户ID
-     * @param role 用户角色
+     * @param uid the user ID
+     * @param role the user role
      */
     @Override
     public void updateUserByUid(Integer uid, String role) {
         userMapper.updateUserByUid(uid, role);
     }
 
+    /**
+     * Adds a new user.
+     *
+     * @param uid the user ID
+     * @param role the user role
+     */
+    @Override
+    public void createUser(Integer uid, String role) {
+        userMapper.createUser(uid, role);
+    }
+
+    /**
+     * Deletes a user by their UID.
+     *
+     * @param uid the UID of the user to delete
+     */
+    @Override
+    public void deleteUserByUid(Integer uid) {
+        userMapper.deleteUserByUid(uid);
+    }
 }
