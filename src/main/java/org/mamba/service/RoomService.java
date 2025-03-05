@@ -1,7 +1,5 @@
 package org.mamba.service;
 
-import org.mamba.entity.Room;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -18,29 +16,12 @@ public interface RoomService {
      * @param requireApproval if the room requires approval from the admin when trying to book or not
      * @param isRestricted    if the room is only available to lecturers or not
      * @param roomType        the type of the room
+     * @param start           the start of the desired time period
+     * @param end             the end of the desired time period
      * @param size            the size of each page
      * @param page            the page No.
      */
-    Map<String, Object> getRooms(Integer id, String roomName, Integer capacity, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, Integer size, Integer page);
-
-    /**
-     * Obtains the all the available rooms in a time period
-     * or obtains some available rooms based on the conditions given.
-     *
-     * @param start           (MUST PROVIDE) the start of the time period
-     * @param end             (MUST PROVIDE) the end of the time period
-     * @param id              the room id
-     * @param roomName        the room name
-     * @param capacity        the capacity (the query result has to be bigger than or equal to this)
-     * @param multimedia      if the room has multimedia facilities or not
-     * @param projector       if the room has a projector or not
-     * @param requireApproval if the room requires approval from the admin when trying to book or not
-     * @param isRestricted    if the room is only available to lecturers or not
-     * @param roomType        the type of the room
-     * @param size            the size of each page
-     * @param page            the page No.
-     */
-    Map<String, Object> getFreeRooms(LocalDateTime start, LocalDateTime end, Integer id, String roomName, Integer capacity, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, Integer size, Integer page);
+    Map<String, Object> getRooms(Integer id, String roomName, Integer capacity, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, LocalDateTime start, LocalDateTime end, Integer size, Integer page);
 
     /**
      * Insert a new room.
