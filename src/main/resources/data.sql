@@ -36,7 +36,6 @@ CREATE TABLE Student (
 CREATE TABLE User (
                       uid INT NOT NULL PRIMARY KEY,
                       role ENUM('Admin', 'Lecturer', 'Student') NOT NULL,
-                      authenticationToken VARCHAR(512) NOT NULL
 );
 
 CREATE TABLE Record (
@@ -55,6 +54,6 @@ CREATE TABLE Message (
                          title VARCHAR(255) NOT NULL,
                          text TEXT NOT NULL,
                          createTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                         isRead BOOLEAN NOT NULL DEFAULT FALSE,
+                         isRead BOOLEAN NOT NULL DEFAULT FALSE
                          
 );
