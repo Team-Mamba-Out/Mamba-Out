@@ -17,7 +17,7 @@ public class RoomServiceImpl implements RoomService {
     @Autowired
     private RoomMapper roomMapper;
 
-    /* IMPORTANT NUMBERS */
+    /* IMPORTANT NUMBERS - DO NOT MODIFY */
     private final int DAILY_START_HOUR = 8;
     private final int DAILY_END_HOUR = 22;
     private final long PERIOD_MINUTE = 30;
