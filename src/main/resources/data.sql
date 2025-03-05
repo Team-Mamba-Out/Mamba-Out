@@ -35,7 +35,7 @@ CREATE TABLE Student (
 
 CREATE TABLE User (
                       uid INT NOT NULL PRIMARY KEY,
-                      role ENUM('Admin', 'Lecturer', 'Student') NOT NULL,
+                      role ENUM('Admin', 'Lecturer', 'Student') NOT NULL
 );
 
 CREATE TABLE Record (
