@@ -41,7 +41,7 @@ public class RecordServiceImpl implements RecordService {
         // Obtain the corresponding room of each record
         for (Record record : recordList) {
             int recordRoomId = record.getRoomId();
-            List<Room> recordRoomList = roomMapper.getRooms(roomId, null, null, null, null, null, null, null, null, null);
+            List<Room> recordRoomList = roomMapper.getRooms(recordRoomId, null, null, null, null, null, null, null, null, null);
             // (This list should contain only one room)
             Room recordRoom = recordRoomList.get(0);
 
