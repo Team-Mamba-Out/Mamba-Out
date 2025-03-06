@@ -67,5 +67,15 @@ public class RecordController {
         return Result.success();
     }
 
-
+    /**
+     * Cancel the record specified by id.
+     *
+     * @param id  the provided id
+     * @return the result of the cancellation operation
+     */
+    @PutMapping("/cancel/{id}")
+    public Result cancelRecordById(@PathVariable Integer id) {
+        recordService.cancelRecordById(id);
+        return Result.success();
+    }
 }
