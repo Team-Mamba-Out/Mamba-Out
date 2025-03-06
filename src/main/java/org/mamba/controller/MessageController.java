@@ -51,13 +51,13 @@ public class MessageController {
     /**
      * Retrieves all messages for a given user ID.
      *
-     * @param Uid the user ID
+     * @param uid the user ID
      *
      * @return a success result containing the list of messages
      */
     @GetMapping("/uid/{Uid}")
-    public Result getMessagesByUid(@PathVariable Integer Uid) {
-        List<Message> messages = messageService.getMessagesByUid(Uid);
+    public Result getMessagesByUid(@PathVariable Integer uid) {
+        List<Message> messages = messageService.getMessagesByUid(uid);
         return Result.success(messages);
     }
 
@@ -66,4 +66,8 @@ public class MessageController {
         List<Message> messageResult = messageService.getRecordsByStartTime(time);
         return Result.success(messageResult);
     }
+
+
+
+
 }

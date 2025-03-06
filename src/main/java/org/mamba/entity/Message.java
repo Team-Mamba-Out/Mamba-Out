@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Data
 public class Message {
     private Integer id;
-    private Integer Uid;
+    private Integer uid;
     private String title;
     private String text;
     private LocalDateTime createTime;

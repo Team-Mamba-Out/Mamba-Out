@@ -3,6 +3,7 @@ package org.mamba.service.impl;
 import org.mamba.entity.Record;
 import org.mamba.mapper.MessageMapper;
 import org.mamba.service.MessageService;
+import org.mamba.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.mamba.entity.Message;
@@ -20,6 +21,8 @@ public class MessageServiceImpl implements MessageService {
 
     @Autowired
     private MessageMapper messageMapper;
+    @Autowired
+    private AdminService AdminService;
 
     /**
      * Creates a new message.

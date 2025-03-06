@@ -1,7 +1,6 @@
 package org.mamba.service;
 
 import org.mamba.entity.Message;
-import org.mamba.entity.Record;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,4 +42,5 @@ public interface MessageService {
      * @return the corresponding record list
      */
     List<Message> getRecordsByStartTime(LocalDateTime startTime);
+
 }
