@@ -58,4 +58,10 @@ public class UserServiceImpl implements UserService {
     public void deleteUserByUid(Integer uid) {
         userMapper.deleteUserByUid(uid);
     }
+
+    @Override
+    public User getUserByUid(Integer uid) {
+        return userMapper.getUserByUid(uid);
+    }
+
 }
