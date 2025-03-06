@@ -184,5 +184,6 @@ public interface RoomMapper {
                 }
             }}.toString();
         }
+
     }
 }

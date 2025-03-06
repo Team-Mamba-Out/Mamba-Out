@@ -52,6 +52,15 @@ public interface UserMapper {
     void deleteUserByUid(@Param("uid") Integer uid);
 
     /**
+     * Gets a user by their uid.
+     *
+     * @param uid the user id
+     * @return the user with the specified uid
+     */
+    @Select("SELECT * FROM mamba.user WHERE uid = #{uid}")
+    User getUserByUid(@Param("uid") Integer uid);
+
+    /**
      * Static class for building SQL queries.
      */
     class UserSqlBuilder {

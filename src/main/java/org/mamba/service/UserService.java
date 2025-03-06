@@ -1,5 +1,7 @@
 package org.mamba.service;
 
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.mamba.entity.User;
 
 import java.util.List;
@@ -38,4 +40,13 @@ public interface UserService {
      * @param uid the UID of the user to delete
      */
     void deleteUserByUid(Integer uid);
+
+    /**
+     * Gets a user by their uid.
+     *
+     * @param uid the user id
+     * @return the user with the specified uid
+     */
+    User getUserByUid(Integer uid);
+
 }

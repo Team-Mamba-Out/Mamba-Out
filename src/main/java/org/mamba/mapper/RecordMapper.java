@@ -45,6 +45,7 @@ public interface RecordMapper {
     @Delete("DELETE FROM mamba.record WHERE id = #{id}")
     void deleteRecordById(@Param("id") Integer id);
 
+
     /**
      * Static class to build SQL queries for the record table.
      */

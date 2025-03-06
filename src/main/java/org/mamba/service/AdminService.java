@@ -1,5 +1,7 @@
 package org.mamba.service;
 
+import org.mamba.entity.Record;
+
 public interface AdminService {
 
     /**
@@ -7,5 +9,5 @@ public interface AdminService {
      *
      * @param recordId the record id
      */
-    void reassignRoomForRecord(Integer recordId);
+    Record reassignRoomForRecord(Integer recordId);
 }
