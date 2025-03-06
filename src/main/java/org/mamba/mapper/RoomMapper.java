@@ -44,6 +44,12 @@ public interface RoomMapper {
                     @Param("url") String url);
 
     /**
+     * Obtains the room specified by ID.
+     */
+    @Select("SELECT * FROM mamba.room WHERE id = #{id}")
+    Room getRoomById(@Param("id") int id);
+
+    /**
      * Update room information by ID.
      */
     @UpdateProvider(type = RoomSqlBuilder.class, method = "buildUpdateRoomSql")

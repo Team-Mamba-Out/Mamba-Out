@@ -217,6 +217,11 @@ public class RoomServiceImpl implements RoomService {
         return freeResult;
     }
 
+    @Override
+    public Room getRoomById(Integer id) {
+        return roomMapper.getRoomById(id);
+    }
+
     /**
      * Find the nearest available room.
      *
@@ -228,7 +233,7 @@ public class RoomServiceImpl implements RoomService {
     public Room findNearestAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime) {
         List<Room> allRooms = roomMapper.getAllRooms();
         for (Room room : allRooms) {
-            if (room.getId().equals(currentRoomId)) {
+            if (room.getId().equals(currentRoomId) || room.isBusy() || room.isRestricted() || room.getCapacity() < roomMapper.getRoomById(currentRoomId).getCapacity()) {
                 continue; // Skip the current room
             }
             List<List<LocalDateTime>> busyTimes = getBusyTimesById(room.getId());
