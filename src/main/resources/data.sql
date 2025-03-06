@@ -87,7 +87,8 @@ INSERT INTO Student (email, uid, name, phone, breakTimer) VALUES
 INSERT INTO User (uid, role) VALUES
                                  (1, 'Admin'),
                                  (3, 'Lecturer'),
-                                 (5, 'Student');
+                                 (5, 'Student'),
+                                 (6, 'Student');
 
 -- 插入 Record 数据
 INSERT INTO Record (roomId, userId, startTime, endTime, recordTime, hasCheckedIn, isCancelled) VALUES
