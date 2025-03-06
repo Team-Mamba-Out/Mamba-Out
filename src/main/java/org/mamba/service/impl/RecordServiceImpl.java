@@ -2,6 +2,7 @@ package org.mamba.service.impl;
 
 import org.mamba.entity.Lecturer;
 import org.mamba.entity.Record;
+import org.mamba.entity.Room;
 import org.mamba.mapper.RecordMapper;
 import org.mamba.mapper.RoomMapper;
 import org.mamba.service.RecordService;
@@ -17,6 +18,8 @@ import java.util.Map;
 public class RecordServiceImpl implements RecordService {
     @Autowired
     private RecordMapper recordMapper;
+    @Autowired
+    private RoomMapper roomMapper;
 
     /**
      * Obtains the record list based on the conditions given.
@@ -34,6 +37,17 @@ public class RecordServiceImpl implements RecordService {
         // Calculate offset
         Integer offset = (page - 1) * size;
         List<Record> recordList = recordMapper.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn, size, offset);
+
+        // Obtain the corresponding room of each record
+        for (Record record : recordList) {
+            int recordRoomId = record.getRoomId();
+            List<Room> recordRoomList = roomMapper.getRooms(roomId, null, null, null, null, null, null, null, null, null);
+            // (This list should contain only one room)
+            Room recordRoom = recordRoomList.get(0);
+
+            record.setCorrespondingRoom(recordRoom);
+        }
+
         Map<String, Object> map = new HashMap<>();
         int total = recordList.size();
         int totalPage = total % size == 0 ? total / size : total / size + 1;
