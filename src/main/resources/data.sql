@@ -90,12 +90,12 @@ INSERT INTO User (uid, role) VALUES
                                  (5, 'Student');
 
 -- 插入 Record 数据
-INSERT INTO Record (roomId, userId, startTime, endTime, recordTime, hasCheckedIn) VALUES
-                                                                                      (1, 101, '2025-03-06 10:00:00', '2025-03-06 12:00:00', NOW(), TRUE),
-                                                                                      (2, 102, '2025-03-06 14:00:00', '2025-03-06 16:00:00', NOW(), FALSE),
-                                                                                      (3, 103, '2025-03-07 09:00:00', '2025-03-07 11:00:00', NOW(), TRUE),
-                                                                                      (4, 104, '2025-03-07 13:30:00', '2025-03-07 15:30:00', NOW(), FALSE),
-                                                                                      (5, 105, '2025-03-08 08:00:00', '2025-03-08 10:00:00', NOW(), TRUE);
+INSERT INTO Record (roomId, userId, startTime, endTime, recordTime, hasCheckedIn, isCancelled) VALUES
+                                                                                                   (1, 101, '2025-03-06 10:00:00', '2025-03-06 12:00:00', NOW(), TRUE, FALSE),
+                                                                                                   (2, 102, '2025-03-06 14:00:00', '2025-03-06 16:00:00', NOW(), FALSE, FALSE),
+                                                                                                   (3, 103, '2025-03-07 09:00:00', '2025-03-07 11:00:00', NOW(), TRUE, FALSE),
+                                                                                                   (4, 104, '2025-03-07 13:30:00', '2025-03-07 15:30:00', NOW(), FALSE, FALSE),
+                                                                                                   (5, 105, '2025-03-08 08:00:00', '2025-03-08 10:00:00', NOW(), TRUE, FALSE);
 
 -- 插入 Message 数据
 INSERT INTO Message (uid, title, text, isRead, sender) VALUES
