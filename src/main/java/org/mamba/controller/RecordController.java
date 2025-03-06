@@ -37,8 +37,9 @@ public class RecordController {
                              @RequestParam(required = false) LocalDateTime endTime,
                              @RequestParam(required = false) Boolean hasCheckedIn,
                              @RequestParam(required = false) Integer size,
-                             @RequestParam(required = false) Integer page) {
-        Map<String, Object> recordsResult = recordService.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn, size, page);
+                             @RequestParam(required = false) Integer page,
+                             @RequestParam(required = false) Boolean isCancelled) {
+        Map<String, Object> recordsResult = recordService.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn, size, page, isCancelled);
         return Result.success(recordsResult);
     }
 
@@ -63,6 +64,18 @@ public class RecordController {
     @DeleteMapping("/{id}")
     public Result deleteRecordById(@PathVariable Integer id) {
         recordService.deleteRecordById(id);
+        return Result.success();
+    }
+
+    /**
+     * Cancel the record specified by id.
+     *
+     * @param id  the provided id
+     * @return the result of the cancellation operation
+     */
+    @PutMapping("/cancel/{id}")
+    public Result cancelRecordById(@PathVariable Integer id) {
+        recordService.cancelRecordById(id);
         return Result.success();
     }
 }

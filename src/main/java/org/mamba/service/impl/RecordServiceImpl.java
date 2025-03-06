@@ -33,10 +33,10 @@ public class RecordServiceImpl implements RecordService {
      * @param page         the page No.
      */
     @Override
-    public Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, Integer size, Integer page) {
+    public Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, Integer size, Integer page, Boolean isCancelled) {
         // Calculate offset
         Integer offset = (page - 1) * size;
-        List<Record> recordList = recordMapper.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn, size, offset);
+        List<Record> recordList = recordMapper.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn, size, offset, isCancelled);
 
         // Obtain the corresponding room of each record
         for (Record record : recordList) {
@@ -95,6 +95,16 @@ public class RecordServiceImpl implements RecordService {
         recordMapper.deleteRecordById(id);
     }
 
+
+    /**
+     * Cancel the record specified by id.
+     *
+     * @param id the provided id
+     */
+    @Override
+    public void cancelRecordById(Integer id) {
+        recordMapper.cancelRecordById(id);
+    }
 }
 
 

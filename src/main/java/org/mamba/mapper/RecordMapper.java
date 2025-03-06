@@ -22,7 +22,8 @@ public interface RecordMapper {
                             @Param("endTime") LocalDateTime endTime,
                             @Param("hasCheckedIn") Boolean hasCheckedIn,
                             @Param("pageSize") Integer pageSize,
-                            @Param("offset") Integer offset);
+                            @Param("offset") Integer offset,
+                            @Param("isCancelled") Boolean isCancelled);
 
     @Select("SELECT * FROM mamba.record WHERE id = #{id}")
     Record getRecordById(@Param("id") int id);
@@ -45,6 +46,9 @@ public interface RecordMapper {
     @Delete("DELETE FROM mamba.record WHERE id = #{id}")
     void deleteRecordById(@Param("id") Integer id);
 
+
+    @Update("UPDATE mamba.record SET isCancelled = true WHERE id = #{id}")
+    void cancelRecordById(@Param("id") Integer id);
 
     /**
      * Static class to build SQL queries for the record table.
@@ -72,6 +76,9 @@ public interface RecordMapper {
                 }
                 if (params.get("hasCheckedIn") != null) {
                     WHERE("hasCheckedIn = #{hasCheckedIn}");
+                }
+                if (params.get("isCancelled") != null) {
+                    WHERE("isCancelled = #{isCancelled}");
                 }
                 ORDER_BY("recordTime DESC");
             }};
