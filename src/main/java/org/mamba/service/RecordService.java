@@ -19,7 +19,7 @@ public interface RecordService {
      * @param size         the size of each page
      * @param page         the page No.
      */
-    Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, Integer size, Integer page);
+    Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, Integer size, Integer page, Boolean isCancelled);
 
     /**
      * Obtains the record specified by ID given.
@@ -28,6 +28,8 @@ public interface RecordService {
      * @return the corresponding record, could be null
      */
     Record getRecordById(int id);
+
+
 
     /**
      * Insert a new record.
@@ -47,8 +49,13 @@ public interface RecordService {
      */
     void deleteRecordById(Integer id);
 
+    /**
+     * Cancel the record specified by id.
+     *
+     * @param id  the provided id
+     */
+    void cancelRecordById(Integer id);
 }
-
 
 
 ///**

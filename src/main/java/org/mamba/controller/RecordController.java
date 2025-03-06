@@ -37,8 +37,9 @@ public class RecordController {
                              @RequestParam(required = false) LocalDateTime endTime,
                              @RequestParam(required = false) Boolean hasCheckedIn,
                              @RequestParam(required = false) Integer size,
-                             @RequestParam(required = false) Integer page) {
-        Map<String, Object> recordsResult = recordService.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn, size, page);
+                             @RequestParam(required = false) Integer page,
+                             @RequestParam(required = false) Boolean isCancelled) {
+        Map<String, Object> recordsResult = recordService.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn, size, page, isCancelled);
         return Result.success(recordsResult);
     }
 
@@ -65,4 +66,6 @@ public class RecordController {
         recordService.deleteRecordById(id);
         return Result.success();
     }
+
+
 }
