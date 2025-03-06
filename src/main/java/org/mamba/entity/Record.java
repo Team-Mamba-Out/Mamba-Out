@@ -9,6 +9,7 @@ public class Record {
     private Integer id;
     private Integer roomId;
     private Integer userId;
+    private Room correspondingRoom;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private LocalDateTime recordTime;
