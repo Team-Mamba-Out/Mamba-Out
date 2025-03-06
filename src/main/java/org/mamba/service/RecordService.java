@@ -1,7 +1,6 @@
 package org.mamba.service;
-
 import org.mamba.entity.Record;
-import org.springframework.stereotype.Service;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +20,14 @@ public interface RecordService {
      * @param page         the page No.
      */
     Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, Integer size, Integer page);
+
+    /**
+     * Obtains the record specified by ID given.
+     *
+     * @param id the provided id
+     * @return the corresponding record, could be null
+     */
+    Record getRecordById(int id);
 
     /**
      * Insert a new record.

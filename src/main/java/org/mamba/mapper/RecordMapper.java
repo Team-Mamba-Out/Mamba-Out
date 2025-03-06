@@ -24,6 +24,9 @@ public interface RecordMapper {
                             @Param("pageSize") Integer pageSize,
                             @Param("offset") Integer offset);
 
+    @Select("SELECT * FROM mamba.record WHERE id = #{id}")
+    Record getRecordById(@Param("id") int id);
+
     /**
      * Insert a new record.
      */

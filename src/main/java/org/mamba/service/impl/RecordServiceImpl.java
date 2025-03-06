@@ -45,6 +45,17 @@ public class RecordServiceImpl implements RecordService {
     }
 
     /**
+     * Obtains the record specified by ID given.
+     *
+     * @param id the provided id
+     * @return the corresponding record, could be null
+     */
+    @Override
+    public Record getRecordById(int id) {
+        return recordMapper.getRecordById(id);
+    }
+
+    /**
      * Insert a new record.
      *
      * @param roomId       Room ID

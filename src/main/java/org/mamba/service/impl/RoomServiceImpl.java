@@ -86,6 +86,12 @@ public class RoomServiceImpl implements RoomService {
         return map;
     }
 
+
+    @Override
+    public List<Room> getAllRooms() {
+        return roomMapper.getAllRooms();
+    }
+
     /**
      * Insert a new room.
      *
@@ -209,5 +215,34 @@ public class RoomServiceImpl implements RoomService {
         }
 
         return freeResult;
+    }
+
+    /**
+     * Find the nearest available room.
+     *
+     * @param startTime the start time
+     * @param endTime   the end time
+     * @return the nearest available room
+     */
+    @Override
+    public Room findNearestAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime) {
+        List<Room> allRooms = roomMapper.getAllRooms();
+        for (Room room : allRooms) {
+            if (room.getId().equals(currentRoomId)) {
+                continue; // Skip the current room
+            }
+            List<List<LocalDateTime>> busyTimes = getBusyTimesById(room.getId());
+            boolean isAvailable = true;
+            for (List<LocalDateTime> busyTime : busyTimes) {
+                if (startTime.isBefore(busyTime.get(1)) && endTime.isAfter(busyTime.get(0))) {
+                    isAvailable = false;
+                    break;
+                }
+            }
+            if (isAvailable) {
+                return room;
+            }
+        }
+        return null;
     }
 }
