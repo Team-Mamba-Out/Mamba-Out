@@ -1,5 +1,6 @@
 package org.mamba.service;
 
+import org.mamba.entity.Room;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -83,4 +84,19 @@ public interface RoomService {
      */
     List<List<LocalDateTime>> getFreeTimesById(Integer id);
 
+    /**
+     * Finds the nearest available room for the given time period.
+     *
+     * @param startTime the start time of the desired period
+     * @param endTime   the end time of the desired period
+     * @return the nearest available room, or null if none found
+     */
+    Room findNearestAvailableRoom(Integer currentRoomId,LocalDateTime startTime, LocalDateTime endTime);
+
+    /**
+     * Retrieves all rooms.
+     *
+     * @return a list of all rooms
+     */
+    List<Room> getAllRooms();
 }

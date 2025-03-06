@@ -8,5 +8,4 @@ public class Admin {
     private Integer Uid;
     private String name;
     private String phone;
-
 }

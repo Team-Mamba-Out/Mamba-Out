@@ -81,6 +81,14 @@ public interface RoomMapper {
     List<Record> getFutureRecords(@Param("id") Integer id, LocalDateTime now);
 
     /**
+     * Retrieves all rooms.
+     *
+     * @return a list of all rooms
+     */
+    @Select("SELECT * FROM mamba.room")
+    List<Room> getAllRooms();
+
+    /**
      * Static inner classes - Generate dynamic SQL
      */
     class RoomSqlBuilder {
