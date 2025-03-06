@@ -99,4 +99,6 @@ public interface RoomService {
      * @return a list of all rooms
      */
     List<Room> getAllRooms();
+
+    Room getRoomById(Integer id);
 }

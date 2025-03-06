@@ -1,7 +1,6 @@
 package org.mamba.controller;
 
 import org.mamba.entity.Result;
-import org.mamba.service.RecordService;
 import org.mamba.service.impl.AdminServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
