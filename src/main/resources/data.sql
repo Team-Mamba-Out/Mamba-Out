@@ -48,7 +48,7 @@ CREATE TABLE Record (
                         recordTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         hasCheckedIn BOOLEAN NOT NULL DEFAULT FALSE,
                         isCancelled BOOLEAN NOT NULL DEFAULT FALSE,
-                        status tinyint NOT NULL DEFAULT 1
+                        statusId tinyint NOT NULL DEFAULT 1
 );
 
 CREATE TABLE Message (
@@ -91,12 +91,13 @@ INSERT INTO User (uid, role) VALUES
                                  (5, 'Student');
 
 -- 插入 Record 数据
-INSERT INTO Record (roomId, userId, startTime, endTime, recordTime, hasCheckedIn, isCancelled) VALUES
-                                                                                                   (1, 101, '2025-03-06 10:00:00', '2025-03-06 12:00:00', NOW(), TRUE, FALSE),
-                                                                                                   (2, 102, '2025-03-06 14:00:00', '2025-03-06 16:00:00', NOW(), FALSE, FALSE),
-                                                                                                   (3, 103, '2025-03-07 09:00:00', '2025-03-07 11:00:00', NOW(), TRUE, FALSE),
-                                                                                                   (4, 104, '2025-03-07 13:30:00', '2025-03-07 15:30:00', NOW(), FALSE, FALSE),
-                                                                                                   (5, 105, '2025-03-08 08:00:00', '2025-03-08 10:00:00', NOW(), TRUE, FALSE);
+INSERT INTO Record (roomId, userId, startTime, endTime, recordTime, hasCheckedIn, isCancelled, statusId) VALUES
+                                                                                                             (1, 101, '2025-03-06 10:00:00', '2025-03-06 12:00:00', NOW(), TRUE, FALSE, 1),
+                                                                                                             (2, 102, '2025-03-06 14:00:00', '2025-03-06 16:00:00', NOW(), FALSE, FALSE, 1),
+                                                                                                             (3, 103, '2025-03-07 09:00:00', '2025-03-07 11:00:00', NOW(), TRUE, FALSE, 1),
+                                                                                                             (4, 104, '2025-03-07 13:30:00', '2025-03-07 15:30:00', NOW(), FALSE, FALSE, 1),
+                                                                                                             (5, 105, '2025-03-08 08:00:00', '2025-03-08 10:00:00', NOW(), TRUE, FALSE, 1);
+
 
 -- 插入 Message 数据
 INSERT INTO Message (uid, title, text, isRead, sender) VALUES
