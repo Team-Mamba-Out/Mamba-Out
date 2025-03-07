@@ -271,29 +271,38 @@ public class RoomServiceImpl implements RoomService {
      * @return the nearest available room that meets the criteria, or null if none found
      */
     @Override
-    public Room findNearestAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime, String userRole) {
+    public Room findNearestAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime,
+                                         String userRole, LocalDateTime newUnavailableStartTime, LocalDateTime newUnavailableEndTime) {
         // Get the list of all rooms
         List<Room> allRooms = roomMapper.getAllRooms();
 
+        // Sort rooms by capacity in ascending order to find the closest match
+        allRooms.sort(Comparator.comparingInt(Room::getCapacity));
+
         // Loop to keep searching for an available room until one is found
         while (true) {
-            // Iterate over all rooms
             for (Room room : allRooms) {
-                // Skip the current room or rooms with insufficient capacity
-                if (room.getId().equals(currentRoomId) || room.getCapacity() < roomMapper.getRoomById(currentRoomId).getCapacity()) {
-                    continue; // Skip this room
+                // Skip rooms with insufficient capacity
+                if (room.getCapacity() < roomMapper.getRoomById(currentRoomId).getCapacity()) {
+                    continue;
                 }
 
                 // If the room is restricted and the user is a student, skip this room
                 if (room.isRestricted() && userRole.equals("Student")) {
-                    continue; // Student cannot book restricted rooms
+                    continue;
+                }
+
+                // If the room is the current room, check its availability based on the new unavailable time slot
+                if (room.getId().equals(currentRoomId) &&
+                        !(endTime.isBefore(newUnavailableStartTime) || startTime.isAfter(newUnavailableEndTime))) {
+                    continue; // Skip if the requested time overlaps with the unavailable period
                 }
 
                 // Get all busy times for this room
                 List<List<LocalDateTime>> busyTimes = getBusyTimesById(room.getId());
-                boolean isAvailable = true;
 
-                // Check if the room is available during the requested time slot
+                // Check if the room is available
+                boolean isAvailable = true;
                 for (List<LocalDateTime> busyTime : busyTimes) {
                     if (startTime.isBefore(busyTime.get(1)) && endTime.isAfter(busyTime.get(0))) {
                         isAvailable = false;
@@ -301,7 +310,6 @@ public class RoomServiceImpl implements RoomService {
                     }
                 }
 
-                // If the room is available, return it
                 if (isAvailable) {
                     return room;
                 }
@@ -312,4 +320,5 @@ public class RoomServiceImpl implements RoomService {
             endTime = endTime.plusMinutes(PERIOD_MINUTE);
         }
     }
+
 }

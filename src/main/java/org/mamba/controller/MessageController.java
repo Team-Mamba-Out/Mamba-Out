@@ -62,8 +62,8 @@ public class MessageController {
     }
 
     @GetMapping("/records")
-    public Result getRecordsByTime(@RequestParam LocalDateTime time) {
-        List<Message> messageResult = messageService.getRecordsByStartTime(time);
-        return Result.success(messageResult);
+    public Result appointmentReminder(@RequestParam LocalDateTime time) {
+        messageService.Reminder(time);
+        return Result.success();
     }
 }

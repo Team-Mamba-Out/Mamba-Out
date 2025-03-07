@@ -62,30 +62,24 @@ public class MessageServiceImpl implements MessageService {
      * @param time the provided time
      */
     @Override
-    public List<Message> getRecordsByStartTime(LocalDateTime time) {
+    public void Reminder(LocalDateTime time) {
         // Calculate the actual query time (add 10 minutes)
         LocalDateTime startTime = time.plus(10, ChronoUnit.MINUTES);
 
         // Query records that match the condition
         List<Record> recordList = messageMapper.getRecordsByStartTime(startTime);
 
-        // Create a list of messages
-        List<Message> messageList = new ArrayList<>();
-
-        // Iterate through the record list and convert each to a message
+        // Iterate through the record list and store each message directly
         for (Record record : recordList) {
-            Message message = new Message();
-            message.setUid(record.getUserId());  // Set user ID
-            message.setTitle("Room Reservation Reminder");
-            message.setText("Your reserved room " + record.getRoomId() + " is scheduled to start at " + record.getStartTime() + ". Please arrive on time.");
-            message.setCreateTime(LocalDateTime.now());  // Set message creation time
-            message.setRead(false);  // Default to unread
-            message.setSender("System Notification");  // Sender is the system
-
-            messageList.add(message);
+            createMessage(
+                    record.getUserId(),
+                    "Room Reservation Reminder",
+                    "Your reserved room " + record.getRoomId() + " is scheduled to start at " + record.getStartTime() + ". Please arrive on time.",
+                    LocalDateTime.now(),  // Message creation time
+                    false,  // Default to unread
+                    "System Notification"  // Sender
+            );
         }
-
-        return messageList;
     }
 
 }

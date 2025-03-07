@@ -5,6 +5,8 @@ import org.mamba.service.impl.AdminServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -19,8 +21,10 @@ public class AdminController {
      * @return a success result
      */
     @DeleteMapping("/record/{recordId}")
-    public Result deleteRecordAndReassignRoom(@PathVariable Integer recordId) {
-        adminService.reassignRoomForRecord(recordId);
+    public Result deleteRecordAndReassignRoom(@PathVariable Integer recordId,
+                                              @RequestParam LocalDateTime newStartTime,
+                                              @RequestParam LocalDateTime newEndTime) {
+        adminService.deleteAndReassignRoom(recordId, newStartTime, newEndTime);
         return Result.success();
     }
 }

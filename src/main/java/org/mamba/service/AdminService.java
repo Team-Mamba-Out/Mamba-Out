@@ -2,6 +2,8 @@ package org.mamba.service;
 
 import org.mamba.entity.Record;
 
+import java.time.LocalDateTime;
+
 public interface AdminService {
 
     /**
@@ -9,5 +11,5 @@ public interface AdminService {
      *
      * @param recordId the record id
      */
-    Record reassignRoomForRecord(Integer recordId);
+    void deleteAndReassignRoom(Integer recordId, LocalDateTime newStartTime, LocalDateTime newEndTime);
 }
