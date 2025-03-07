@@ -29,7 +29,7 @@ public class RecordController {
      * @param page         the page No.
      * @return the list of all the records
      */
-    @GetMapping
+    @RequestMapping("/getRecords")
     public Result getRecords(@RequestParam(required = false) Integer id,
                              @RequestParam(required = false) Integer roomId,
                              @RequestParam(required = false) Integer userId,

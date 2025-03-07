@@ -46,8 +46,8 @@ public class RecordServiceImpl implements RecordService {
             List<Room> recordRoomList = roomMapper.getRooms(recordRoomId, null, null, null, null, null, null, null, null, null);
             // (This list should contain only one room)
             Room recordRoom = recordRoomList.get(0);
-
             record.setCorrespondingRoom(recordRoom);
+            record.setStatus(convertStatus(record.getStatusId()));
         }
 
         Map<String, Object> map = new HashMap<>();
@@ -60,6 +60,18 @@ public class RecordServiceImpl implements RecordService {
         return map;
     }
 
+    private String convertStatus(Integer statusId) {
+        switch (statusId) {
+            case 1:
+                return "Pending";
+            case 2:
+                return "Ongoing";
+            case 3:
+                return "Done";
+            default:
+                return "Unknown";
+        }
+    }
     /**
      * Obtains the record specified by ID given.
      *

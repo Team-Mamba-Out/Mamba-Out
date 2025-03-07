@@ -13,6 +13,7 @@ public class Record {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private LocalDateTime recordTime;
+    private Integer statusId;
     private String status;
     private boolean hasCheckedIn;
     private boolean isCancelled;
