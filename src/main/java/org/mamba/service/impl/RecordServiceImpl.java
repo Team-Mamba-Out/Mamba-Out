@@ -114,16 +114,8 @@ public class RecordServiceImpl implements RecordService {
     @Scheduled(cron = "0 * * * * ?") // 每分钟执行一次
     @Transactional
     @Override
-    public void updateOngoingBookings() {
-        LocalDateTime now = LocalDateTime.now();
-        List<Record> records = recordMapper.findOnGoingRecords(now);
-        for (Record record : records) {
-            record.setIsLasting(true);
-        }
-        if (records.isEmpty()){
-            return;
-        }
-        recordMapper.saveAll(records);
+    public void updateStatus() {
+        recordMapper.updateRecordStatus();
     }
 }
 
