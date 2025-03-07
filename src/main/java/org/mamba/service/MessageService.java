@@ -42,5 +42,5 @@ public interface MessageService {
      * @param startTime the provided start time
      * @return the corresponding record list
      */
-    List<Message> getRecordsByStartTime(LocalDateTime startTime);
+    void Reminder(LocalDateTime startTime);
 }
