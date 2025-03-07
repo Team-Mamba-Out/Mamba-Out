@@ -48,7 +48,7 @@ CREATE TABLE Record (
                         recordTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         hasCheckedIn BOOLEAN NOT NULL DEFAULT FALSE,
                         isCancelled BOOLEAN NOT NULL DEFAULT FALSE,
-                        isLasting BOOLEAN NOT NULL DEFAULT FALSE
+                        status tinyint NOT NULL DEFAULT 1
 );
 
 CREATE TABLE Message (

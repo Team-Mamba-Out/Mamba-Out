@@ -46,16 +46,20 @@ public interface RecordMapper {
     @Delete("DELETE FROM mamba.record WHERE id = #{id}")
     void deleteRecordById(@Param("id") Integer id);
 
-    /**
-     *  find all ongoing records
-     */
-    @Select("SELECT * FROM record WHERE startTime <= #{now} AND isLasting = FALSE")
-    List<Record> findOnGoingRecords(@Param("now") LocalDateTime now);
+
 
     /**
      *  allow update record list.
      */
-    void saveAll(@Param("records") List<Record> records);
+    @Update("UPDATE Record " +
+            "SET status = " +
+            "  CASE " +
+            "    WHEN startTime > NOW() THEN 1 " +
+            "    WHEN NOW() BETWEEN startTime AND endTime THEN 2 " +
+            "    ELSE 3 " +
+            "  END")
+    void updateRecordStatus();
+
 
     @Update("UPDATE mamba.record SET isCancelled = true WHERE id = #{id}")
     void cancelRecordById(@Param("id") Integer id);

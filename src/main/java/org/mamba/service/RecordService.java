@@ -58,7 +58,7 @@ public interface RecordService {
     /**
      * automatically updating
      */
-    void updateOngoingBookings();
+    void updateStatus();
 }
 
 
