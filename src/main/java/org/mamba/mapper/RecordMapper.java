@@ -52,7 +52,7 @@ public interface RecordMapper {
      *  allow update record list.
      */
     @Update("UPDATE Record " +
-            "SET status = " +
+            "SET statusId = " +
             "  CASE " +
             "    WHEN startTime > NOW() THEN 1 " +
             "    WHEN NOW() BETWEEN startTime AND endTime THEN 2 " +
