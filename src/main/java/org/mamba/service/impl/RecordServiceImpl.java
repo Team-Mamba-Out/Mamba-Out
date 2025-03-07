@@ -96,6 +96,7 @@ public class RecordServiceImpl implements RecordService {
     public void createRecord(Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn) {
         // Obtain the current time
         LocalDateTime recordTime = LocalDateTime.now();
+
         recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn);
     }
 

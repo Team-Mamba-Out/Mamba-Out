@@ -96,7 +96,7 @@ public class RoomController {
      * @param id the room id
      * @return the list containing several lists, each of which contains start time and end time
      */
-    // TODO 注脚，参数传递
+    @GetMapping("/getBusyTime/{id}")
     public Result getBusyTimesById(Integer id) {
         List<List<LocalDateTime>> busyTimesList = roomService.getBusyTimesById(id);
         return Result.success(busyTimesList);
@@ -111,7 +111,7 @@ public class RoomController {
      * @param id the room id
      * @return the list containing several lists, each of which contains start time and end time
      */
-    // TODO 注脚，参数传递
+    @GetMapping("/getRecordPeriods/{id}")
     public Result getRecordPeriodsById (Integer id) {
         List<List<LocalDateTime>> roomRecordPeriods = roomService.getRecordPeriodsById(id);
         return Result.success(roomRecordPeriods);
@@ -126,7 +126,7 @@ public class RoomController {
      * @param id the room id
      * @return the list containing several lists, each of which contains start time and end time
      */
-    // TODO 注脚，参数传递
+    @GetMapping("/getFreeTime/{id}")
     public Result getFreeTimesById(Integer id) {
         List<List<LocalDateTime>> freeTimesList = roomService.getFreeTimesById(id);
         return Result.success(freeTimesList);
