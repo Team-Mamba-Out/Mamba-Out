@@ -31,7 +31,7 @@ public class RoomController {
      * @param end             the end of the desired time period
      * @param size            the size of each page
      * @param page            the page No.
-     * @return the list of all the rooms satisfying the condition(s)
+     * @return all the rooms satisfying the condition(s)
      */
     @RequestMapping("/getRooms")
     public Result getRooms(@RequestParam(required = false) Integer id,
@@ -91,6 +91,7 @@ public class RoomController {
      * Get the BUSY times of the room by id.
      * Returns all the BUSY time periods of the room in the next 7 days.
      * (including the current day)
+     * The format: the list of minimal unit of time period.
      *
      * @param id the room id
      * @return the list containing several lists, each of which contains start time and end time
@@ -102,9 +103,25 @@ public class RoomController {
     }
 
     /**
+     * Get all the RECORD PERIODS times of the room by id.
+     * Returns all the RECORD PERIODS of the room in the next 7 days.
+     * (including the current day)
+     * The format: the list of each order's start time & end time
+     *
+     * @param id the room id
+     * @return the list containing several lists, each of which contains start time and end time
+     */
+    // TODO 注脚，参数传递
+    public Result getRecordPeriodsById (Integer id) {
+        List<List<LocalDateTime>> roomRecordPeriods = roomService.getRecordPeriodsById(id);
+        return Result.success(roomRecordPeriods);
+    }
+
+    /**
      * Get the FREE times of the room by id.
      * Returns all the FREE time periods of the room in the next 7 days.
      * (including the current day)
+     * The format: the list of minimal unit of time period.
      *
      * @param id the room id
      * @return the list containing several lists, each of which contains start time and end time

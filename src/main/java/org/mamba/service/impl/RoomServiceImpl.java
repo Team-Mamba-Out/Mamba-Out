@@ -2,6 +2,7 @@ package org.mamba.service.impl;
 
 import org.mamba.entity.Record;
 import org.mamba.entity.Room;
+import org.mamba.mapper.RecordMapper;
 import org.mamba.mapper.RoomMapper;
 import org.mamba.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import java.util.*;
 public class RoomServiceImpl implements RoomService {
     @Autowired
     private RoomMapper roomMapper;
+    @Autowired
+    private RecordMapper recordMapper;
 
     /* IMPORTANT NUMBERS - DO NOT MODIFY */
     private final int DAILY_START_HOUR = 8;
@@ -145,6 +148,7 @@ public class RoomServiceImpl implements RoomService {
      * Get the BUSY times of the room by id.
      * Returns all the BUSY time periods of the room in the next 7 days.
      * (including the current day)
+     * The format: the list of minimal unit of time period.
      *
      * @param id the room id
      * @return the list containing several lists, each of which contains start time and end time
@@ -167,9 +171,44 @@ public class RoomServiceImpl implements RoomService {
     }
 
     /**
+     * Get all the RECORD PERIODS times of the room by id.
+     * Returns all the RECORD PERIODS of the room in the next 7 days.
+     * (including the current day)
+     * The format: the list of each order's start time & end time
+     *
+     * @param id the room id
+     * @return the list containing several lists, each of which contains start time and end time
+     */
+    @Override
+    public List<List<LocalDateTime>> getRecordPeriodsById (Integer id) {
+        // Get the current time
+        LocalDateTime now = LocalDateTime.now();
+
+        // Obtain all the records
+        List<Record> roomRecords = recordMapper.getRecords(null, id, null, now, now.plusDays(7), null, null, null, null);
+        List<List<LocalDateTime>> roomRecordPeriods = new ArrayList<>();
+
+        // Iterate through all the record periods
+        for (Record roomRecord : roomRecords) {
+            LocalDateTime recordStart = roomRecord.getStartTime();
+            LocalDateTime recordEnd = roomRecord.getEndTime();
+
+            List<LocalDateTime> recordPeriod = new ArrayList<>();
+            recordPeriod.add(recordStart);
+            recordPeriod.add(recordEnd);
+
+            // Add to the result
+            roomRecordPeriods.add(recordPeriod);
+        }
+
+        return roomRecordPeriods;
+    }
+
+    /**
      * Get the FREE times of the room by id.
      * Returns all the FREE time periods of the room in the next 7 days.
      * (including the current day)
+     * The format: the list of minimal unit of time period.
      *
      * @param id the room id
      * @return the list containing several lists, each of which contains start time and end time
@@ -269,8 +308,8 @@ public class RoomServiceImpl implements RoomService {
             }
 
             // If no available room is found, adjust the time slot by adding 30 minutes
-            startTime = startTime.plusMinutes(30);
-            endTime = endTime.plusMinutes(30);
+            startTime = startTime.plusMinutes(PERIOD_MINUTE);
+            endTime = endTime.plusMinutes(PERIOD_MINUTE);
         }
     }
 }
