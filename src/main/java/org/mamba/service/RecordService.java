@@ -55,6 +55,10 @@ public interface RecordService {
      * @param id  the provided id
      */
     void cancelRecordById(Integer id);
+    /**
+     * automatically updating
+     */
+    void updateOngoingBookings();
 }
 
 

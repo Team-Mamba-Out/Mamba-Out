@@ -7,7 +7,9 @@ import org.mamba.mapper.RecordMapper;
 import org.mamba.mapper.RoomMapper;
 import org.mamba.service.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -104,6 +106,24 @@ public class RecordServiceImpl implements RecordService {
     @Override
     public void cancelRecordById(Integer id) {
         recordMapper.cancelRecordById(id);
+    }
+
+    /**
+     * automatically updating
+     */
+    @Scheduled(cron = "0 * * * * ?") // 每分钟执行一次
+    @Transactional
+    @Override
+    public void updateOngoingBookings() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Record> records = recordMapper.findOnGoingRecords(now);
+        for (Record record : records) {
+            record.setIsLasting(true);
+        }
+        if (records.isEmpty()){
+            return;
+        }
+        recordMapper.saveAll(records);
     }
 }
 
