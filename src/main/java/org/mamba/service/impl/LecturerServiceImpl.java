@@ -3,9 +3,11 @@ package org.mamba.service.impl;
 import org.mamba.entity.Lecturer;
 import org.mamba.mapper.LecturerMapper;
 import org.mamba.service.LecturerService;
+import org.mamba.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,8 @@ import java.util.Map;
 public class LecturerServiceImpl implements LecturerService {
     @Autowired
     private LecturerMapper lecturerMapper;
+    @Autowired
+    private MessageService messageService;
 
     /**
      * Obtains the lecturer list based on the conditions given.
@@ -54,6 +58,16 @@ public class LecturerServiceImpl implements LecturerService {
     @Override
     public void createLecturer(String email, Integer uid, String name, String phone) {
         lecturerMapper.createLecturer(email, uid, name, phone);
+
+        messageService.createMessage(
+                uid,
+                "Welcome to the System",
+                "Dear " + name + ", your lecturer account has been created successfully.",
+                LocalDateTime.now(),
+                false,
+                "System Notification"
+        );
+
     }
 
     /**
@@ -67,6 +81,15 @@ public class LecturerServiceImpl implements LecturerService {
     @Override
     public void updateLecturerByEmail(String email, Integer uid, String name, String phone) {
         lecturerMapper.updateLecturerByEmail(email, uid, name, phone);
+
+        messageService.createMessage(
+                uid,
+                "Student Information Updated",
+                "Dear " + name + ", your lecturer information has been successfully updated.",
+                LocalDateTime.now(),
+                false,
+                "System Notification"
+        );
     }
 
     /**
@@ -77,5 +100,14 @@ public class LecturerServiceImpl implements LecturerService {
     @Override
     public void deleteLecturer(String email) {
         lecturerMapper.deleteLecturerByEmail(email);
+
+        messageService.createMessage(
+                1,
+                "Lecturer Account Deletion",
+                "Lecturer account associated with the email " + email + " has been successfully deleted.",
+                LocalDateTime.now(),
+                false,
+                "System Notification"
+        );
     }
 }

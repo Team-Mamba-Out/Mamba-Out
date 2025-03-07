@@ -67,12 +67,8 @@ public class AdminServiceImpl implements AdminService {
         messageService.createMessage(
                 userID,
                 "Room Reassignment Notification",
-                String.format(
-                        "Your reserved room %d at %s is no longer available. " +
-                                "You have been reassigned to room %d from %s to %s. Please check your reservation details.",
-                        roomID, oldStartTime,
-                        newRecord.getRoomId(), newRecord.getStartTime(), newRecord.getEndTime()
-                ),
+                "Your reserved room" + roomID + "at" + oldStartTime + "is no longer available. " +
+                        "You have been reassigned to room" + newRecord.getRoomId() + "from" + newRecord.getStartTime()+ "to"+ newRecord.getEndTime() + "Please check your reservation details.",
                 LocalDateTime.now(),
                 false,
                 "System Notification"
