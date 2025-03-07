@@ -19,7 +19,7 @@ public interface RecordService {
      * @param size         the size of each page
      * @param page         the page No.
      */
-    Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, Integer size, Integer page, Boolean isCancelled);
+    Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, Boolean isCancelled, Integer size, Integer page);
 
     /**
      * Obtains the record specified by ID given.

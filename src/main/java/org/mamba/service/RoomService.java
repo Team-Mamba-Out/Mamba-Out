@@ -1,6 +1,7 @@
 package org.mamba.service;
 
 import org.mamba.entity.Room;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,7 @@ public interface RoomService {
      * Get the BUSY times of the room by id.
      * Returns all the BUSY time periods of the room in the next 7 days.
      * (including the current day)
+     * The format: the list of minimal unit of time period.
      *
      * @param id the room id
      * @return the list containing several lists, each of which contains start time and end time
@@ -75,9 +77,21 @@ public interface RoomService {
     List<List<LocalDateTime>> getBusyTimesById(Integer id);
 
     /**
+     * Get all the RECORD PERIODS times of the room by id.
+     * Returns all the RECORD PERIODS of the room in the next 7 days.
+     * (including the current day)
+     * The format: the list of each order's start time & end time
+     *
+     * @param id the room id
+     * @return the list containing several lists, each of which contains start time and end time
+     */
+    List<List<LocalDateTime>> getRecordPeriodsById(Integer id);
+
+    /**
      * Get the FREE times of the room by id.
      * Returns all the FREE time periods of the room in the next 7 days.
      * (including the current day)
+     * The format: the list of minimal unit of time period.
      *
      * @param id the room id
      * @return the list containing several lists, each of which contains start time and end time
@@ -91,7 +105,7 @@ public interface RoomService {
      * @param endTime   the end time of the desired period
      * @return the nearest available room, or null if none found
      */
-    Room findNearestAvailableRoom(Integer currentRoomId,LocalDateTime startTime, LocalDateTime endTime, String userRole);
+    Room findNearestAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime, String userRole);
 
     /**
      * Retrieves all rooms.

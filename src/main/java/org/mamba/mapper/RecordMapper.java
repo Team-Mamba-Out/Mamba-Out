@@ -21,9 +21,9 @@ public interface RecordMapper {
                             @Param("startTime") LocalDateTime startTime,
                             @Param("endTime") LocalDateTime endTime,
                             @Param("hasCheckedIn") Boolean hasCheckedIn,
+                            @Param("isCancelled") Boolean isCancelled,
                             @Param("pageSize") Integer pageSize,
-                            @Param("offset") Integer offset,
-                            @Param("isCancelled") Boolean isCancelled);
+                            @Param("offset") Integer offset);
 
     @Select("SELECT * FROM mamba.record WHERE id = #{id}")
     Record getRecordById(@Param("id") int id);

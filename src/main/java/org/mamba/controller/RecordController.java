@@ -36,10 +36,10 @@ public class RecordController {
                              @RequestParam(required = false) LocalDateTime startTime,
                              @RequestParam(required = false) LocalDateTime endTime,
                              @RequestParam(required = false) Boolean hasCheckedIn,
+                             @RequestParam(required = false) Boolean isCancelled,
                              @RequestParam(required = false) Integer size,
-                             @RequestParam(required = false) Integer page,
-                             @RequestParam(required = false) Boolean isCancelled) {
-        Map<String, Object> recordsResult = recordService.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn, size, page, isCancelled);
+                             @RequestParam(required = false) Integer page) {
+        Map<String, Object> recordsResult = recordService.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn, isCancelled, size, page);
         return Result.success(recordsResult);
     }
 

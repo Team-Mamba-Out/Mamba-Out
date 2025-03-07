@@ -35,10 +35,10 @@ public class RecordServiceImpl implements RecordService {
      * @param page         the page No.
      */
     @Override
-    public Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, Integer size, Integer page, Boolean isCancelled) {
+    public Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, Boolean isCancelled, Integer size, Integer page) {
         // Calculate offset
         Integer offset = (page - 1) * size;
-        List<Record> recordList = recordMapper.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn, size, offset, isCancelled);
+        List<Record> recordList = recordMapper.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn, isCancelled, size, offset);
 
         // Obtain the corresponding room of each record
         for (Record record : recordList) {
