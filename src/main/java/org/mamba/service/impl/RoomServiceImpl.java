@@ -5,6 +5,7 @@ import org.mamba.entity.Room;
 import org.mamba.mapper.RecordMapper;
 import org.mamba.mapper.RoomMapper;
 import org.mamba.service.RoomService;
+import org.mamba.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,8 @@ public class RoomServiceImpl implements RoomService {
     private RoomMapper roomMapper;
     @Autowired
     private RecordMapper recordMapper;
+    @Autowired
+    private MessageService messageService;
 
     /* IMPORTANT NUMBERS - DO NOT MODIFY */
     private final int DAILY_START_HOUR = 8;
@@ -110,10 +113,19 @@ public class RoomServiceImpl implements RoomService {
      * @param url             the description photo url of the room
      */
     @Override
+
     public void createRoom(String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url) {
         roomMapper.createRoom(roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url);
-    }
 
+        messageService.createMessage(
+                1,
+                "New Room Created",
+                "A new room named '" + roomName + "' has been successfully created. Details: Capacity: " + capacity + ", Location: " + location,
+                LocalDateTime.now(),
+                false,
+                "System Notification"
+        );
+    }
     /**
      * Update the information of a room by id.
      *
@@ -132,6 +144,18 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void updateRoomById(Integer id, String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url) {
         roomMapper.updateRoomById(id, roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url);
+
+        messageService.createMessage(
+                1,
+                "Room Information Updated",
+                "The room with ID " + id + " has been successfully updated. New details: Name: " + roomName +
+                        ", Capacity: " + capacity + ", Location: " + location + ", Multimedia: " + multimedia +
+                        ", Projector: " + projector + ", Requires Approval: " + requireApproval +
+                        ", Restricted: " + isRestricted + ", Room Type: " + roomType + ", URL: " + url,
+                LocalDateTime.now(),
+                false,
+                "System Notification"
+        );
     }
 
     /**
@@ -142,6 +166,15 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void deleteRoomById(Integer id) {
         roomMapper.deleteRoomById(id);
+
+        messageService.createMessage(
+                1,
+                "Room Deleted",
+                "The room with ID " + id + " has been successfully deleted.",
+                LocalDateTime.now(),
+                false,
+                "System Notification"
+        );
     }
 
     /**

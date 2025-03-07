@@ -6,6 +6,7 @@ import org.mamba.entity.Room;
 import org.mamba.mapper.RecordMapper;
 import org.mamba.mapper.RoomMapper;
 import org.mamba.service.RecordService;
+import org.mamba.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,8 @@ public class RecordServiceImpl implements RecordService {
     private RecordMapper recordMapper;
     @Autowired
     private RoomMapper roomMapper;
+    @Autowired
+    private MessageService messageService;
 
     /**
      * Obtains the record list based on the conditions given.
@@ -98,6 +101,17 @@ public class RecordServiceImpl implements RecordService {
         LocalDateTime recordTime = LocalDateTime.now();
 
         recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn);
+
+        Room room = roomMapper.getRoomById(roomId);
+
+        messageService.createMessage(
+                userId,
+                "Reserve Room successfully",
+                "Your room reservation for: " + room.getRoomName() + " has been successfully created. The reservation is from " + startTime + " to " + endTime + ". Please check in on time.",
+                recordTime,
+                false,
+                "System Notification"
+        );
     }
 
     /**
@@ -118,7 +132,18 @@ public class RecordServiceImpl implements RecordService {
      */
     @Override
     public void cancelRecordById(Integer id) {
+        Record record = recordMapper.getRecordById(id);
+        Room room = roomMapper.getRoomById(record.getRoomId());
         recordMapper.cancelRecordById(id);
+
+        messageService.createMessage(
+                record.getUserId(),
+                "Room Reservation Cancellation",
+                "Your room reservation for: " + room.getRoomName() + " has been successfully cancelled.",
+                LocalDateTime.now(),
+                false,
+                "System Notification"
+        );
     }
 
     /**
