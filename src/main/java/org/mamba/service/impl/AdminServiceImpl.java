@@ -36,9 +36,9 @@ public class AdminServiceImpl implements AdminService {
     public void deleteAndReassignRoom(Integer recordId, LocalDateTime newStartTime, LocalDateTime newEndTime) {
         // Retrieve the original reservation record
         Record record = recordService.getRecordById(recordId);
-//        if (record == null) {
-//            throw new IllegalArgumentException("Record not found");
-//        }
+        if (record == null) {
+            throw new IllegalArgumentException("Record not found");
+        }
 
         Integer roomID = record.getRoomId();
         Integer userID = record.getUserId();
@@ -53,9 +53,9 @@ public class AdminServiceImpl implements AdminService {
 
         // Find the nearest available room
         Room nearestRoom = roomService.findNearestAvailableRoom(roomID, oldStartTime, record.getEndTime(), userRole, newStartTime, newEndTime);
-//        if (nearestRoom == null) {
-//            throw new IllegalStateException("No available room found");
-//        }
+        if (nearestRoom == null) {
+            throw new IllegalStateException("No available room found");
+        }
 
         // Create a new reservation for the reassigned room
         recordService.createRecord(nearestRoom.getId(), userID, record.getStartTime(), record.getEndTime(), record.isHasCheckedIn());
