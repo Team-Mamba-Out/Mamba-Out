@@ -1,7 +1,6 @@
 package org.mamba.controller;
 
 import org.mamba.entity.Message;
-import org.mamba.entity.Record;
 import org.mamba.entity.Result;
 import org.mamba.service.RecordService;
 import org.mamba.service.MessageService;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
@@ -49,18 +47,28 @@ public class MessageController {
     }
 
     /**
-     * Retrieves all messages for a given user ID.
+     * Retrieves a paginated list of messages for a given user ID.
      *
-     * @param Uid the user ID
-     *
-     * @return a success result containing the list of messages
+     * @param Uid  the user ID
+     * @param size the number of messages per page (optional, default is 10)
+     * @param page the current page number (optional, default is 1)
+     * @return a success result containing the paginated list of messages
      */
-    @GetMapping("/uid/{Uid}")
-    public Result getMessagesByUid(@PathVariable Integer Uid) {
-        List<Message> messages = messageService.getMessagesByUid(Uid);
-        return Result.success(messages);
+    @GetMapping("/messages/{Uid}")
+    public Result getMessagesByUid(@PathVariable Integer Uid,
+                                   @RequestParam(required = false, defaultValue = "10") Integer size,
+                                   @RequestParam(required = false, defaultValue = "1") Integer page) {
+        // Retrieve paginated messages from the service layer
+        Map<String, Object> messagesResult = messageService.getMessagesByUid(Uid, size, page);
+        return Result.success(messagesResult);
     }
 
+    /**
+     * Sends appointment reminders for records that have a start time equal to the provided time plus 10 minutes.
+     *
+     * @param time the provided time
+     * @return a success result indicating the reminders were sent
+     */
     @GetMapping("/records")
     public Result appointmentReminder(@RequestParam LocalDateTime time) {
         messageService.Reminder(time);

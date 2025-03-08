@@ -6,7 +6,9 @@ import org.mamba.entity.Room;
 import org.mamba.mapper.RecordMapper;
 import org.mamba.mapper.RoomMapper;
 import org.mamba.service.RecordService;
+import org.mamba.service.RoomService;
 import org.mamba.service.MessageService;
+import org.mamba.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,8 @@ public class RecordServiceImpl implements RecordService {
     private RoomMapper roomMapper;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private RoomService roomService;
 
     /**
      * Obtains the record list based on the conditions given.
@@ -149,6 +153,11 @@ public class RecordServiceImpl implements RecordService {
         );
     }
 
+    @Override
+    public List<Record> findRecordsByRoomAndTimeRange(String roomName, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime) {
+        Room room = roomMapper.getRoomByName(roomName);
+        return recordMapper.findRecordsByRoomAndTimeRange(room.getId(), occupyStartTime, occupyEndTime);
+    }
     /**
      * Counts the total number of records.
      *
@@ -178,6 +187,18 @@ public class RecordServiceImpl implements RecordService {
     @Override
     public int countIncompleteOrders() {
         return recordMapper.countIncompleteOrders();
+    }
+
+    @Override
+    public Map<String, Object> getRecordsByRoomAndTime(String roomName, LocalDateTime startTime, LocalDateTime endTime) {
+        Room room = roomMapper.getRoomByName(roomName);
+        return getRecords(null,room.getId(),null,startTime,endTime,null,null,null,null);
+    }
+
+    @Override
+    public void createAdminRecord(String roomName, LocalDateTime startTime, LocalDateTime endTime) {
+        Room room = roomMapper.getRoomByName(roomName);
+        createRecord(room.getId(),1,startTime,endTime,true);
     }
 
     /**

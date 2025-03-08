@@ -2,7 +2,9 @@ package org.mamba.controller;
 
 import org.mamba.entity.Admin;
 import org.mamba.entity.Result;
+import org.mamba.service.RecordService;
 import org.mamba.service.impl.AdminServiceImpl;
+import org.mamba.service.impl.RecordServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,9 +15,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
-
     @Autowired
     private AdminServiceImpl adminService;
+    @Autowired
+    private RecordServiceImpl recordService;
 
     /**
      * Obtains the admin list.
@@ -61,25 +64,29 @@ public class AdminController {
      * @param endTime   the end time
      * @return the list of records matching the criteria
      */
-//    @GetMapping("/records")
-//    public Result getRecordsByRoomNameAndTime(@RequestParam String roomName,
-//                                              @RequestParam LocalDateTime startTime,
-//                                              @RequestParam LocalDateTime endTime) {
-//        Map<String, Object> recordsResult = recordService.getRecords(null, null, null, startTime, endTime, null, null, null, null);
-//        return Result.success(recordsResult);
-//    }
+    @GetMapping("/records")
+    public Result getRecordsByRoomNameAndTime(@RequestParam String roomName,
+                                              @RequestParam LocalDateTime startTime,
+                                              @RequestParam LocalDateTime endTime) {
+        Map<String, Object> recordsResult = recordService.getRecordsByRoomAndTime(roomName, startTime, endTime);
+        return Result.success(recordsResult);
+    }
 
     /**
-     * Deletes the record specified by id and reassigns the room.
+     * Deletes records for a specified room within a given time range and reassigns users to new rooms.
      *
-     * @param recordId the provided record id
-     * @return a success result
+     * @param roomName    the name of the room
+     * @param newStartTime the new start time for the reassignment
+     * @param newEndTime   the new end time for the reassignment
+     * @param reason       the reason for the reassignment
+     * @return a success result indicating the operation was completed
      */
     @DeleteMapping("/record/{recordId}")
-    public Result deleteRecordAndReassignRoom(@PathVariable Integer recordId,
+    public Result deleteRecordAndReassignRoom(@PathVariable String roomName,
                                               @RequestParam LocalDateTime newStartTime,
-                                              @RequestParam LocalDateTime newEndTime) {
-        adminService.deleteAndReassignRoom(recordId, newStartTime, newEndTime);
+                                              @RequestParam LocalDateTime newEndTime,
+                                              @RequestParam String reason) {
+        adminService.deleteAndReassignRoom(roomName, newStartTime, newEndTime, reason);
         return Result.success();
     }
 }

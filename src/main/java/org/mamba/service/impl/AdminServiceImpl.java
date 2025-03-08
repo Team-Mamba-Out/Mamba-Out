@@ -15,7 +15,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -63,55 +66,62 @@ public class AdminServiceImpl implements AdminService {
         );
     }
 
-    /**
-     * Deletes the specified record by ID and reassigns the user to a new room.
-     *
-     * @param recordId    the ID of the record to be deleted
-     * @param newStartTime the new start time for the updated reservation
-     * @param newEndTime   the new end time for the updated reservation
-     */
+
     @Override
-    public void deleteAndReassignRoom(Integer recordId, LocalDateTime newStartTime, LocalDateTime newEndTime) {
-        // Retrieve the original reservation record
-        Record record = recordService.getRecordById(recordId);
-        if (record == null) {
-            throw new IllegalArgumentException("Record not found");
+    public void deleteAndReassignRoom(String roomName, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime, String reason) {
+        // Retrieve the list of records within the specified time range for the given room
+        List<Record> list = recordService.findRecordsByRoomAndTimeRange(roomName, occupyStartTime, occupyEndTime);
+        Integer roomId = roomService.getRoomByName(roomName).getId();  // Get the room ID
+
+        // Create a list to store extracted reservation data
+        List<Map<String, Object>> extractedRecords = new ArrayList<>();
+
+        for (Record record : list) {
+            Map<String, Object> recordData = new HashMap<>();
+            recordData.put("userID", record.getUserId());
+            recordData.put("startTime", record.getStartTime());
+            recordData.put("endTime", record.getEndTime());
+
+            // Retrieve the user's role
+            String userRole = userService.getUserByUid(record.getUserId()).getRole();
+            recordData.put("role", userRole);
+
+            extractedRecords.add(recordData);
         }
 
-        Integer roomID = record.getRoomId();
-        Integer userID = record.getUserId();
-        LocalDateTime oldStartTime = record.getStartTime();
+        // Create a new reservation for the occupied room
+        recordService.createRecord(roomId, 1, occupyStartTime, occupyEndTime, true);
 
-        // Retrieve the user's role
-        String userRole = userService.getUserByUid(userID).getRole();
+        // Iterate through extracted records and reassign each user to a new room
+        for (Map<String, Object> recordData : extractedRecords) {
+            Integer userID = (Integer) recordData.get("userID");
+            LocalDateTime oldStartTime = (LocalDateTime) recordData.get("startTime");
+            LocalDateTime oldEndTime = (LocalDateTime) recordData.get("endTime");
+            String userRole = (String) recordData.get("role");
 
-        // Delete the old reservation record and create a new one with updated time
-        recordService.deleteRecordById(recordId);
-        recordService.createRecord(roomID, 1, newStartTime, newEndTime, true);
+            // Find the nearest available room for reassignment
+            Room nearestRoom = roomService.findNearestAvailableRoom(roomId,oldStartTime, oldEndTime, userRole, occupyStartTime, occupyEndTime);
+            if (nearestRoom == null) {
+                throw new IllegalStateException("No available room found for user " + userID);
+            }
 
-        // Find the nearest available room
-        Room nearestRoom = roomService.findNearestAvailableRoom(roomID, oldStartTime, record.getEndTime(), userRole, newStartTime, newEndTime);
-        if (nearestRoom == null) {
-            throw new IllegalStateException("No available room found");
+            // Create a new reservation for the reassigned room
+            recordService.createRecord(nearestRoom.getId(), userID, oldStartTime, oldEndTime, false);
+
+            // Retrieve the newly assigned record
+            Record newRecord = recordService.getRecordById(nearestRoom.getId());
+
+            // Send a notification message about the reassignment
+            messageService.createMessage(
+                    userID,
+                    "Room Reassignment Notification",
+                    "Your reserved room at " + oldStartTime + " is no longer available. " +
+                            "You have been reassigned to room " + newRecord.getRoomId() + " from " + newRecord.getStartTime() + " to " + newRecord.getEndTime() +
+                            ". The reason is: " + reason + ". Please check your reservation details.",
+                    LocalDateTime.now(),
+                    false,
+                    "System Notification"
+            );
         }
-
-        // Create a new reservation for the reassigned room
-        recordService.createRecord(nearestRoom.getId(), userID, record.getStartTime(), record.getEndTime(), record.isHasCheckedIn());
-
-        // Retrieve the newly assigned record
-        Record newRecord = recordService.getRecordById(nearestRoom.getId());
-
-        // Send a notification message about the reassignment
-        messageService.createMessage(
-                userID,
-                "Room Reassignment Notification",
-                "Your reserved room" + roomID + "at" + oldStartTime + "is no longer available. " +
-                        "You have been reassigned to room" + newRecord.getRoomId() + "from" + newRecord.getStartTime()+ "to"+ newRecord.getEndTime() + "Please check your reservation details.",
-                LocalDateTime.now(),
-                false,
-                "System Notification"
-        );
     }
-
-
 }

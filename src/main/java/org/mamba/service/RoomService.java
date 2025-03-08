@@ -1,5 +1,6 @@
 package org.mamba.service;
 
+import org.apache.ibatis.annotations.Select;
 import org.mamba.entity.Room;
 
 import java.time.LocalDateTime;
@@ -122,4 +123,13 @@ public interface RoomService {
     List<Room> getAllRooms();
 
     Room getRoomById(Integer id);
+
+    /**
+     * Queries a room based on its name.
+     *
+     * @param roomName the name of the room
+     * @return the room matching the name
+     */
+    @Select("SELECT * FROM mamba.room WHERE roomName = #{roomName}")
+    Room getRoomByName(String roomName);
 }

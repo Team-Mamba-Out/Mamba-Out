@@ -12,34 +12,32 @@ import java.util.List;
 
 public interface AdminService {
     /**
-     * Obtains the admin list.
+     * Retrieves the list of all administrators.
+     *
+     * @return a list of {@link Admin} objects representing all administrators.
      */
-    @Select("SELECT * FROM mamba.admin")
     List<Admin> getAdmins();
 
     /**
-     * Insert a new admin.
-     */
-    @Insert("INSERT INTO mamba.admin (email, uid, name, phone) " +
-            "VALUES (#{email}, #{uid}, #{name}, #{phone})")
-    void createAdmin(@Param("email") String email,
-                     @Param("uid") Integer uid,
-                     @Param("name") String name,
-                     @Param("phone") String phone);
-
-    /**
-     * Update admin information by email.
-     */
-    @Update("UPDATE mamba.admin SET uid = #{uid}, name = #{name}, phone = #{phone} WHERE email = #{email}")
-    void updateAdminByEmail(@Param("email") String email,
-                            @Param("uid") Integer uid,
-                            @Param("name") String name,
-                            @Param("phone") String phone);
-
-    /**
-     * Reassign a room for a record.
+     * Creates a new administrator account and sends a welcome notification.
      *
-     * @param recordId the record id
+     * @param email the email address of the new administrator.
+     * @param uid the unique user ID of the administrator.
+     * @param name the name of the administrator.
+     * @param phone the phone number of the administrator.
      */
-    void deleteAndReassignRoom(Integer recordId, LocalDateTime newStartTime, LocalDateTime newEndTime);
+    void createAdmin(String email, Integer uid, String name, String phone);
+
+    /**
+     * Updates the administrator's information by email and sends a notification.
+     *
+     * @param email the email address of the administrator to update.
+     * @param uid the updated user ID of the administrator.
+     * @param name the updated name of the administrator.
+     * @param phone the updated phone number of the administrator.
+     */
+    void updateAdminByEmail(String email, Integer uid, String name, String phone);
+
+
+    void deleteAndReassignRoom(String roomName, LocalDateTime newStartTime, LocalDateTime newEndTime, String reason);
 }
