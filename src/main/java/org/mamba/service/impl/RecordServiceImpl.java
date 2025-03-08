@@ -147,6 +147,37 @@ public class RecordServiceImpl implements RecordService {
     }
 
     /**
+     * Counts the total number of records.
+     *
+     * @return the total number of records
+     */
+    @Override
+    public int countRecords() {
+        return recordMapper.countRecords();
+    }
+
+
+    @Override
+    public int countTeacherOrders() {
+        return recordMapper.countTeacherOrders();
+    }
+
+    @Override
+    public int countStudentOrders() {
+        return recordMapper.countStudentOrders();
+    }
+
+    @Override
+    public int countCompletedOrders() {
+        return recordMapper.countCompletedOrders();
+    }
+
+    @Override
+    public int countIncompleteOrders() {
+        return recordMapper.countIncompleteOrders();
+    }
+
+    /**
      * automatically updating
      */
     @Scheduled(cron = "0 * * * * ?") // 每分钟执行一次

@@ -1,8 +1,10 @@
 package org.mamba.service.impl;
 
+import org.mamba.entity.Admin;
 import org.mamba.entity.Message;
 import org.mamba.entity.Room;
 import org.mamba.entity.Record;
+import org.mamba.mapper.AdminMapper;
 import org.mamba.service.AdminService;
 import org.mamba.service.UserService;
 import org.mamba.service.MessageService;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -24,6 +27,41 @@ public class AdminServiceImpl implements AdminService {
     private UserService userService;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private AdminMapper adminMapper;
+
+    @Override
+    public List<Admin> getAdmins() {
+        return adminMapper.getAdmins();
+    }
+
+    @Override
+    public void createAdmin(String email, Integer uid, String name, String phone) {
+        adminMapper.createAdmin(email, uid, name, phone);
+
+        messageService.createMessage(
+                uid,
+                "Welcome to the System",
+                "Dear " + name + ", your admin account has been created successfully.",
+                LocalDateTime.now(),
+                false,
+                "System Notification"
+        );
+    }
+
+    @Override
+    public void updateAdminByEmail(String email, Integer uid, String name, String phone) {
+        adminMapper.updateAdminByEmail(email, uid, name, phone);
+
+        messageService.createMessage(
+                uid,
+                "Admin Information Updated",
+                "Dear " + name + ", your admin information has been successfully updated.",
+                LocalDateTime.now(),
+                false,
+                "System Notification"
+        );
+    }
 
     /**
      * Deletes the specified record by ID and reassigns the user to a new room.

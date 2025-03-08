@@ -12,22 +12,29 @@ public interface UserMapper {
     /**
      * Retrieves a list of users based on the given conditions.
      *
-     * @param uid the user ID
-     * @param role the user role
-     * @param pageSize the number of records per page
-     * @param offset the offset for pagination
      * @return a list of users
      */
     @SelectProvider(type = UserSqlBuilder.class, method = "buildGetUsersSql")
     List<User> getUsers(@Param("uid") Integer uid,
+                        @Param("microsoftId") String microsoftId,
+                        @Param("email") String email,
+                        @Param("name") String name,
                         @Param("role") String role,
                         @Param("pageSize") Integer pageSize,
                         @Param("offset") Integer offset);
 
+
+    /**
+     * Get the user by microsoft id.
+     * @return the user
+     */
+    @Select("SELECT * FROM mamba.user WHERE microsoftId = #{microsoftId}")
+    User getUserByMicrosoftId(String microsoftId);
+
     /**
      * Updates user information based on the user ID.
      *
-     * @param uid the user ID
+     * @param uid  the user ID
      * @param role the user role
      */
     @UpdateProvider(type = UserSqlBuilder.class, method = "buildUpdateUserSql")
@@ -36,12 +43,9 @@ public interface UserMapper {
 
     /**
      * Inserts a new user into the database.
-            *
-            * @param uid the user ID
-     * @param role the user role
      */
-    @Insert("INSERT INTO mamba.user (uid, role) VALUES (#{uid}, #{role})")
-    void createUser(@Param("uid") Integer uid, @Param("role") String role);
+    @Insert("INSERT INTO mamba.user (microsoftId, email, name, role) VALUES (#{uid}, #{microsoftId}, #{email}, #{name}, #{role})")
+    void createUser(@Param("microsoftId") String microsoftId, @Param("email") String email, @Param("name") String name, @Param("role") String role);
 
     /**
      * Deletes a user from the database by their UID.
@@ -78,6 +82,15 @@ public interface UserMapper {
                 if (params.get("uid") != null) {
                     WHERE("uid = #{uid}");
                 }
+                if (params.get("microsoftId") != null && !params.get("microsoftId").toString().isEmpty()) {
+                    WHERE("microsoftId = #{microsoftId}");
+                }
+                if (params.get("email") != null && !params.get("email").toString().isEmpty()) {
+                    WHERE("email = #{email}");
+                }
+                if (params.get("name") != null && !params.get("name").toString().isEmpty()) {
+                    WHERE("name = #{name}");
+                }
                 if (params.get("role") != null && !params.get("role").toString().isEmpty()) {
                     WHERE("role = #{role}");
                 }
@@ -103,6 +116,15 @@ public interface UserMapper {
         public static String buildUpdateUserSql(Map<String, Object> params) {
             return new SQL() {{
                 UPDATE("mamba.user");
+                if (params.get("email") != null && !params.get("email").toString().isEmpty()) {
+                    SET("email = #{email}");
+                }
+                if (params.get("microsoftId") != null && !params.get("microsoftId").toString().isEmpty()) {
+                    SET("microsoftId = #{microsoftId}");
+                }
+                if (params.get("name") != null && !params.get("name").toString().isEmpty()) {
+                    SET("name = #{name}");
+                }
                 if (params.get("role") != null && !params.get("role").toString().isEmpty()) {
                     SET("role = #{role}");
                 }

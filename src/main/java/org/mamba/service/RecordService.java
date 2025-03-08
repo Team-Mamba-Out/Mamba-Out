@@ -29,8 +29,6 @@ public interface RecordService {
      */
     Record getRecordById(int id);
 
-
-
     /**
      * Insert a new record.
      *
@@ -59,6 +57,41 @@ public interface RecordService {
      * automatically updating
      */
     void updateStatus();
+
+    /**
+     * Counts the total number of orders for teachers.
+     *
+     * @return the total number of orders for teachers
+     */
+    int countTeacherOrders();
+
+    /**
+     * Counts the total number of orders for students.
+     *
+     * @return the total number of orders for students
+     */
+    int countStudentOrders();
+
+    /**
+     * Counts the total number of completed orders.
+     *
+     * @return the total number of completed orders
+     */
+    int countCompletedOrders();
+
+    /**
+     * Counts the total number of incomplete orders.
+     *
+     * @return the total number of incomplete orders
+     */
+    int countIncompleteOrders();
+
+    /**
+     * Counts the total number of records.
+     *
+     * @return the total number of records
+     */
+    int countRecords();
 }
 
 

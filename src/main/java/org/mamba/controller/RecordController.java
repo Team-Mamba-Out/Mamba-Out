@@ -78,4 +78,59 @@ public class RecordController {
         recordService.cancelRecordById(id);
         return Result.success();
     }
+
+    /**
+     * Counts the total number of records.
+     *
+     * @return the total number of records
+     */
+    @GetMapping("/count")
+    public Result countRecords() {
+        int count = recordService.countRecords();
+        return Result.success(count);
+    }
+
+    /**
+     * Counts the total number of orders for teachers.
+     *
+     * @return the total number of orders for teachers
+     */
+    @GetMapping("/count/teachers")
+    public Result countTeacherOrders() {
+        int count = recordService.countTeacherOrders();
+        return Result.success(count);
+    }
+
+    /**
+     * Counts the total number of orders for students.
+     *
+     * @return the total number of orders for students
+     */
+    @GetMapping("/count/students")
+    public Result countStudentOrders() {
+        int count = recordService.countStudentOrders();
+        return Result.success(count);
+    }
+
+    /**
+     * Counts the total number of completed orders.
+     *
+     * @return the total number of completed orders
+     */
+    @GetMapping("/count/completed")
+    public Result countCompletedOrders() {
+        int count = recordService.countCompletedOrders();
+        return Result.success(count);
+    }
+
+    /**
+     * Counts the total number of incomplete orders.
+     *
+     * @return the total number of incomplete orders
+     */
+    @GetMapping("/count/incomplete")
+    public Result countIncompleteOrders() {
+        int count = recordService.countIncompleteOrders();
+        return Result.success(count);
+    }
 }

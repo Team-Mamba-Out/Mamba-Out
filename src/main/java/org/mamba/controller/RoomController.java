@@ -132,4 +132,15 @@ public class RoomController {
         return Result.success(freeTimesList);
     }
 
+    /**
+     * Counts the total number of rooms.
+     *
+     * @return the total number of rooms
+     */
+    @GetMapping("/count")
+    public Result countRooms() {
+        int count = roomService.countRooms();
+        return Result.success(count);
+    }
+
 }

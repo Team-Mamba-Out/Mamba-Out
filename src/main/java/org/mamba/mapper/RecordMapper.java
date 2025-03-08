@@ -46,8 +46,6 @@ public interface RecordMapper {
     @Delete("DELETE FROM mamba.record WHERE id = #{id}")
     void deleteRecordById(@Param("id") Integer id);
 
-
-
     /**
      *  allow update record list.
      */
@@ -63,6 +61,41 @@ public interface RecordMapper {
 
     @Update("UPDATE mamba.record SET isCancelled = true WHERE id = #{id}")
     void cancelRecordById(@Param("id") Integer id);
+
+    @Select("SELECT COUNT(*) FROM mamba.record")
+    int countRecords();
+
+    /**
+     * Counts the total number of orders for teachers.
+     *
+     * @return the total number of orders for teachers
+     */
+    @Select("SELECT COUNT(*) FROM mamba.record WHERE userId IN (SELECT uid FROM mamba.user WHERE role = 'Teacher')")
+    int countTeacherOrders();
+
+    /**
+     * Counts the total number of orders for students.
+     *
+     * @return the total number of orders for students
+     */
+    @Select("SELECT COUNT(*) FROM mamba.record WHERE userId IN (SELECT uid FROM mamba.user WHERE role = 'Student')")
+    int countStudentOrders();
+
+    /**
+     * Counts the total number of completed orders.
+     *
+     * @return the total number of completed orders
+     */
+    @Select("SELECT COUNT(*) FROM mamba.record WHERE statusId = 3")
+    int countCompletedOrders();
+
+    /**
+     * Counts the total number of incomplete orders.
+     *
+     * @return the total number of incomplete orders
+     */
+    @Select("SELECT COUNT(*) FROM mamba.record WHERE statusId != 3")
+    int countIncompleteOrders();
 
     /**
      * Static class to build SQL queries for the record table.

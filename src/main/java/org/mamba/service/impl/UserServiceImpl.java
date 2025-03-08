@@ -16,15 +16,13 @@ public class UserServiceImpl implements UserService {
     /**
      * Retrieves a list of users based on the given conditions.
      *
-     * @param uid the user ID
-     * @param role the user role
      * @param pageSize the number of records per page
      * @param offset the offset for pagination
      * @return a list of users
      */
     @Override
-    public List<User> getUsers(Integer uid, String role, Integer pageSize, Integer offset) {
-        return userMapper.getUsers(uid, role, pageSize, offset);
+    public List<User> getUsers(Integer uid, String microsoftId, String email, String name, String role, Integer pageSize, Integer offset) {
+        return userMapper.getUsers(uid, microsoftId, email, name, role, pageSize, offset);
     }
 
     /**
@@ -40,13 +38,10 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Adds a new user.
-     *
-     * @param uid the user ID
-     * @param role the user role
      */
     @Override
-    public void createUser(Integer uid, String role) {
-        userMapper.createUser(uid, role);
+    public void createUser(String microsoftId, String email, String name, String role) {
+        userMapper.createUser(microsoftId, email, name, role);
     }
 
     /**
