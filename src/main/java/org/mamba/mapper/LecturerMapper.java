@@ -24,6 +24,12 @@ public interface LecturerMapper {
                                 @Param("offset") Integer offset);
 
     /**
+     * counts the total number of lecturers
+     */
+    @Select("SELECT COUNT(*) from mamba.lecturer;")
+    Integer count();
+
+    /**
      * Insert a new lecturer.
      */
     @Insert("INSERT INTO mamba.lecturer (email, uid, name, phone) " +

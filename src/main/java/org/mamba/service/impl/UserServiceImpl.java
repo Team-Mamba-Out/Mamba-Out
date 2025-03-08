@@ -21,8 +21,8 @@ public class UserServiceImpl implements UserService {
      * @return a list of users
      */
     @Override
-    public List<User> getUsers(Integer uid, String microsoftId, String email, String name, String role, Integer pageSize, Integer offset) {
-        return userMapper.getUsers(uid, microsoftId, email, name, role, pageSize, offset);
+    public List<User> getUsers(Integer uid, String role, Integer pageSize, Integer offset) {
+        return userMapper.getUsers(uid, role, pageSize, offset);
     }
 
     /**
@@ -40,8 +40,8 @@ public class UserServiceImpl implements UserService {
      * Adds a new user.
      */
     @Override
-    public void createUser(String microsoftId, String email, String name, String role) {
-        userMapper.createUser(microsoftId, email, name, role);
+    public void createUser(String role) {
+        userMapper.createUser(role);
     }
 
     /**

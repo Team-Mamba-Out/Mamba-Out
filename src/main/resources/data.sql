@@ -35,7 +35,7 @@ CREATE TABLE Student (
 );
 
 CREATE TABLE User (
-                      uid INT NOT NULL PRIMARY KEY,
+                      uid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
                       role ENUM('Admin', 'Lecturer', 'Student') NOT NULL
 );
 

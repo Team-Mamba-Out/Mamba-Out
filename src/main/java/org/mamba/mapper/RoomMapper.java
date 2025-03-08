@@ -95,6 +95,19 @@ public interface RoomMapper {
     List<Room> getAllRooms();
 
     /**
+     * counts the total number of rooms
+     */
+    @SelectProvider(type = RoomSqlBuilder.class, method = "buildCountRoomsSql")
+    Integer count(@Param("id") Integer id,
+                  @Param("roomName") String roomName,
+                  @Param("capacity") Integer capacity,
+                  @Param("multimedia") Boolean multimedia,
+                  @Param("projector") Boolean projector,
+                  @Param("requireApproval") Boolean requireApproval,
+                  @Param("isRestricted") Boolean isRestricted,
+                  @Param("roomType") Integer roomType);
+
+    /**
      * Counts the total number of rooms.
      *
      * @return the total number of rooms
@@ -151,6 +164,40 @@ public interface RoomMapper {
                 }
             }
             return query;
+        }
+
+        public static String buildCountRoomsSql(Map<String, Object> params) {
+            SQL sql = new SQL() {{
+                SELECT("COUNT(*)");
+                FROM("mamba.room");
+
+                if (params.get("id") != null) {
+                    WHERE("id = #{id}");
+                }
+                if (params.get("roomName") != null && !params.get("roomName").toString().isEmpty()) {
+                    WHERE("roomName LIKE CONCAT('%', #{roomName}, '%')");
+                }
+                if (params.get("capacity") != null) {
+                    WHERE("capacity >= #{capacity}");
+                }
+                if (params.get("multimedia") != null) {
+                    WHERE("multimedia = #{multimedia}");
+                }
+                if (params.get("projector") != null) {
+                    WHERE("projector = #{projector}");
+                }
+                if (params.get("requireApproval") != null) {
+                    WHERE("requireApproval = #{requireApproval}");
+                }
+                if (params.get("isRestricted") != null) {
+                    WHERE("isRestricted = #{isRestricted}");
+                }
+                if (params.get("roomType") != null) {
+                    WHERE("roomType = #{roomType}");
+                }
+            }};
+
+            return sql.toString();
         }
 
 

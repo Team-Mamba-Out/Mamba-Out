@@ -14,6 +14,12 @@ public interface AdminMapper {
     List<Admin> getAdmins();
 
     /**
+     * counts the total number of admins
+     */
+    @Select("SELECT COUNT(*) from mamba.admin;")
+    Integer count();
+
+    /**
      * Insert a new admin.
      */
     @Insert("INSERT INTO mamba.admin (email, uid, name, phone) " +

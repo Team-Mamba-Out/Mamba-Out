@@ -38,7 +38,7 @@ public class LecturerServiceImpl implements LecturerService {
         Integer offset = (page - 1) * size;
         List<Lecturer> lecturerList = lecturerMapper.getLecturers(email, uid, name, phone, size, offset);
         Map<String, Object> map = new HashMap<>();
-        int total = lecturerList.size();
+        int total = lecturerMapper.count();
         int totalPage = total % size == 0 ? total / size : total / size + 1;
         map.put("lecturers", lecturerList);
         map.put("totalPage", totalPage);

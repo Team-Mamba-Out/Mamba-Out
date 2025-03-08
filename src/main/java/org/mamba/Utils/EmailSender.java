@@ -224,7 +224,7 @@ public class EmailSender {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(SMTP_SENDER_USERNAME)); // Set sender
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(userEmail)); // Set receiver
-            message.setSubject("Your booking request is approved"); // Set subject
+            message.setSubject("Your booking time is almost up"); // Set subject
 
             String almostTimeText = "Hi,\n\n"
                     + "This is a kindly reminder that your booking for "
@@ -274,7 +274,7 @@ public class EmailSender {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(SMTP_SENDER_USERNAME)); // Set sender
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(userEmail)); // Set receiver
-            message.setSubject("Your booking request is approved"); // Set subject
+            message.setSubject("Your booking has been cancelled"); // Set subject
 
             String cancelledText = "Hi,\n\n"
                     + "We are sorry to inform you that your booking for "

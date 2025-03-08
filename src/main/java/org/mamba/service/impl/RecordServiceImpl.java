@@ -54,7 +54,10 @@ public class RecordServiceImpl implements RecordService {
         }
 
         Map<String, Object> map = new HashMap<>();
-        int total = recordList.size();
+
+        // TODO
+        int total = recordMapper.count(id, roomId, userId, startTime, endTime, hasCheckedIn, isCancelled);
+
         int totalPage = total % size == 0 ? total / size : total / size + 1;
         map.put("records", recordList);
         map.put("totalPage", totalPage);
@@ -83,7 +86,7 @@ public class RecordServiceImpl implements RecordService {
      */
     @Override
     public Record getRecordById(int id) {
-        return recordMapper.getRecordById(id);
+        return recordMapper.getRecords(id, null, null,null,null,null,null,null,null).get(0);
     }
 
     /**
@@ -132,7 +135,7 @@ public class RecordServiceImpl implements RecordService {
      */
     @Override
     public void cancelRecordById(Integer id) {
-        Record record = recordMapper.getRecordById(id);
+        Record record = recordMapper.getRecords(id, null, null,null,null,null,null,null,null).get(0);
         Room room = roomMapper.getRoomById(record.getRoomId());
         recordMapper.cancelRecordById(id);
 
