@@ -61,13 +61,13 @@ public class AdminController {
      * @param endTime   the end time
      * @return the list of records matching the criteria
      */
-    @GetMapping("/records")
-    public Result getRecordsByRoomNameAndTime(@RequestParam String roomName,
-                                              @RequestParam LocalDateTime startTime,
-                                              @RequestParam LocalDateTime endTime) {
-        Map<String, Object> recordsResult = recordService.getRecords(null, null, null, startTime, endTime, null, null, null, null);
-        return Result.success(recordsResult);
-    }
+//    @GetMapping("/records")
+//    public Result getRecordsByRoomNameAndTime(@RequestParam String roomName,
+//                                              @RequestParam LocalDateTime startTime,
+//                                              @RequestParam LocalDateTime endTime) {
+//        Map<String, Object> recordsResult = recordService.getRecords(null, null, null, startTime, endTime, null, null, null, null);
+//        return Result.success(recordsResult);
+//    }
 
     /**
      * Deletes the record specified by id and reassigns the room.
