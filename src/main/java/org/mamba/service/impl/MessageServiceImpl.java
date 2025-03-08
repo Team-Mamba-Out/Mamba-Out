@@ -10,7 +10,9 @@ import org.mamba.entity.Message;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of the MessageService interface.
@@ -46,14 +48,35 @@ public class MessageServiceImpl implements MessageService {
     }
 
     /**
-     * Retrieves all messages for a given user ID.
+     * Retrieves a paginated list of messages for a given user ID.
      *
-     * @param Uid the user ID
-     * @return a list of messages
+     * @param Uid  the user ID
+     * @param size the number of messages per page
+     * @param page the current page number
+     * @return a map containing the list of messages, total pages, total messages, and current page number
      */
     @Override
-    public List<Message> getMessagesByUid(Integer Uid) {
-        return messageMapper.getMessagesByUid(Uid);
+    public Map<String, Object> getMessagesByUid(Integer Uid, Integer size, Integer page) {
+        // Calculate the offset for pagination
+        Integer offset = (page - 1) * size;
+
+        // Retrieve the paginated list of messages
+        List<Message> messageList = messageMapper.getMessagesByUid(Uid, size, offset);
+
+        // Retrieve the total number of messages for the given user ID
+        int total = messageMapper.getMessagesCountByUid(Uid);
+
+        // Calculate the total number of pages
+        int totalPage = (total + size - 1) / size;
+
+        // Prepare the response map
+        Map<String, Object> result = new HashMap<>();
+        result.put("messages", messageList);
+        result.put("totalPage", totalPage);
+        result.put("total", total);
+        result.put("pageNumber", page);
+
+        return result;
     }
 
     /**

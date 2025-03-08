@@ -5,6 +5,7 @@ import org.mamba.entity.Record;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Service interface for managing messages.
@@ -29,12 +30,14 @@ public interface MessageService {
     void deleteMessage(Integer id);
 
     /**
-     * Retrieves all messages for a given user ID.
+     * Retrieves a paginated list of messages for a given user ID.
      *
-     * @param Uid the user ID
-     * @return a list of messages
+     * @param uid  the user ID
+     * @param size the number of messages per page
+     * @param page the current page number
+     * @return a map containing the list of messages, total pages, total messages, and current page number
      */
-    List<Message> getMessagesByUid(Integer Uid);
+    Map<String, Object> getMessagesByUid(Integer uid, Integer size, Integer page);
 
     /**
      * Obtains the list of records specified by the start time.

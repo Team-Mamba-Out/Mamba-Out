@@ -116,6 +116,15 @@ public interface RoomMapper {
     int countRooms();
 
     /**
+     * Queries a room based on its name.
+     *
+     * @param roomName the name of the room
+     * @return the room matching the name
+     */
+    @Select("SELECT * FROM mamba.room WHERE roomName = #{roomName}")
+    Room getRoomByName(String roomName);
+
+    /**
      * Static inner classes - Generate dynamic SQL
      */
     class RoomSqlBuilder {

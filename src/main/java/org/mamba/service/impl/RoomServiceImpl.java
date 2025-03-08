@@ -294,6 +294,11 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    public Room getRoomByName(String roomName) {
+        return roomMapper.getRoomByName(roomName);
+    }
+
+    @Override
     public int countRooms() {
         return roomMapper.countRooms();
     }

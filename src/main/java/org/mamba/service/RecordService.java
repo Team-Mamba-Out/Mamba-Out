@@ -1,5 +1,6 @@
 package org.mamba.service;
 import org.mamba.entity.Record;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 import java.time.LocalDateTime;
@@ -92,6 +93,35 @@ public interface RecordService {
      * @return the total number of records
      */
     int countRecords();
+
+    /**
+     * Queries records based on room ID, start time, and end time.
+     *
+     * @param roomName    the room ID
+     * @param startTime the start time
+     * @param endTime   the end time
+     * @return the list of records matching the criteria
+     */
+    Map<String, Object> getRecordsByRoomAndTime(String roomName, LocalDateTime startTime, LocalDateTime endTime);
+
+    /**
+     * Queries records based on room ID, start time, and end time.
+     *
+     * @param roomName    the room ID
+     * @param startTime the start time
+     * @param endTime   the end time
+     */
+    void createAdminRecord(String roomName, LocalDateTime startTime, LocalDateTime endTime);
+
+    /**
+     * Finds records for a given room within a specified time range, including those that partially overlap.
+     *
+     * @param roomName the name of the room
+     * @param occupyStartTime the start time of the range
+     * @param occupyEndTime the end time of the range
+     * @return a list of records that overlap with the specified time range
+     */
+    List<Record> findRecordsByRoomAndTimeRange(String roomName, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime);
 }
 
 

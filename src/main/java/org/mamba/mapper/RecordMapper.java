@@ -26,6 +26,19 @@ public interface RecordMapper {
                             @Param("offset") Integer offset);
 
     /**
+     * Finds records for a given room within a specified time range, including those that partially overlap.
+     *
+     * @param roomId the ID of the room
+     * @param occupyStartTime the start time of the range
+     * @param occupyEndTime the end time of the range
+     * @return a list of records that overlap with the specified time range
+     */
+    @Select("SELECT * FROM mamba.record WHERE roomId = #{roomId} AND " +
+            "(startTime < #{occupyEndTime} AND endTime > #{occupyStartTime})")
+    List<Record> findRecordsByRoomAndTimeRange(@Param("roomId") Integer roomId,
+                                                         @Param("occupyStartTime") LocalDateTime occupyStartTime,
+                                                         @Param("occupyEndTime") LocalDateTime occupyEndTime);
+    /**
      * counts the total number of records
      */
     @SelectProvider(type = RecordSqlBuilder.class, method = "buildCountRecordsSql")

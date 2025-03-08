@@ -42,13 +42,27 @@ public interface MessageMapper {
     void deleteMessage(@Param("id") Integer id);
 
     /**
-     * Retrieves all messages for a given user ID.
+     * Retrieves a paginated list of messages for a given user ID.
      *
      * @param Uid the user ID
-     * @return a list of messages
+     * @param pageSize the number of messages to retrieve
+     * @param offset the offset for pagination
+     * @return a list of messages for the specified user
      */
-    @Select("SELECT * FROM mamba.message WHERE Uid = #{Uid}")
-    List<Message> getMessagesByUid(@Param("Uid") Integer Uid);
+    @Select("SELECT * FROM mamba.message WHERE Uid = #{Uid} LIMIT #{pageSize} OFFSET #{offset}")
+    List<Message> getMessagesByUid(@Param("Uid") Integer Uid,
+                                   @Param("pageSize") Integer pageSize,
+                                   @Param("offset") Integer offset);
+
+    /**
+     * Retrieves the total count of messages for a given user ID.
+     *
+     * @param Uid the user ID
+     * @return the total number of messages for the specified user
+     */
+    @Select("SELECT COUNT(*) FROM mamba.message WHERE Uid = #{Uid}")
+    int getMessagesCountByUid(@Param("Uid") Integer Uid);
+
 
     /**
      * counts the total number of messages (or those satisfying the conditions)
