@@ -108,6 +108,13 @@ public interface RoomService {
     Room findNearestAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime, String userRole, LocalDateTime newStartTime, LocalDateTime newEndTime);
 
     /**
+     * Counts the total number of rooms.
+     *
+     * @return the total number of rooms
+     */
+    int countRooms();
+
+    /**
      * Retrieves all rooms.
      *
      * @return a list of all rooms

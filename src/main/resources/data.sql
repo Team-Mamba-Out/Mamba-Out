@@ -73,11 +73,14 @@ INSERT INTO Lecturer (email, uid, name, phone) VALUES
 
 -- 插入 Room 数据
 INSERT INTO Room (roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url) VALUES
-                                                                                                                                 ('Conference Room A', 20, FALSE, 'Building 1 - Floor 2', TRUE, TRUE, FALSE, FALSE, 1, 'http://example.com/roomA'),
-                                                                                                                                 ('Lecture Hall 101', 100, TRUE, 'Building 2 - Floor 1', TRUE, FALSE, TRUE, FALSE, 2, 'http://example.com/lecture101'),
-                                                                                                                                 ('Small Meeting Room', 8, FALSE, 'Building 3 - Floor 1', FALSE, FALSE, FALSE, FALSE, 3, 'http://example.com/meetingRoom'),
-                                                                                                                                 ('Computer Lab', 30, TRUE, 'Building 4 - Floor 3', TRUE, TRUE, FALSE, FALSE, 4, 'http://example.com/computerLab'),
-                                                                                                                                 ('VIP Lounge', 150, FALSE, 'Building 5 - Floor 2', TRUE, TRUE, TRUE, FALSE, 5, 'http://example.com/vipLounge');
+                                                                                                                        ('Meeting Room A', 20, FALSE, 'Foreign Language Network Building, 109, 1st floor', TRUE, TRUE, FALSE, FALSE, 'meeting room', 'https://706f-poppy-5gvizuof36ac74d2-1324175882.tcb.qcloud.la/booking%20system/R-C.jpg?sign=7387659e0e8855bcfd75834175f4dd00&t=1741172449'),
+                                                                                                                        ('Meeting Room B', 10, TRUE, 'Foreign Language Network Building, 634, 6th floor', FALSE, FALSE, TRUE, FALSE, 'meeting room', 'https://706f-poppy-5gvizuof36ac74d2-1324175882.tcb.qcloud.la/booking%20system/R-C.jpg?sign=7387659e0e8855bcfd75834175f4dd00&t=1741172449'),
+                                                                                                                        ('Activities Room A', 40, FALSE, 'Foreign Language Network Building, 635, 6th floor', TRUE, TRUE, FALSE, FALSE, 'activities room', 'https://706f-poppy-5gvizuof36ac74d2-1324175882.tcb.qcloud.la/booking%20system/R-C.jpg?sign=7387659e0e8855bcfd75834175f4dd00&t=1741172449'),
+                                                                                                                        ('Activities Room B', 25, TRUE, 'Foreign Language Network Building, 623, 6th floor', TRUE, FALSE, TRUE, TRUE, 'activities room', 'https://706f-poppy-5gvizuof36ac74d2-1324175882.tcb.qcloud.la/booking%20system/R-C.jpg?sign=7387659e0e8855bcfd75834175f4dd00&t=1741172449'),
+                                                                                                                        ('Classroom A', 15, FALSE, 'Foreign Language Network Building, 101, 1st floor', FALSE, TRUE, FALSE, FALSE, 'teaching room', 'https://706f-poppy-5gvizuof36ac74d2-1324175882.tcb.qcloud.la/booking%20system/R-C.jpg?sign=7387659e0e8855bcfd75834175f4dd00&t=1741172449'),
+                                                                                                                        ('Classroom B', 12, TRUE, 'Foreign Language Network Building, 102, 1st floor', TRUE, TRUE, TRUE, TRUE, 'teaching room', 'https://706f-poppy-5gvizuof36ac74d2-1324175882.tcb.qcloud.la/booking%20system/R-C.jpg?sign=7387659e0e8855bcfd75834175f4dd00&t=1741172449');
+
+
 
 -- 插入 Student 数据
 INSERT INTO Student (email, uid, name, phone, breakTimer) VALUES

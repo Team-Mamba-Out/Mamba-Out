@@ -294,6 +294,11 @@ public class RoomServiceImpl implements RoomService {
         return roomMapper.getRoomById(id);
     }
 
+    @Override
+    public int countRooms() {
+        return roomMapper.countRooms();
+    }
+
     /**
      * Finds the nearest available room for the given time period, considering the user's role.
      *
