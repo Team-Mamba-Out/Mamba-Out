@@ -22,6 +22,12 @@ public interface StudentMapper {
                               @Param("offset") Integer offset);
 
     /**
+     * counts the total number of students
+     */
+    @Select("SELECT COUNT(*) from mamba.student;")
+    Integer count();
+
+    /**
      * Insert a new student.
      */
     @Insert("INSERT INTO mamba.student (email, uid, name, phone, breakTimer) " +

@@ -83,7 +83,7 @@ public class RoomServiceImpl implements RoomService {
         }
 
         Map<String, Object> map = new HashMap<>();
-        int total = roomList.size();
+        int total = roomMapper.count(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, roomType);
         int totalPage = total % size == 0 ? total / size : total / size + 1;
         map.put("rooms", roomList);
         map.put("totalPage", totalPage);
@@ -91,7 +91,6 @@ public class RoomServiceImpl implements RoomService {
         map.put("pageNumber", page);
         return map;
     }
-
 
     @Override
     public List<Room> getAllRooms() {

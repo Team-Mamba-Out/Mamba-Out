@@ -14,7 +14,7 @@ public interface UserService {
      * @param offset the offset for pagination
      * @return a list of users
      */
-    List<User> getUsers(Integer uid, String microsoftId, String email, String name, String role, Integer pageSize, Integer offset);
+    List<User> getUsers(Integer uid, String role, Integer pageSize, Integer offset);
 
     /**
      * Updates user information based on the user ID.
@@ -27,7 +27,7 @@ public interface UserService {
     /**
      * Adds a new user.
      */
-    void createUser(String microsoftId, String email, String name, String role);
+    void createUser(String role);
 
     /**
      * Deletes a user by their UID.

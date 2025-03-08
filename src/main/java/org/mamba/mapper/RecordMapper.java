@@ -25,8 +25,17 @@ public interface RecordMapper {
                             @Param("pageSize") Integer pageSize,
                             @Param("offset") Integer offset);
 
-    @Select("SELECT * FROM mamba.record WHERE id = #{id}")
-    Record getRecordById(@Param("id") int id);
+    /**
+     * counts the total number of records
+     */
+    @SelectProvider(type = RecordSqlBuilder.class, method = "buildCountRecordsSql")
+    Integer count(@Param("id") Integer id,
+                  @Param("roomId") Integer roomId,
+                  @Param("userId") Integer userId,
+                  @Param("startTime") LocalDateTime startTime,
+                  @Param("endTime") LocalDateTime endTime,
+                  @Param("hasCheckedIn") Boolean hasCheckedIn,
+                  @Param("isCancelled") Boolean isCancelled);
 
     /**
      * Insert a new record.
@@ -140,6 +149,37 @@ public interface RecordMapper {
                 }
             }
             return query;
+        }
+
+        public static String buildCountRecordsSql(Map<String, Object> params) {
+            SQL sql = new SQL() {{
+                SELECT("COUNT(*)");
+                FROM("mamba.record");
+
+                if (params.get("id") != null) {
+                    WHERE("id = #{id}");
+                }
+                if (params.get("roomId") != null) {
+                    WHERE("roomId = #{roomId}");
+                }
+                if (params.get("userId") != null) {
+                    WHERE("userId = #{userId}");
+                }
+                if (params.get("startTime") != null) {
+                    WHERE("startTime >= #{startTime}");
+                }
+                if (params.get("endTime") != null) {
+                    WHERE("endTime <= #{endTime}");
+                }
+                if (params.get("hasCheckedIn") != null) {
+                    WHERE("hasCheckedIn = #{hasCheckedIn}");
+                }
+                if (params.get("isCancelled") != null) {
+                    WHERE("isCancelled = #{isCancelled}");
+                }
+            }};
+
+            return sql.toString();
         }
     }
 }

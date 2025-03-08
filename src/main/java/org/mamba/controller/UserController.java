@@ -23,13 +23,10 @@ public class UserController {
      */
     @GetMapping
     public Result getUsers(@RequestParam(required = false) Integer uid,
-                           @RequestParam(required = false) String microsoftId,
-                           @RequestParam(required = false) String email,
-                           @RequestParam(required = false) String name,
                            @RequestParam(required = false) String role,
                            @RequestParam(required = false) Integer pageSize,
                            @RequestParam(required = false) Integer offset) {
-        List<User> users = userService.getUsers(uid, microsoftId, email, name, role, pageSize, offset);
+        List<User> users = userService.getUsers(uid, role, pageSize, offset);
         return Result.success(users);
     }
 
@@ -53,7 +50,7 @@ public class UserController {
      */
     @PostMapping("/create")
     public Result createUser(@RequestBody User user) {
-        userService.createUser(user.getMicrosoftId(), user.getEmail(), user.getName(), user.getRole());
+        userService.createUser(user.getRole());
         return Result.success();
     }
 
