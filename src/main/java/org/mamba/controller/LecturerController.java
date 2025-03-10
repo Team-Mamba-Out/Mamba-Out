@@ -72,4 +72,15 @@ public class LecturerController {
         lecturerService.deleteLecturer(email);
         return Result.success();
     }
+    /**
+     * Returns the total number of lecturers.
+     *
+     * @return the total number of lecturers
+     */
+    @GetMapping("/count")
+    public Result getTotalLecturers() {
+        int totalLecturers = lecturerService.getTotalLecturers();
+        return Result.success(totalLecturers);
+    }
+
 }

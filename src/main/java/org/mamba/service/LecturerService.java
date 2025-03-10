@@ -47,4 +47,11 @@ public interface LecturerService {
      * @param email the provided email
      */
     void deleteLecturer(String email);
+
+    /**
+     * Returns the total number of lecturers.
+     *
+     * @return the total number of lecturers
+     */
+    int getTotalLecturers();
 }

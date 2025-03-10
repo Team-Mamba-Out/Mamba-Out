@@ -110,4 +110,9 @@ public class LecturerServiceImpl implements LecturerService {
                 "System Notification"
         );
     }
+
+    @Override
+    public int getTotalLecturers() {
+        return lecturerMapper.count();
+    }
 }
