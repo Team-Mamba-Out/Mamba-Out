@@ -75,4 +75,15 @@ public class StudentController {
         studentService.deleteStudent(email);
         return Result.success();
     }
+
+    /**
+     * Returns the total number of students.
+     *
+     * @return the total number of students
+     */
+    @GetMapping("/count")
+    public Result getTotalStudents() {
+        int totalStudents = studentService.getTotalStudents();
+        return Result.success(totalStudents);
+    }
 }

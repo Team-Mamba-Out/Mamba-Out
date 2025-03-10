@@ -51,10 +51,6 @@ public class AdminServiceImpl implements AdminService {
                 "System Notification"
         );
     }
-    @Override
-    public int getUserAccount() {
-        return adminMapper.userAccount();
-    }
 
     @Override
     public void updateAdminByEmail(String email, Integer uid, String name, String phone) {
@@ -129,4 +125,37 @@ public class AdminServiceImpl implements AdminService {
             );
         }
     }
+
+    @Override
+    public List<Map<String, Object>> getAllRecordsWithRoomNames() {
+        Map<String, Object> recordsMap = recordService.getRecords(
+                null,  // id
+                null,  // roomId
+                null,  // userId
+                null,  // startTime
+                null,  // endTime
+                null,  // hasCheckedIn
+                null,  // isCancelled
+                Integer.MAX_VALUE,
+                1
+        );
+
+        List<Record> records = (List<Record>) recordsMap.get("records");
+
+        List<Map<String, Object>> recordsWithRoomNames = new ArrayList<>();
+
+        if (records != null) {
+            for (Record record : records) {
+                Map<String, Object> recordData = new HashMap<>();
+                recordData.put("record", record);
+                Room room = roomService.getRoomById(record.getRoomId());
+                recordData.put("roomName", room.getRoomName());
+                recordData.put("roomType", room.getRoomType());
+                recordsWithRoomNames.add(recordData);
+            }
+        }
+
+        return recordsWithRoomNames;
+    }
+
 }

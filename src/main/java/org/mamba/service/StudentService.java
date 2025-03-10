@@ -47,4 +47,11 @@ public interface StudentService {
      * @param email the provided email
      */
     void deleteStudent(String email);
+
+    /**
+     * Returns the total number of students.
+     *
+     * @return the total number of students
+     */
+    int getTotalStudents();
 }

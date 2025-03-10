@@ -110,4 +110,9 @@ public class StudentServiceImpl implements StudentService {
                 "System Notification"
         );
     }
+
+    @Override
+    public int getTotalStudents() {
+        return studentMapper.count();
+    }
 }

@@ -9,6 +9,7 @@ import org.mamba.entity.Record;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public interface AdminService {
     /**
@@ -41,4 +42,11 @@ public interface AdminService {
     int getUserAccount();
 
     void deleteAndReassignRoom(String roomName, LocalDateTime newStartTime, LocalDateTime newEndTime, String reason);
+
+    /**
+     * Retrieves all records with their corresponding room names.
+     *
+     * @return a list of records with room names
+     */
+    List<Map<String, Object>> getAllRecordsWithRoomNames();
 }
