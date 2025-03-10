@@ -72,6 +72,10 @@ public class AdminController {
         return Result.success(recordsResult);
     }
 
+    @GetMapping("/getUserAccount")
+    public Result getUserAccount() {
+        return Result.success(adminService.getUserAccount());
+    }
     /**
      * Deletes records for a specified room within a given time range and reassigns users to new rooms.
      *
@@ -81,7 +85,7 @@ public class AdminController {
      * @param reason       the reason for the reassignment
      * @return a success result indicating the operation was completed
      */
-    @DeleteMapping("/record/{recordId}")
+    @DeleteMapping("/roomRecord/{roomName}")
     public Result deleteRecordAndReassignRoom(@PathVariable String roomName,
                                               @RequestParam LocalDateTime newStartTime,
                                               @RequestParam LocalDateTime newEndTime,

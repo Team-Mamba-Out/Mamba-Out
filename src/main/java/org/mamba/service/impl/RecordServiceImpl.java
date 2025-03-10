@@ -42,10 +42,32 @@ public class RecordServiceImpl implements RecordService {
      * @param page         the page No.
      */
     @Override
-    public Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, Boolean isCancelled, Integer size, Integer page) {
+    public Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn,String status, Integer size, Integer page) {
         // Calculate offset
         Integer offset = (page - 1) * size;
-        List<Record> recordList = recordMapper.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn, isCancelled, size, offset);
+        Integer statusId = null;
+        if (status!=null){
+            switch (status){
+                case "Pending":
+                    statusId = 1;
+                    break;
+                case "Ongoing":
+                    statusId = 2;
+                    break;
+                case "Done":
+                    statusId = 3;
+                    break;
+                case "Cancelled":
+                    statusId = 3;
+                    break;
+                case "Overdue":
+                    statusId = 3;
+                    break;
+                default:
+                    statusId = 1;
+            }
+        }
+        List<Record> recordList = recordMapper.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn,statusId, size, offset);
 
         // Obtain the corresponding room of each record
         for (Record record : recordList) {
@@ -60,8 +82,7 @@ public class RecordServiceImpl implements RecordService {
         Map<String, Object> map = new HashMap<>();
 
         // TODO
-        int total = recordMapper.count(id, roomId, userId, startTime, endTime, hasCheckedIn, isCancelled);
-
+        int total = recordMapper.count(id, roomId, userId, startTime, endTime, hasCheckedIn,statusId);
         int totalPage = total % size == 0 ? total / size : total / size + 1;
         map.put("records", recordList);
         map.put("totalPage", totalPage);
@@ -78,6 +99,10 @@ public class RecordServiceImpl implements RecordService {
                 return "Ongoing";
             case 3:
                 return "Done";
+            case 4:
+                return "Cancelled";
+            case 5:
+                return "Overdue";
             default:
                 return "Unknown";
         }
@@ -158,6 +183,12 @@ public class RecordServiceImpl implements RecordService {
         Room room = roomMapper.getRoomByName(roomName);
         return recordMapper.findRecordsByRoomAndTimeRange(room.getId(), occupyStartTime, occupyEndTime);
     }
+
+    @Override
+    public void checkIn(Integer id) {
+        recordMapper.checkIn(id);
+    }
+
     /**
      * Counts the total number of records.
      *

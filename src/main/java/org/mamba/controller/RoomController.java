@@ -96,7 +96,7 @@ public class RoomController {
      * @param id the room id
      * @return the list containing several lists, each of which contains start time and end time
      */
-    @GetMapping("/getBusyTime/{id}")
+    @GetMapping("/getBusyTime")
     public Result getBusyTimesById(Integer id) {
         List<List<LocalDateTime>> busyTimesList = roomService.getBusyTimesById(id);
         return Result.success(busyTimesList);
