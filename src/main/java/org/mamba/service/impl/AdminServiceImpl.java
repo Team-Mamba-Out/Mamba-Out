@@ -66,6 +66,11 @@ public class AdminServiceImpl implements AdminService {
         );
     }
 
+    @Override
+    public int getUserAccount() {
+        return adminMapper.userAccount();
+    }
+
 
     @Override
     public void deleteAndReassignRoom(String roomName, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime, String reason) {
@@ -157,5 +162,7 @@ public class AdminServiceImpl implements AdminService {
 
         return recordsWithRoomNames;
     }
+
+
 
 }
