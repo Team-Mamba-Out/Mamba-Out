@@ -5,10 +5,12 @@ import org.mamba.entity.Room;
 import org.mamba.mapper.RecordMapper;
 import org.mamba.mapper.RoomMapper;
 import org.mamba.service.RoomService;
+import org.mamba.service.RecordService;
 import org.mamba.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -367,6 +369,34 @@ public class RoomServiceImpl implements RoomService {
             startTime = startTime.plusMinutes(PERIOD_MINUTE);
             endTime = endTime.plusMinutes(PERIOD_MINUTE);
         }
+    }
+
+    @Override
+    public Map<String, Double> calculateRoomUtilization() {
+        List<Room> rooms = roomMapper.getAllRooms();
+        Map<String, Double> utilizationMap = new HashMap<>();
+
+        LocalDateTime now = LocalDateTime.now();
+
+        for (Room room : rooms) {
+            List<Record> pastRecords = roomMapper.getPastRecords(room.getId(), now);
+            double totalBusyMinutes = 0;
+
+            for (Record record : pastRecords) {
+                if (record == null || record.getStartTime() == null || record.getEndTime() == null) {
+                    continue; // Skip invalid data to avoid NullPointerException
+                }
+                LocalDateTime start = record.getStartTime();
+                LocalDateTime end = record.getEndTime();
+                totalBusyMinutes += Duration.between(start, end).toMinutes();
+            }
+
+            double totalMinutesInWeek = 7 * 24 * 60;
+            double utilization = (totalBusyMinutes / totalMinutesInWeek) * 100;
+            utilizationMap.put(room.getRoomName(), utilization);
+        }
+
+        return utilizationMap;
     }
 
 }

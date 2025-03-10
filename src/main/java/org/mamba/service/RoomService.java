@@ -130,6 +130,12 @@ public interface RoomService {
      * @param roomName the name of the room
      * @return the room matching the name
      */
-    @Select("SELECT * FROM mamba.room WHERE roomName = #{roomName}")
     Room getRoomByName(String roomName);
+
+    /**
+     * Calculate room utilization
+     *
+     * @return Contains a map of room utilization
+     */
+    Map<String, Double> calculateRoomUtilization();
 }

@@ -3,8 +3,10 @@ package org.mamba.controller;
 import org.mamba.entity.Admin;
 import org.mamba.entity.Result;
 import org.mamba.service.RecordService;
+import org.mamba.service.RoomService;
 import org.mamba.service.impl.AdminServiceImpl;
 import org.mamba.service.impl.RecordServiceImpl;
+import org.mamba.service.impl.RoomServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +21,8 @@ public class AdminController {
     private AdminServiceImpl adminService;
     @Autowired
     private RecordServiceImpl recordService;
+    @Autowired
+    private RoomServiceImpl roomService;
 
     /**
      * Obtains the admin list.
@@ -103,5 +107,16 @@ public class AdminController {
     public Result getAllRecordsWithRoomNames() {
         List<Map<String, Object>> recordsWithRoomNames = adminService.getAllRecordsWithRoomNames();
         return Result.success(recordsWithRoomNames);
+    }
+
+    /**
+     * Get the room utilization report
+     *
+     * @return Contains results for room utilization
+     */
+    @GetMapping("/roomUtilization")
+    public Result getRoomUtilization() {
+        Map<String, Double> utilizationReport = roomService.calculateRoomUtilization();
+        return Result.success(utilizationReport);
     }
 }

@@ -87,6 +87,23 @@ public interface RoomMapper {
     List<Record> getFutureRecords(@Param("id") Integer id, LocalDateTime now);
 
     /**
+     * Retrieves all records related to a specific room in the past 7 days.
+     *
+     * @param id  the ID of the room to be checked
+     * @param now the current timestamp
+     * @return a list containing all records from the past 7 days
+     */
+    @Select("SELECT * " +
+            "FROM mamba.record r " +
+            "WHERE r.roomId = #{id} " +
+            "AND r.startTime >= DATE_SUB(#{now}, INTERVAL 7 DAY) " +  // Past 7 days
+            "AND r.startTime <= #{now} " +  // Up to the current time
+            "ORDER BY r.startTime")
+    List<Record> getPastRecords(@Param("id") Integer id, @Param("now") LocalDateTime now);
+
+
+
+    /**
      * Retrieves all rooms.
      *
      * @return a list of all rooms
