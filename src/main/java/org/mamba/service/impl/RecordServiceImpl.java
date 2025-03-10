@@ -3,12 +3,12 @@ package org.mamba.service.impl;
 import org.mamba.entity.Lecturer;
 import org.mamba.entity.Record;
 import org.mamba.entity.Room;
+import org.mamba.entity.User;
 import org.mamba.mapper.RecordMapper;
 import org.mamba.mapper.RoomMapper;
-import org.mamba.service.RecordService;
+import org.mamba.service.*;
 import org.mamba.service.RoomService;
-import org.mamba.service.MessageService;
-import org.mamba.service.RoomService;
+import org.mamba.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -27,6 +27,8 @@ public class RecordServiceImpl implements RecordService {
     private RoomMapper roomMapper;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private UserService userService;
     @Autowired
     private RoomService roomService;
 
@@ -129,7 +131,37 @@ public class RecordServiceImpl implements RecordService {
      */
     @Override
     public void createRecord(Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn) {
+        User user = userService.getUserByUid(userId);
+        String role = user.getRole();
+        List<Integer> permissionUsers = roomMapper.getPermissionUser(roomId);
+
+        if (!"Admin".equals(role) && !permissionUsers.contains(userId)) {
+            throw new IllegalArgumentException("You do not have the permission to create a record for this room.");
+        }
+//        // Check room permission type
+//        switch (roomTemp.getPermissionType()) {
+//            case 1: // Only students
+//                if (!"Student".equals(role) && !"Admin".equals(role) && !permissionUser.contains(userId)) {
+//                    throw new IllegalArgumentException("Only students can create a record for this room.");
+//                }
+//                break;
+//            case 2: // Only lecturers
+//                if (!"Lecturer".equals(role) && !"Admin".equals(role) && !permissionUser.contains(userId)) {
+//                    throw new IllegalArgumentException("Only lecturers can create a record for this room.");
+//                }
+//                break;
+//            case 3: // Only specific users
+//                boolean hasPermission = roomMapper.getPermissionUser(roomId).contains(userId);
+//                if (!hasPermission) {
+//                    throw new IllegalArgumentException("You do not have permission to create a record for this room.");
+//                }
+//                break;
+//            default: // Everyone can create a record
+//                break;
+//        }
+
         // Obtain the current time
+
         LocalDateTime recordTime = LocalDateTime.now();
 
         recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn);
