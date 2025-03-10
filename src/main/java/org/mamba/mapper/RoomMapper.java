@@ -30,7 +30,7 @@ public interface RoomMapper {
     /**
      * Insert a new room.
      */
-    @Insert("INSERT INTO mamba.room (roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url) " +
+    @Insert("INSERT INTO mamba.room (roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType) " +
             "VALUES (#{roomName}, #{capacity}, #{isBusy}, #{location}, #{multimedia}, #{projector}, #{requireApproval}, #{isRestricted}, #{roomType}, #{url})")
     void createRoom(@Param("roomName") String roomName,
                     @Param("capacity") Integer capacity,
@@ -50,20 +50,42 @@ public interface RoomMapper {
     Room getRoomById(@Param("id") int id);
 
     /**
+     * Deletes the permission of the room specified by ID.
+     *
+     * @param room_id
+     */
+    @Delete("DELETE FROM mamba.room_user WHERE room_id = #{room_id}")
+    void deletePermissionUsers(@Param("room_id") int room_id);
+    /**
+     * Obtains the room specified by ID.
+     */
+    @Insert("INSERT INTO mamba.room_user(room_id, uid) VALUES(#{room_id}, #{uid})")
+    void createPermissionUser(@Param("room_id") int room_id,
+                              @Param("uid") int uid);
+
+    /**
+     *
+     * @param room_id
+     */
+    @Select("SELECT uid FROM mamba.room_user WHERE room_id = #{room_id}")
+    List<Integer> getPermissionUser(@Param("room_id") int room_id);
+
+
+    /**
      * Update room information by ID.
      */
     @UpdateProvider(type = RoomSqlBuilder.class, method = "buildUpdateRoomSql")
-    void updateRoomById(@Param("id") Integer id,
-                        @Param("roomName") String roomName,
-                        @Param("capacity") Integer capacity,
-                        @Param("isBusy") Boolean isBusy,
-                        @Param("location") String location,
-                        @Param("multimedia") Boolean multimedia,
-                        @Param("projector") Boolean projector,
-                        @Param("requireApproval") Boolean requireApproval,
-                        @Param("isRestricted") Boolean isRestricted,
-                        @Param("roomType") Integer roomType,
-                        @Param("url") String url);
+    void updateRoom(@Param("id") Integer id,
+                    @Param("roomName") String roomName,
+                    @Param("capacity") Integer capacity,
+                    @Param("isBusy") Boolean isBusy,
+                    @Param("location") String location,
+                    @Param("multimedia") Boolean multimedia,
+                    @Param("projector") Boolean projector,
+                    @Param("requireApproval") Boolean requireApproval,
+                    @Param("isRestricted") Boolean isRestricted,
+                    @Param("roomType") Integer roomType,
+                    @Param("url") String url);
 
     /**
      * Deletes the room specified by ID.

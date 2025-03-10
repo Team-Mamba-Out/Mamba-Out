@@ -71,7 +71,32 @@ public class RoomController {
      */
     @PutMapping("/{id}")
     public Result updateRoomById(@PathVariable Integer id, @RequestBody Room room) {
-        roomService.updateRoomById(id, room.getRoomName(), room.getCapacity(), room.isBusy(), room.getLocation(), room.isMultimedia(), room.isProjector(), room.isRequireApproval(), room.isRestricted(), room.getRoomType(), room.getUrl());
+        roomService.updateRoom(id, room.getRoomName(), room.getCapacity(), room.isBusy(), room.getLocation(), room.isMultimedia(), room.isProjector(), room.isRequireApproval(), room.isRestricted(), room.getRoomType(), room.getUrl());
+        return Result.success();
+    }
+
+    /**
+     * Set the permission of the user in the room.
+     *
+     * @param room_id the room id
+     * @param uid the user id
+     * @return the result of the operation
+     */
+    @PostMapping("/setPermissionUser")
+    public Result setPermissionUser(@RequestParam Integer room_id, @RequestParam Integer uid) {
+        roomService.setPermissionUser(room_id, uid);
+        return Result.success();
+    }
+
+    /**
+     * Get the permission of the user in the room.
+     *
+     * @param room_id the room id
+     * @return the result of the operation
+     */
+    @GetMapping("/getPermissionUser")
+    public Result getPermissionUser(@RequestParam Integer room_id) {
+        roomService.getPermissionUser(room_id);
         return Result.success();
     }
 
