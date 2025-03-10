@@ -51,6 +51,10 @@ public class AdminServiceImpl implements AdminService {
                 "System Notification"
         );
     }
+    @Override
+    public int getUserAccount() {
+        return adminMapper.userAccount();
+    }
 
     @Override
     public void updateAdminByEmail(String email, Integer uid, String name, String phone) {
@@ -87,6 +91,7 @@ public class AdminServiceImpl implements AdminService {
             recordData.put("role", userRole);
 
             extractedRecords.add(recordData);
+            recordService.deleteRecordById(record.getId());
         }
 
         // Create a new reservation for the occupied room

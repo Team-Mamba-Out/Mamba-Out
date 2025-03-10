@@ -20,7 +20,7 @@ public interface RecordService {
      * @param size         the size of each page
      * @param page         the page No.
      */
-    Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, Boolean isCancelled, Integer size, Integer page);
+    Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn,String status, Integer size, Integer page);
 
     /**
      * Obtains the record specified by ID given.
@@ -122,6 +122,8 @@ public interface RecordService {
      * @return a list of records that overlap with the specified time range
      */
     List<Record> findRecordsByRoomAndTimeRange(String roomName, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime);
+
+    void checkIn(Integer id);
 }
 
 

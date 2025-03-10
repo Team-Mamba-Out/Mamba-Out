@@ -38,6 +38,7 @@ public interface AdminService {
      */
     void updateAdminByEmail(String email, Integer uid, String name, String phone);
 
+    int getUserAccount();
 
     void deleteAndReassignRoom(String roomName, LocalDateTime newStartTime, LocalDateTime newEndTime, String reason);
 }

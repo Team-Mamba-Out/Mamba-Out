@@ -47,7 +47,10 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Map<String, Object> getRooms(Integer id, String roomName, Integer capacity, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, LocalDateTime start, LocalDateTime end, Integer size, Integer page) {
         // Calculate offset
-        Integer offset = (page - 1) * size;
+        Integer offset = null;
+        if (size!=null && page!=null) {
+            offset = (page - 1) * size;
+        }
 
         // Get the list of rooms that satisfy other search conditions first
         List<Room> conditionRoomList = roomMapper.getRooms(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, roomType, size, offset);
@@ -84,7 +87,10 @@ public class RoomServiceImpl implements RoomService {
 
         Map<String, Object> map = new HashMap<>();
         int total = roomMapper.count(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, roomType);
-        int totalPage = total % size == 0 ? total / size : total / size + 1;
+        Integer totalPage = null;
+        if (size!=null){
+            totalPage = total % size == 0 ? total / size : total / size + 1;
+        }
         map.put("rooms", roomList);
         map.put("totalPage", totalPage);
         map.put("total", total);

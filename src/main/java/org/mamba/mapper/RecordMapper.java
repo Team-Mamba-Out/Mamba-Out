@@ -21,7 +21,7 @@ public interface RecordMapper {
                             @Param("startTime") LocalDateTime startTime,
                             @Param("endTime") LocalDateTime endTime,
                             @Param("hasCheckedIn") Boolean hasCheckedIn,
-                            @Param("isCancelled") Boolean isCancelled,
+                            @Param("statusId") Integer statusId,
                             @Param("pageSize") Integer pageSize,
                             @Param("offset") Integer offset);
 
@@ -48,7 +48,7 @@ public interface RecordMapper {
                   @Param("startTime") LocalDateTime startTime,
                   @Param("endTime") LocalDateTime endTime,
                   @Param("hasCheckedIn") Boolean hasCheckedIn,
-                  @Param("isCancelled") Boolean isCancelled);
+                  @Param("statusId") Integer statusId);
 
     /**
      * Insert a new record.
@@ -74,14 +74,19 @@ public interface RecordMapper {
     @Update("UPDATE Record " +
             "SET statusId = " +
             "  CASE " +
+            "    WHEN statusId = 4 THEN statusId" +
             "    WHEN startTime > NOW() THEN 1 " +
+            "    WHEN NOW() > endTime AND hasCheckedIn = true THEN 3"+
+            "    WHEN NOW() > endTime AND hasCheckedIn = false THEN 5"+
             "    WHEN NOW() BETWEEN startTime AND endTime THEN 2 " +
-            "    ELSE 3 " +
+            "    ELSE  statusId" +
             "  END")
     void updateRecordStatus();
 
+    @Update("UPDATE mamba.record set statusId = 2, hasCheckedIn = true where id = #{id}")
+    void checkIn(@Param("id") Integer id);
 
-    @Update("UPDATE mamba.record SET isCancelled = true WHERE id = #{id}")
+    @Update("UPDATE mamba.record SET statusId = 4 WHERE id = #{id}")
     void cancelRecordById(@Param("id") Integer id);
 
     @Select("SELECT COUNT(*) FROM mamba.record")
@@ -116,7 +121,7 @@ public interface RecordMapper {
      *
      * @return the total number of incomplete orders
      */
-    @Select("SELECT COUNT(*) FROM mamba.record WHERE statusId != 3")
+    @Select("SELECT COUNT(*) FROM mamba.record WHERE statusId == 1 or statusId == 2")
     int countIncompleteOrders();
 
     /**
@@ -146,8 +151,8 @@ public interface RecordMapper {
                 if (params.get("hasCheckedIn") != null) {
                     WHERE("hasCheckedIn = #{hasCheckedIn}");
                 }
-                if (params.get("isCancelled") != null) {
-                    WHERE("isCancelled = #{isCancelled}");
+                if (params.get("statusId") != null) {
+                    WHERE("statusId = #{statusId}");
                 }
                 ORDER_BY("recordTime DESC");
             }};
@@ -187,8 +192,8 @@ public interface RecordMapper {
                 if (params.get("hasCheckedIn") != null) {
                     WHERE("hasCheckedIn = #{hasCheckedIn}");
                 }
-                if (params.get("isCancelled") != null) {
-                    WHERE("isCancelled = #{isCancelled}");
+                if (params.get("statusId") != null) {
+                    WHERE("statusId = #{statusId}");
                 }
             }};
 

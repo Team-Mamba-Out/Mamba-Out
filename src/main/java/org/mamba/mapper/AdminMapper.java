@@ -38,4 +38,10 @@ public interface AdminMapper {
                             @Param("uid") Integer uid,
                             @Param("name") String name,
                             @Param("phone") String phone);
+    /**
+     * Get the account of the users;
+     * @return the corresponding count.
+     */
+    @Select("SELECT COUNT(*) mamba.user")
+    int userAccount();
 }

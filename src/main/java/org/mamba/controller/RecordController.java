@@ -36,10 +36,10 @@ public class RecordController {
                              @RequestParam(required = false) LocalDateTime startTime,
                              @RequestParam(required = false) LocalDateTime endTime,
                              @RequestParam(required = false) Boolean hasCheckedIn,
-                             @RequestParam(required = false) Boolean isCancelled,
+                             @RequestParam(required = false) String status,
                              @RequestParam(required = false) Integer size,
                              @RequestParam(required = false) Integer page) {
-        Map<String, Object> recordsResult = recordService.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn, isCancelled, size, page);
+        Map<String, Object> recordsResult = recordService.getRecords(id, roomId, userId, startTime, endTime,hasCheckedIn,status, size, page);
         return Result.success(recordsResult);
     }
 
@@ -61,8 +61,8 @@ public class RecordController {
      * @param id the provided id
      * @return the result of the deletion operation
      */
-    @DeleteMapping("/{id}")
-    public Result deleteRecordById(@PathVariable Integer id) {
+    @DeleteMapping("/delete")
+    public Result deleteRecordById(Integer id) {
         recordService.deleteRecordById(id);
         return Result.success();
     }
@@ -73,9 +73,14 @@ public class RecordController {
      * @param id  the provided id
      * @return the result of the cancellation operation
      */
-    @PutMapping("/cancel/{id}")
-    public Result cancelRecordById(@PathVariable Integer id) {
+    @PutMapping("/cancel")
+    public Result cancelRecordById(Integer id) {
         recordService.cancelRecordById(id);
+        return Result.success();
+    }
+    @PutMapping("/checkin")
+    public Result checkedIn(Integer id) {
+        recordService.checkIn(id);
         return Result.success();
     }
 
