@@ -93,4 +93,15 @@ public class AdminController {
         adminService.deleteAndReassignRoom(roomName, newStartTime, newEndTime, reason);
         return Result.success();
     }
+
+    /**
+     * Retrieves all records with their corresponding room names.
+     *
+     * @return a list of records with room names
+     */
+    @GetMapping("/recordsWithRoomNames")
+    public Result getAllRecordsWithRoomNames() {
+        List<Map<String, Object>> recordsWithRoomNames = adminService.getAllRecordsWithRoomNames();
+        return Result.success(recordsWithRoomNames);
+    }
 }
