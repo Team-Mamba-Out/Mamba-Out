@@ -43,6 +43,13 @@ public interface RoomService {
     void createRoom(String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url);
 
     /**
+     * Update the permission of a room by id.
+     *
+     * @param id              the id of the room with permission to be updated
+     * @param permissionUsers the list of users with permission
+     */
+    void updateRoomPermission(Integer id, List<Integer> permissionUsers);
+    /**
      * Update the information of a room by id.
      *
      * @param id              the id of the room with information to be updated (used for query)
@@ -57,7 +64,7 @@ public interface RoomService {
      * @param roomType        the type of the room
      * @param url             the description photo url of the room
      */
-    void updateRoomById(Integer id, String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url);
+    void updateRoom(Integer id, String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url);
 
     /**
      * Deletes the room specified by id.
@@ -107,6 +114,22 @@ public interface RoomService {
      * @return the nearest available room, or null if none found
      */
     Room findNearestAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime, String userRole, LocalDateTime newStartTime, LocalDateTime newEndTime);
+
+    /**
+     * Set the permission of a user in a room.
+     *
+     * @param roomId         the room id
+     * @param userId         the user id
+     */
+    void setPermissionUser(Integer roomId, Integer userId);
+
+    /**
+     * Get the permission of the user in the room.
+     *
+     * @param roomId the room id
+     * @return the result of the operation
+     */
+    List<Integer> getPermissionUser(Integer roomId);
 
     /**
      * Counts the total number of rooms.

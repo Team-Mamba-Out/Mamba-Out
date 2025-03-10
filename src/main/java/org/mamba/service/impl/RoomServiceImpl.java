@@ -100,6 +100,7 @@ public class RoomServiceImpl implements RoomService {
         return map;
     }
 
+
     @Override
     public List<Room> getAllRooms() {
         return roomMapper.getAllRooms();
@@ -120,7 +121,6 @@ public class RoomServiceImpl implements RoomService {
      * @param url             the description photo url of the room
      */
     @Override
-
     public void createRoom(String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url) {
         roomMapper.createRoom(roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url);
 
@@ -133,6 +133,30 @@ public class RoomServiceImpl implements RoomService {
                 "System Notification"
         );
     }
+
+    /**
+     * Set the permission of a user for a room.
+     *
+     * @param roomid the room id
+     * @param uid    the user id
+     */
+    @Override
+    public void setPermissionUser (Integer roomid, Integer uid) {
+        roomMapper.deletePermissionUsers(roomid);
+        roomMapper.createPermissionUser(roomid, uid);
+    }
+
+    /**
+     * Get the permission of a user for a room.
+     *
+     * @param roomid the room id
+     */
+    @Override
+    public List<Integer> getPermissionUser (Integer roomid) {
+        return roomMapper.getPermissionUser(roomid);
+    }
+
+
     /**
      * Update the information of a room by id.
      *
@@ -149,8 +173,8 @@ public class RoomServiceImpl implements RoomService {
      * @param url             the description photo url of the room
      */
     @Override
-    public void updateRoomById(Integer id, String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url) {
-        roomMapper.updateRoomById(id, roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url);
+    public void updateRoom(Integer id, String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url) {
+        roomMapper.updateRoom(id, roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url);
 
         messageService.createMessage(
                 1,
@@ -163,6 +187,14 @@ public class RoomServiceImpl implements RoomService {
                 false,
                 "System Notification"
         );
+    }
+
+    @Override
+    public void updateRoomPermission(Integer id, List<Integer> permissionUsers) {
+        roomMapper.deletePermissionUsers(id);
+        for (Integer uid : permissionUsers) {
+            roomMapper.createPermissionUser(id, uid);
+        }
     }
 
     /**
@@ -209,6 +241,8 @@ public class RoomServiceImpl implements RoomService {
 
         return busyTimes;
     }
+
+
 
     /**
      * Get all the RECORD PERIODS times of the room by id.
