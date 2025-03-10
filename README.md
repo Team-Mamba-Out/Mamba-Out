@@ -1,3 +1,7 @@
+DIICSU ASE Team Mamba Out
+
+Backend code repo
+
 # IMPORTANT
 To ensure efficient work, based on standard development specifications, all team Mamba Out members are asked to ensure that the following rules are followed:
 
