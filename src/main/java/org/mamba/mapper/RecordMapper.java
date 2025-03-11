@@ -72,18 +72,25 @@ public interface RecordMapper {
      *  allow update record list.
      */
     @Update("UPDATE Record " +
-            "SET statusId = " +
-            "  CASE " +
-            "    WHEN statusId = 4 THEN statusId" +
-            "    WHEN startTime > NOW() THEN 1 " +
-            "    WHEN NOW() > endTime AND hasCheckedIn = true THEN 3"+
-            "    WHEN NOW() > endTime AND hasCheckedIn = false THEN 5"+
-            "    WHEN NOW() BETWEEN startTime AND endTime THEN 2 " +
-            "    ELSE  statusId" +
-            "  END")
+            "SET " +
+            "  statusId = " +
+            "    CASE " +
+            "      WHEN statusId = 4 THEN statusId  " +
+            "      WHEN NOW() >= startTime AND hasCheckedIn = false THEN 5  " +
+            "      WHEN NOW() >= startTime AND hasCheckedIn = true THEN 2  " +
+            "      WHEN statusId = 2 AND NOW() > endTime THEN 3  " +
+            "      ELSE statusId  " +
+            "    END,  " +
+            "  allowCheckIn = " +
+            "    CASE " +
+            "      WHEN NOW() >= startTime - INTERVAL 10 MINUTE AND NOW() < startTime And hasCheckedIn = false THEN true  " +
+            "      WHEN NOW() >= startTime THEN false  " +
+            "      ELSE allowCheckIn " +
+            "    END;")
     void updateRecordStatus();
 
-    @Update("UPDATE mamba.record set statusId = 2, hasCheckedIn = true where id = #{id}")
+
+    @Update("UPDATE mamba.record set allowCheckIn = false, statusId = 2, hasCheckedIn = true where id = #{id}")
     void checkIn(@Param("id") Integer id);
 
     @Update("UPDATE mamba.record SET statusId = 4 WHERE id = #{id}")
