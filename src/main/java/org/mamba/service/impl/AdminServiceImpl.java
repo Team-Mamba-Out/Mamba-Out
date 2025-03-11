@@ -39,6 +39,10 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public void approveRestrictedRoomRecord(Integer id){}
+
+
+    @Override
     public void createAdmin(String email, Integer uid, String name, String phone) {
         adminMapper.createAdmin(email, uid, name, phone);
 
@@ -142,7 +146,8 @@ public class AdminServiceImpl implements AdminService {
                 null,  // hasCheckedIn
                 null,  // isCancelled
                 Integer.MAX_VALUE,
-                1
+                1,
+                null  //isApproved
         );
 
         List<Record> records = (List<Record>) recordsMap.get("records");

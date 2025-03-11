@@ -44,7 +44,7 @@ public class RecordServiceImpl implements RecordService {
      * @param page         the page No.
      */
     @Override
-    public Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn,String status, Integer size, Integer page) {
+    public Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn,String status, Integer size, Integer page, Boolean isApproved) {
         // Calculate offset
         Integer offset = (page - 1) * size;
         Integer statusId = null;
@@ -69,7 +69,7 @@ public class RecordServiceImpl implements RecordService {
                     statusId = 1;
             }
         }
-        List<Record> recordList = recordMapper.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn,statusId, size, offset);
+        List<Record> recordList = recordMapper.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn,statusId, size, offset,isApproved);
 
         // Obtain the corresponding room of each record
         for (Record record : recordList) {
@@ -91,6 +91,11 @@ public class RecordServiceImpl implements RecordService {
         map.put("total", total);
         map.put("pageNumber", page);
         return map;
+    }
+
+    @Override
+    public List<Record> getRestrictedRecords() {
+        return recordMapper.getRecords(null,null,null,null,null,null,null,null,null,false);
     }
 
     private String convertStatus(Integer statusId) {
@@ -117,7 +122,7 @@ public class RecordServiceImpl implements RecordService {
      */
     @Override
     public Record getRecordById(int id) {
-        return recordMapper.getRecords(id, null, null,null,null,null,null,null,null).get(0);
+        return recordMapper.getRecords(id, null, null,null,null,null,null,null,null,null).get(0);
     }
 
     /**
@@ -133,10 +138,15 @@ public class RecordServiceImpl implements RecordService {
     public void createRecord(Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn) {
         User user = userService.getUserByUid(userId);
         String role = user.getRole();
+        Room room = roomMapper.getRoomById(roomId);
         List<Integer> permissionUsers = roomMapper.getPermissionUser(roomId);
 
         if (!"Admin".equals(role) && !permissionUsers.contains(userId)) {
             throw new IllegalArgumentException("You do not have the permission to create a record for this room.");
+        }
+
+        if(room.isRestricted()){
+            throw new IllegalArgumentException("This room is restricted, please wait for the admin to approve your request.");
         }
 //        // Check room permission type
 //        switch (roomTemp.getPermissionType()) {
@@ -166,7 +176,7 @@ public class RecordServiceImpl implements RecordService {
 
         recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn);
 
-        Room room = roomMapper.getRoomById(roomId);
+
 
         messageService.createMessage(
                 userId,
@@ -196,7 +206,7 @@ public class RecordServiceImpl implements RecordService {
      */
     @Override
     public void cancelRecordById(Integer id) {
-        Record record = recordMapper.getRecords(id, null, null,null,null,null,null,null,null).get(0);
+        Record record = recordMapper.getRecords(id, null, null,null,null,null,null,null,null,null).get(0);
         Room room = roomMapper.getRoomById(record.getRoomId());
         recordMapper.cancelRecordById(id);
 
@@ -255,7 +265,7 @@ public class RecordServiceImpl implements RecordService {
     @Override
     public Map<String, Object> getRecordsByRoomAndTime(String roomName, LocalDateTime startTime, LocalDateTime endTime) {
         Room room = roomMapper.getRoomByName(roomName);
-        return getRecords(null,room.getId(),null,startTime,endTime,null,null,null,null);
+        return getRecords(null,room.getId(),null,startTime,endTime,null,null,null,null,null);
     }
 
     @Override

@@ -23,7 +23,8 @@ public interface RecordMapper {
                             @Param("hasCheckedIn") Boolean hasCheckedIn,
                             @Param("statusId") Integer statusId,
                             @Param("pageSize") Integer pageSize,
-                            @Param("offset") Integer offset);
+                            @Param("offset") Integer offset,
+                            @Param("isApproved") Boolean isApproved);
 
     /**
      * Finds records for a given room within a specified time range, including those that partially overlap.
@@ -38,6 +39,8 @@ public interface RecordMapper {
     List<Record> findRecordsByRoomAndTimeRange(@Param("roomId") Integer roomId,
                                                          @Param("occupyStartTime") LocalDateTime occupyStartTime,
                                                          @Param("occupyEndTime") LocalDateTime occupyEndTime);
+
+
     /**
      * counts the total number of records
      */
@@ -160,6 +163,9 @@ public interface RecordMapper {
                 }
                 if (params.get("statusId") != null) {
                     WHERE("statusId = #{statusId}");
+                }
+                if (params.get("isApproved") != null) {
+                    WHERE("isApproved = #{isApproved}");
                 }
                 ORDER_BY("recordTime DESC");
             }};

@@ -2,8 +2,6 @@ package org.mamba.controller;
 
 import org.mamba.entity.Admin;
 import org.mamba.entity.Result;
-import org.mamba.service.RecordService;
-import org.mamba.service.RoomService;
 import org.mamba.service.impl.AdminServiceImpl;
 import org.mamba.service.impl.RecordServiceImpl;
 import org.mamba.service.impl.RoomServiceImpl;
@@ -35,6 +33,40 @@ public class AdminController {
         return Result.success(admins);
     }
 
+    /**
+     * Get the permission of the user in the room.
+     *
+     * @param room_id the room id
+     * @return the result of the operation
+     */
+    @GetMapping("/getPermissionUser")
+    public Result getPermissionUser(@RequestParam Integer room_id) {
+        roomService.getPermissionUser(room_id);
+        return Result.success();
+    }
+
+    /**
+     * Update the information of a room by id.
+     *
+     * @param id   the id of the room with information to be updated (used for query)
+     * @return the result of the update operation
+     */
+    @PutMapping("/updateRoomPermission")
+    public Result updateRoomPermission(@RequestParam Integer id,
+                                       @RequestParam List<Integer> permissionUsers) {
+        roomService.updateRoomPermission(id,permissionUsers);
+        return Result.success();
+    }
+
+    /**
+     * Get the account of the users;
+     * @return the corresponding count.
+     */
+    @PostMapping("/{id}/addUsers")
+    public Result addUsersToRoom(@PathVariable Integer id, @RequestBody List<Integer> userIds) {
+        roomService.updateRoomPermission(id, userIds);
+        return Result.success();
+    }
     /**
      * Insert a new admin.
      *

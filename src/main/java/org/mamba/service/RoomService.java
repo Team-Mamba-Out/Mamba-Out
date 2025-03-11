@@ -74,6 +74,15 @@ public interface RoomService {
     void deleteRoomById(Integer id);
 
     /**
+     * Get the RESTRICTED rooms.
+     *
+     * @return the list of restricted rooms
+     */
+    List<Room> getRestrictedRooms();
+
+
+
+    /**
      * Get the BUSY times of the room by id.
      * Returns all the BUSY time periods of the room in the next 7 days.
      * (including the current day)
