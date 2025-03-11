@@ -31,7 +31,7 @@ public interface RoomMapper {
      * Insert a new room.
      */
     @Insert("INSERT INTO mamba.room (roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType) " +
-            "VALUES (#{roomName}, #{capacity}, #{isBusy}, #{location}, #{multimedia}, #{projector}, #{requireApproval}, #{isRestricted}, #{roomType}, #{url})")
+            "VALUES (#{roomName}, #{capacity}, #{isBusy}, #{location}, #{multimedia}, #{projector}, #{requireApproval}, #{isRestricted}, #{roomType}, #{url}, #{description})")
     void createRoom(@Param("roomName") String roomName,
                     @Param("capacity") Integer capacity,
                     @Param("isBusy") Boolean isBusy,
@@ -41,7 +41,8 @@ public interface RoomMapper {
                     @Param("requireApproval") Boolean requireApproval,
                     @Param("isRestricted") Boolean isRestricted,
                     @Param("roomType") Integer roomType,
-                    @Param("url") String url);
+                    @Param("url") String url,
+                    @Param("description") String description);
 
     /**
      * Obtains the room specified by ID.
@@ -85,7 +86,8 @@ public interface RoomMapper {
                     @Param("requireApproval") Boolean requireApproval,
                     @Param("isRestricted") Boolean isRestricted,
                     @Param("roomType") Integer roomType,
-                    @Param("url") String url);
+                    @Param("url") String url,
+                    @Param("description") String description);
 
     /**
      * Deletes the room specified by ID.
@@ -284,6 +286,9 @@ public interface RoomMapper {
                 }
                 if (params.get("url") != null && !params.get("url").toString().isEmpty()) {
                     SET("url = #{url}");
+                }
+                if (params.get("description") != null && !params.get("description").toString().isEmpty()) {
+                    SET("description = #{description}");
                 }
             }}.toString();
         }

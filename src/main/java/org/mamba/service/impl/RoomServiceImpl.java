@@ -121,8 +121,8 @@ public class RoomServiceImpl implements RoomService {
      * @param url             the description photo url of the room
      */
     @Override
-    public void createRoom(String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url) {
-        roomMapper.createRoom(roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url);
+    public void createRoom(String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url, String description) {
+        roomMapper.createRoom(roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url, description);
 
         messageService.createMessage(
                 1,
@@ -173,8 +173,8 @@ public class RoomServiceImpl implements RoomService {
      * @param url             the description photo url of the room
      */
     @Override
-    public void updateRoom(Integer id, String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url) {
-        roomMapper.updateRoom(id, roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url);
+    public void updateRoom(Integer id, String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url, String description) {
+        roomMapper.updateRoom(id, roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url, description);
 
         messageService.createMessage(
                 1,
@@ -182,7 +182,8 @@ public class RoomServiceImpl implements RoomService {
                 "The room with ID " + id + " has been successfully updated. New details: Name: " + roomName +
                         ", Capacity: " + capacity + ", Location: " + location + ", Multimedia: " + multimedia +
                         ", Projector: " + projector + ", Requires Approval: " + requireApproval +
-                        ", Restricted: " + isRestricted + ", Room Type: " + roomType + ", URL: " + url,
+                        ", Restricted: " + isRestricted + ", Room Type: " + roomType + ", URL: " + url +
+                        ", Description: " + description,
                 LocalDateTime.now(),
                 false,
                 "System Notification"
