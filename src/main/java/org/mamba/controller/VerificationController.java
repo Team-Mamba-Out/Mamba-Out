@@ -33,7 +33,7 @@ public class VerificationController {
      *
      * @param email the user's email
      */
-    @RequestMapping()
+    @RequestMapping("/send")
     public static void startVerify(@RequestParam() String email) {
         if (!email.endsWith("@dundee.ac.uk")) {
             throw new RuntimeException("Please enter a valid UoD email!");
@@ -101,7 +101,7 @@ public class VerificationController {
      * @param codeInput the code string that the user inputs
      * @return if authentication is successful or not
      */
-    @RequestMapping()
+    @RequestMapping("/validate")
     public static Result verifyCode(@RequestParam() String email, @RequestParam() String codeInput) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime generateTimeStored = timeLimitInfoMap.get(email);

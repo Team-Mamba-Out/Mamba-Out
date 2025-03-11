@@ -16,4 +16,5 @@ public class Record {
     private Integer statusId;
     private String status;
     private boolean hasCheckedIn;
+    private boolean allowCheckIn;
 }
