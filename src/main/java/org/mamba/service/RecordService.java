@@ -20,7 +20,7 @@ public interface RecordService {
      * @param size         the size of each page
      * @param page         the page No.
      */
-    Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn,String status, Integer size, Integer page);
+    Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn,String status, Integer size, Integer page, Boolean isApproved);
 
     /**
      * Obtains the record specified by ID given.
@@ -54,6 +54,9 @@ public interface RecordService {
      * @param id  the provided id
      */
     void cancelRecordById(Integer id);
+
+
+    List<Record> getRestrictedRecords();
     /**
      * automatically updating
      */
@@ -72,6 +75,7 @@ public interface RecordService {
      * @return the total number of orders for students
      */
     int countStudentOrders();
+
 
     /**
      * Counts the total number of completed orders.
@@ -124,6 +128,8 @@ public interface RecordService {
     List<Record> findRecordsByRoomAndTimeRange(String roomName, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime);
 
     void checkIn(Integer id);
+
+
 }
 
 

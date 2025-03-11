@@ -49,4 +49,12 @@ public interface AdminService {
      * @return a list of records with room names
      */
     List<Map<String, Object>> getAllRecordsWithRoomNames();
+
+
+    /**
+     * Approve a restricted room record.
+     *
+     * @param id the id of the record to approve
+     */
+    void approveRestrictedRoomRecord(Integer id);
 }

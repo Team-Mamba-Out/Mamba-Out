@@ -189,12 +189,23 @@ public class RoomServiceImpl implements RoomService {
         );
     }
 
+    /**
+     * Update the permission of a room by id.
+     *
+     * @param id              the id of the room with permission to be updated
+     * @param permissionUsers the list of users with permission
+     */
     @Override
     public void updateRoomPermission(Integer id, List<Integer> permissionUsers) {
         roomMapper.deletePermissionUsers(id);
         for (Integer uid : permissionUsers) {
             roomMapper.createPermissionUser(id, uid);
         }
+    }
+
+    @Override
+    public List<Room> getRestrictedRooms() {
+        return roomMapper.getRooms(null, null, null, null, null, null, true, null, null, null);
     }
 
     /**
@@ -259,7 +270,7 @@ public class RoomServiceImpl implements RoomService {
         LocalDateTime now = LocalDateTime.now();
 
         // Obtain all the records
-        List<Record> roomRecords = recordMapper.getRecords(null, id, null, now, now.plusDays(7), null, null, null, null);
+        List<Record> roomRecords = recordMapper.getRecords(null, id, null, now, now.plusDays(7), null, null, null, null, null);
         List<List<LocalDateTime>> roomRecordPeriods = new ArrayList<>();
 
         // Iterate through all the record periods

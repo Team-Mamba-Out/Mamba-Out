@@ -38,8 +38,9 @@ public class RecordController {
                              @RequestParam(required = false) Boolean hasCheckedIn,
                              @RequestParam(required = false) String status,
                              @RequestParam(required = false) Integer size,
-                             @RequestParam(required = false) Integer page) {
-        Map<String, Object> recordsResult = recordService.getRecords(id, roomId, userId, startTime, endTime,hasCheckedIn,status, size, page);
+                             @RequestParam(required = false) Integer page,
+                             @RequestParam(required = false) Boolean isApproved) {
+        Map<String, Object> recordsResult = recordService.getRecords(id, roomId, userId, startTime, endTime,hasCheckedIn,status, size, page, isApproved);
         return Result.success(recordsResult);
     }
 
