@@ -58,7 +58,7 @@ public class RoomController {
      */
     @PostMapping("/addRoom")
     public Result createRoom(@RequestBody Room room) {
-        roomService.createRoom(room.getRoomName(), room.getCapacity(), room.isBusy(), room.getLocation(), room.isMultimedia(), room.isProjector(), room.isRequireApproval(), room.isRestricted(), room.getRoomType(), room.getUrl());
+        roomService.createRoom(room.getRoomName(), room.getCapacity(), room.isBusy(), room.getLocation(), room.isMultimedia(), room.isProjector(), room.isRequireApproval(), room.isRestricted(), room.getRoomType(), room.getUrl(), room.getDescription());
         return Result.success();
     }
 
@@ -71,7 +71,7 @@ public class RoomController {
      */
     @PutMapping("/{id}")
     public Result updateRoomById(@PathVariable Integer id, @RequestBody Room room) {
-        roomService.updateRoom(id, room.getRoomName(), room.getCapacity(), room.isBusy(), room.getLocation(), room.isMultimedia(), room.isProjector(), room.isRequireApproval(), room.isRestricted(), room.getRoomType(), room.getUrl());
+        roomService.updateRoom(id, room.getRoomName(), room.getCapacity(), room.isBusy(), room.getLocation(), room.isMultimedia(), room.isProjector(), room.isRequireApproval(), room.isRestricted(), room.getRoomType(), room.getUrl(), room.getDescription());
         return Result.success();
     }
 
