@@ -91,8 +91,7 @@ public class AdminController {
      */
     @GetMapping("/getRestrictedResources")
     public Result getRestrictedResources() {
-        recordService.getRestrictedRecords();
-        return Result.success();
+        return Result.success(recordService.getRestrictedRecords());
     }
 
     /**
