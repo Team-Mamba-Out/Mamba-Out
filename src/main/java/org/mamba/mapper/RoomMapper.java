@@ -30,7 +30,7 @@ public interface RoomMapper {
     /**
      * Insert a new room.
      */
-    @Insert("INSERT INTO mamba.room (roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType) " +
+    @Insert("INSERT INTO mamba.room (roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url, description) " +
             "VALUES (#{roomName}, #{capacity}, #{isBusy}, #{location}, #{multimedia}, #{projector}, #{requireApproval}, #{isRestricted}, #{roomType}, #{url}, #{description})")
     void createRoom(@Param("roomName") String roomName,
                     @Param("capacity") Integer capacity,
@@ -105,8 +105,8 @@ public interface RoomMapper {
     @Select("SELECT * " +
             "FROM mamba.record r " +
             "WHERE r.roomId = #{id} " +
-            "AND r.startTime >= #{now} " +
-            "AND r.startTime <= DATE_ADD(#{now}, INTERVAL 7 DAY) " +
+            "AND r.startTime >= DATE(#{now}) " +
+            "AND r.startTime <= DATE_ADD(DATE(#{now}), INTERVAL 7 DAY) " +
             "ORDER BY r.startTime")
     List<Record> getFutureRecords(@Param("id") Integer id, LocalDateTime now);
 
@@ -120,8 +120,8 @@ public interface RoomMapper {
     @Select("SELECT * " +
             "FROM mamba.record r " +
             "WHERE r.roomId = #{id} " +
-            "AND r.startTime >= DATE_SUB(#{now}, INTERVAL 7 DAY) " +  // Past 7 days
-            "AND r.startTime <= #{now} " +  // Up to the current time
+            "AND r.startTime >= DATE_SUB(DATE(#{now}), INTERVAL 7 DAY) " +  // Past 7 days
+            "AND r.startTime <= DATE(#{now}) " +  // Up to the current time
             "ORDER BY r.startTime")
     List<Record> getPastRecords(@Param("id") Integer id, @Param("now") LocalDateTime now);
 
