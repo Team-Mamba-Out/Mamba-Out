@@ -30,7 +30,7 @@ public interface RoomMapper {
     /**
      * Insert a new room.
      */
-    @Insert("INSERT INTO mamba.room (roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType) " +
+    @Insert("INSERT INTO mamba.room (roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url, description) " +
             "VALUES (#{roomName}, #{capacity}, #{isBusy}, #{location}, #{multimedia}, #{projector}, #{requireApproval}, #{isRestricted}, #{roomType}, #{url}, #{description})")
     void createRoom(@Param("roomName") String roomName,
                     @Param("capacity") Integer capacity,
