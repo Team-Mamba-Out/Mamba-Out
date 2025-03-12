@@ -28,9 +28,14 @@ public class AdminController {
      * @return the list of all admins
      */
     @GetMapping
-    public Result getAdmins() {
-        List<Admin> admins = adminService.getAdmins();
-        return Result.success(admins);
+    public Result getAdmins(@RequestParam(required = false) String email,
+                            @RequestParam(required = false) Integer uid,
+                            @RequestParam(required = false) String name,
+                            @RequestParam(required = false) String phone,
+                            @RequestParam(required = false) Integer size,
+                            @RequestParam(required = false) Integer page) {
+        Map<String, Object> adminsResult = adminService.getAdmins(email, uid, name, phone, size, page);
+        return Result.success(adminsResult);
     }
 
     /**
