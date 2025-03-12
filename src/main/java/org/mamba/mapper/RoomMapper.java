@@ -57,6 +57,7 @@ public interface RoomMapper {
      */
     @Delete("DELETE FROM mamba.room_user WHERE room_id = #{room_id}")
     void deletePermissionUsers(@Param("room_id") int room_id);
+
     /**
      * Obtains the room specified by ID.
      */
@@ -65,7 +66,6 @@ public interface RoomMapper {
                               @Param("uid") int uid);
 
     /**
-     *
      * @param room_id
      */
     @Select("SELECT uid FROM mamba.room_user WHERE room_id = #{room_id}")
@@ -98,23 +98,25 @@ public interface RoomMapper {
     /**
      * Gets all the records related to a room in the next 7 days.
      *
-     * @param id  the id of the room to be checked
-     * @param now the current time
+     * @param id         the id of the room to be checked
+     * @param startOfDay the current day at 0am
+     * @param endOfDay   7 days later at 0am
      * @return the list containing all the records in 7 days
      */
     @Select("SELECT * " +
             "FROM mamba.record r " +
             "WHERE r.roomId = #{id} " +
-            "AND r.startTime >= DATE(#{now}) " +
-            "AND r.startTime <= DATE_ADD(DATE(#{now}), INTERVAL 7 DAY) " +
+            "AND r.startTime >= #{startOfDay} " +
+            "AND r.startTime <= #{endOfDay} " +
             "ORDER BY r.startTime")
-    List<Record> getFutureRecords(@Param("id") Integer id, LocalDateTime now);
+    List<Record> getFutureRecords(@Param("id") Integer id, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 
     /**
      * Retrieves all records related to a specific room in the past 7 days.
      *
-     * @param id  the ID of the room to be checked
-     * @param now the current timestamp
+     * @param id         the ID of the room to be checked
+     * @param startOfDay 7 days before at 0am
+     * @param endOfDay   today at 0am
      * @return a list containing all records from the past 7 days
      */
     @Select("SELECT * " +
@@ -123,8 +125,7 @@ public interface RoomMapper {
             "AND r.startTime >= DATE_SUB(DATE(#{now}), INTERVAL 7 DAY) " +  // Past 7 days
             "AND r.startTime <= DATE(#{now}) " +  // Up to the current time
             "ORDER BY r.startTime")
-    List<Record> getPastRecords(@Param("id") Integer id, @Param("now") LocalDateTime now);
-
+    List<Record> getPastRecords(@Param("id") Integer id, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 
 
     /**
