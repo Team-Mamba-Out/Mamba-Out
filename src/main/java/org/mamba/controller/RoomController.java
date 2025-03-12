@@ -78,13 +78,13 @@ public class RoomController {
     /**
      * Set the permission of the user in the room.
      *
-     * @param room_id the room id
-     * @param uid the user id
      * @return the result of the operation
      */
     @PostMapping("/setPermissionUser")
-    public Result setPermissionUser(@RequestParam Integer room_id, @RequestParam Integer uid) {
-        roomService.setPermissionUser(room_id, uid);
+    public Result setPermissionUser(@RequestBody Map<String,Object> request) {
+        Integer room_id = Integer.parseInt(request.get("room_id").toString());
+        List<Integer> uids = (List<Integer>) request.get("uids");
+        uids.forEach(uid->roomService.setPermissionUser(room_id, uid));
         return Result.success();
     }
 
@@ -96,8 +96,8 @@ public class RoomController {
      */
     @GetMapping("/getPermissionUser")
     public Result getPermissionUser(@RequestParam Integer room_id) {
-        roomService.getPermissionUser(room_id);
-        return Result.success();
+
+        return Result.success(roomService.getPermissionUser(room_id));
     }
 
     /**

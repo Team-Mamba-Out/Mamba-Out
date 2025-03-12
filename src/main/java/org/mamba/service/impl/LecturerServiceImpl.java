@@ -35,11 +35,17 @@ public class LecturerServiceImpl implements LecturerService {
     @Override
     public Map<String, Object> getLecturers(String email, Integer uid, String name, String phone, Integer size, Integer page) {
         // Calculate offset
-        Integer offset = (page - 1) * size;
+        Integer offset = null;
+        if (size!=null && page!=null) {
+            offset = (page - 1) * size;
+        }
         List<Lecturer> lecturerList = lecturerMapper.getLecturers(email, uid, name, phone, size, offset);
         Map<String, Object> map = new HashMap<>();
         int total = lecturerMapper.count();
-        int totalPage = total % size == 0 ? total / size : total / size + 1;
+        Integer totalPage = null;
+        if (size!=null){
+            totalPage = total % size == 0 ? total / size : total / size + 1;
+        }
         map.put("lecturers", lecturerList);
         map.put("totalPage", totalPage);
         map.put("total", total);
