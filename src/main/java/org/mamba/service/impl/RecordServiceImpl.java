@@ -32,6 +32,37 @@ public class RecordServiceImpl implements RecordService {
     @Autowired
     private RoomService roomService;
 
+
+    @Override
+    public void approveRestrictedRoomRecord(Integer id){
+        Record record = recordMapper.getRecords(id, null, null,null,null,null,null,null,null,null).get(0);
+        recordMapper.approveRestrictedRoomRecord(id);
+        Room room = roomMapper.getRoomById(record.getRoomId());
+        messageService.createMessage(
+                record.getUserId(),
+                "Room Reservation Approved",
+                "Your reservation for room " + room.getRoomName() + " has been approved.",
+                LocalDateTime.now(),
+                false,
+                "System Notification"
+        );
+    }
+
+    @Override
+    public void rejectRestrictedRoomRecord(Integer id){
+        Record record = recordMapper.getRecords(id, null, null,null,null,null,null,null,null,null).get(0);
+        recordMapper.deleteRecordById(id);
+        Room room = roomMapper.getRoomById(record.getRoomId());
+        messageService.createMessage(
+                record.getUserId(),
+                "Room Reservation Rejected",
+                "Your reservation for room " + room.getRoomName() + " has been rejected.",
+                LocalDateTime.now(),
+                false,
+                "System Notification"
+        );
+    }
+
     /**
      * Obtains the record list based on the conditions given.
      *
@@ -144,8 +175,10 @@ public class RecordServiceImpl implements RecordService {
         if (!"Admin".equals(role) && !permissionUsers.contains(userId)) {
             throw new IllegalArgumentException("You do not have the permission to create a record for this room.");
         }
+        LocalDateTime recordTime = LocalDateTime.now();
 
         if(room.isRestricted()){
+            recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn,false);
             throw new IllegalArgumentException("This room is restricted, please wait for the admin to approve your request.");
         }
 //        // Check room permission type
@@ -172,9 +205,9 @@ public class RecordServiceImpl implements RecordService {
 
         // Obtain the current time
 
-        LocalDateTime recordTime = LocalDateTime.now();
 
-        recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn);
+
+        recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, true);
 
 
 
