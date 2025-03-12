@@ -80,6 +80,41 @@ public class AdminController {
     }
 
     /**
+     * Find restricted records.
+     *
+     * @return the result of the approval operation
+     */
+    @GetMapping("/getRestrictedResources")
+    public Result getRestrictedResources() {
+        recordService.getRestrictedRecords();
+        return Result.success();
+    }
+
+    /**
+     * Approve a record.
+     *
+     * @param id the id of the record to approve
+     * @return the result of the approval operation
+     */
+    @PutMapping("/approveRestrictedResource")
+    public Result approveRestrictedResource(@RequestParam Integer id) {
+        adminService.approveRestrictedRoomRecord(id);
+        return Result.success();
+    }
+
+    /**
+     * Reject a record.
+     *
+     * @param id the id of the record to reject
+     * @return the result of the rejection operation
+     */
+    @DeleteMapping("/rejectRestrictedResource")
+    public Result rejectRestrictedResource(@RequestParam Integer id) {
+        adminService.rejectRestrictedRoomRecord(id);
+        return Result.success();
+    }
+
+    /**
      * Update the information of an admin by email.
      *
      * @param email the admin's email

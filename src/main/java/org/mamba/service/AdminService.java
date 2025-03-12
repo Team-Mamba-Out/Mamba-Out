@@ -13,6 +13,21 @@ import java.util.Map;
 
 public interface AdminService {
     /**
+     * Approve a restricted room record.
+     *
+     * @param id the id of the record to approve
+     */
+    void approveRestrictedRoomRecord(Integer id);
+
+    /**
+     * Reject a restricted room record.
+     *
+     * @param id the id of the record to reject
+     */
+    void rejectRestrictedRoomRecord(Integer id);
+
+
+    /**
      * Retrieves the list of all administrators.
      *
      * @return a list of {@link Admin} objects representing all administrators.
@@ -51,10 +66,5 @@ public interface AdminService {
     List<Map<String, Object>> getAllRecordsWithRoomNames();
 
 
-    /**
-     * Approve a restricted room record.
-     *
-     * @param id the id of the record to approve
-     */
-    void approveRestrictedRoomRecord(Integer id);
+
 }

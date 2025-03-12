@@ -38,8 +38,23 @@ public class AdminServiceImpl implements AdminService {
         return adminMapper.getAdmins();
     }
 
+    /**
+     * Approve a record.
+     * @param id the id of the record to approve
+     */
     @Override
-    public void approveRestrictedRoomRecord(Integer id){}
+    public void approveRestrictedRoomRecord(Integer id){
+        recordService.approveRestrictedRoomRecord(id);
+    }
+
+    /**
+     * Reject a record.
+     * @param id the id of the record to reject
+     */
+    @Override
+    public void rejectRestrictedRoomRecord(Integer id){
+        recordService.rejectRestrictedRoomRecord(id);
+    }
 
 
     @Override

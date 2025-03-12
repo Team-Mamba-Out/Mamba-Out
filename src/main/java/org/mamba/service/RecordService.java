@@ -8,6 +8,22 @@ import java.util.List;
 import java.util.Map;
 
 public interface RecordService {
+
+    /**
+     * Approves the record specified by ID.
+     *
+     * @param id the provided id
+     */
+    void approveRestrictedRoomRecord(Integer id);
+
+    /**
+     * Rejects the record specified by ID.
+     *
+     * @param id the provided id
+     */
+    void rejectRestrictedRoomRecord(Integer id);
+
+
     /**
      * Obtains the record list based on the conditions given.
      *

@@ -27,6 +27,12 @@ public interface RecordMapper {
                             @Param("isApproved") Boolean isApproved);
 
     /**
+     * Obtains the record specified by ID given.
+     */
+    @Update("UPDATE mamba.record SET isApproved = true WHERE id = #{id}")
+    void approveRestrictedRoomRecord(Integer id);
+
+    /**
      * Finds records for a given room within a specified time range, including those that partially overlap.
      *
      * @param roomId the ID of the room
@@ -56,14 +62,15 @@ public interface RecordMapper {
     /**
      * Insert a new record.
      */
-    @Insert("INSERT INTO mamba.record (roomId, userId, startTime, endTime, recordTime, hasCheckedIn) " +
-            "VALUES (#{roomId}, #{userId}, #{startTime}, #{endTime}, #{recordTime}, #{hasCheckedIn})")
+    @Insert("INSERT INTO mamba.record (roomId, userId, startTime, endTime, recordTime, hasCheckedIn,isApproved) " +
+            "VALUES (#{roomId}, #{userId}, #{startTime}, #{endTime}, #{recordTime}, #{hasCheckedIn}, #{isApproved})")
     void createRecord(@Param("roomId") Integer roomId,
                       @Param("userId") Integer userId,
                       @Param("startTime") LocalDateTime startTime,
                       @Param("endTime") LocalDateTime endTime,
                       @Param("recordTime") LocalDateTime recordTime,
-                      @Param("hasCheckedIn") Boolean hasCheckedIn);
+                      @Param("hasCheckedIn") Boolean hasCheckedIn,
+                      @Param("isApproved") Boolean isApproved);
 
     /**
      * Deletes the record specified by id.
