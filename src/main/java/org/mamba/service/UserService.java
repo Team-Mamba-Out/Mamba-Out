@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Select;
 import org.mamba.entity.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
     /**
@@ -43,5 +44,7 @@ public interface UserService {
      * @return the user with the specified uid
      */
     User getUserByUid(Integer uid);
-
+    Map<String,Object>getUserInfo(Integer uid);
+    String getUserName(Integer uid);
+    Integer getUserId(String email);
 }

@@ -32,7 +32,7 @@ public interface AdminService {
      *
      * @return a list of {@link Admin} objects representing all administrators.
      */
-    List<Admin> getAdmins();
+    Map<String, Object> getAdmins(String email, Integer uid, String name, String phone, Integer size, Integer page);
 
     /**
      * Creates a new administrator account and sends a welcome notification.

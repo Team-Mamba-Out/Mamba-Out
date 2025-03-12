@@ -59,6 +59,11 @@ public interface UserMapper {
     @Select("SELECT * FROM mamba.user WHERE uid = #{uid}")
     User getUserByUid(@Param("uid") Integer uid);
 
+    @Select("SELECT uid from user where role like CONCAT(#{email}, '%')")
+    Integer getUserIdByEmail(String email);
+
+    @Insert("INSERT INTO student (uid,email)values (#{uid},#{email})")
+    void createStudent(Integer uid, String email);
     /**
      * Static class for building SQL queries.
      */

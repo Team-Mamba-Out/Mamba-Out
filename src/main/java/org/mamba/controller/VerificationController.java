@@ -1,6 +1,10 @@
 package org.mamba.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.mamba.Utils.JwtUtil;
 import org.mamba.entity.Result;
+import org.mamba.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +22,8 @@ import java.util.Properties;
 @RestController
 @RequestMapping("/verify")
 public class VerificationController {
+    @Autowired
+    private UserService userService;
     private static final Map<String, LocalDateTime> timeLimitInfoMap = new HashMap<>();
     private static final Map<String, String> codeInfoMap = new HashMap<>();
     private static final Map<String, Integer> failedAttemptsMap = new HashMap<>();
@@ -34,9 +40,9 @@ public class VerificationController {
      * @param email the user's email
      */
     @RequestMapping("/send")
-    public static void startVerify(@RequestParam() String email) {
+    public static Result startVerify(@RequestParam() String email) {
         if (!email.endsWith("@dundee.ac.uk")) {
-            throw new RuntimeException("Please enter a valid UoD email!");
+            return Result.error("Please enter a valid UoD email!");
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -92,6 +98,8 @@ public class VerificationController {
         } catch (MessagingException e) {
             throw new RuntimeException("EMAIL SENDING FAILURE: " + e.getMessage());
         }
+
+        return Result.success("Verification code has been successfully sent. Check spam folder if not found.");
     }
 
     /**
@@ -102,7 +110,7 @@ public class VerificationController {
      * @return if authentication is successful or not
      */
     @RequestMapping("/validate")
-    public static Result verifyCode(@RequestParam() String email, @RequestParam() String codeInput) {
+    public Result verifyCode(@RequestParam() String email, @RequestParam() String codeInput) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime generateTimeStored = timeLimitInfoMap.get(email);
 
@@ -117,13 +125,27 @@ public class VerificationController {
 
         if (constantTimeCompare(codeInput, codeInfoMap.get(email))) {
             failedAttemptsMap.remove(email);
-            return Result.success("Verification successful!");
+            Integer uid = userService.getUserId(email);
+            String name = userService.getUserName(uid);
+            Map<String,Object> claims = new HashMap<>();
+            claims.put("uid",uid);
+            claims.put("email",email);
+            claims.put("name",name);
+            String token = JwtUtil.getToken(claims);
+            return Result.success(token);
         }
-
         failedAttemptsMap.put(email, attempts + 1);
         return Result.error("Incorrect code. " + (5 - failedAttemptsMap.get(email)) + " attempts left.");
     }
-
+    @RequestMapping("/getUserInfo")
+    public Result getUserInfo(HttpServletRequest request){
+        String token = request.getHeader("Authorization");
+        System.out.println(token);
+        Map<String,Object> claims = JwtUtil.parseToken(token);
+        Integer uid = (Integer) claims.get("uid");
+        Map<String, Object> result = userService.getUserInfo(uid);
+        return Result.success(result);
+    }
     /**
      * Compares two string in constant time. This is to prevent timing attack.
      *

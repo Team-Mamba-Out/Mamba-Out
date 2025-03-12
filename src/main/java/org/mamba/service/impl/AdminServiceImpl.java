@@ -1,8 +1,6 @@
 package org.mamba.service.impl;
 
-import org.mamba.entity.Admin;
-import org.mamba.entity.Message;
-import org.mamba.entity.Room;
+import org.mamba.entity.*;
 import org.mamba.entity.Record;
 import org.mamba.mapper.AdminMapper;
 import org.mamba.service.AdminService;
@@ -34,8 +32,17 @@ public class AdminServiceImpl implements AdminService {
     private AdminMapper adminMapper;
 
     @Override
-    public List<Admin> getAdmins() {
-        return adminMapper.getAdmins();
+    public Map<String, Object> getAdmins(String email, Integer uid, String name, String phone, Integer size, Integer page) {
+        Integer offset = (page - 1) * size;
+        List<Admin> adminList = adminMapper.getAdmins(email, uid, name, phone, size, offset);
+        Map<String, Object> map = new HashMap<>();
+        int total = adminMapper.count();
+        int totalPage = total % size == 0 ? total / size : total / size + 1;
+        map.put("admins", adminList);
+        map.put("totalPage", totalPage);
+        map.put("total", total);
+        map.put("pageNumber", page);
+        return map;
     }
 
     /**
