@@ -50,7 +50,7 @@ public class RoomServiceImpl implements RoomService {
     public Map<String, Object> getRooms(Integer id, String roomName, Integer capacity, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, LocalDateTime start, LocalDateTime end, Integer size, Integer page) {
         // Calculate offset
         Integer offset = null;
-        if (size!=null && page!=null) {
+        if (size != null && page != null) {
             offset = (page - 1) * size;
         }
 
@@ -90,7 +90,7 @@ public class RoomServiceImpl implements RoomService {
         Map<String, Object> map = new HashMap<>();
         int total = roomMapper.count(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, roomType);
         Integer totalPage = null;
-        if (size!=null){
+        if (size != null) {
             totalPage = total % size == 0 ? total / size : total / size + 1;
         }
         map.put("rooms", roomList);
@@ -141,7 +141,7 @@ public class RoomServiceImpl implements RoomService {
      * @param uid    the user id
      */
     @Override
-    public void setPermissionUser (Integer roomid, Integer uid) {
+    public void setPermissionUser(Integer roomid, Integer uid) {
         roomMapper.deletePermissionUsers(roomid);
         roomMapper.createPermissionUser(roomid, uid);
     }
@@ -152,7 +152,7 @@ public class RoomServiceImpl implements RoomService {
      * @param roomid the room id
      */
     @Override
-    public List<Integer> getPermissionUser (Integer roomid) {
+    public List<Integer> getPermissionUser(Integer roomid) {
         return roomMapper.getPermissionUser(roomid);
     }
 
@@ -241,8 +241,13 @@ public class RoomServiceImpl implements RoomService {
     public List<List<LocalDateTime>> getBusyTimesById(Integer id) {
         // Get the current time
         LocalDateTime now = LocalDateTime.now();
+
+        LocalDate today = now.toLocalDate();
+        LocalDateTime startOfDay = today.atStartOfDay(); // to 00:00
+        LocalDateTime endOfDay = today.plusDays(7).atStartOfDay(); // 7 days later
+
         // Get all the records of the next 7 days
-        List<Record> records = roomMapper.getFutureRecords(id, now);
+        List<Record> records = roomMapper.getFutureRecords(id, startOfDay, endOfDay);
 
         List<List<LocalDateTime>> busyTimes = new ArrayList<>();
 
@@ -255,7 +260,6 @@ public class RoomServiceImpl implements RoomService {
     }
 
 
-
     /**
      * Get all the RECORD PERIODS times of the room by id.
      * Returns all the RECORD PERIODS of the room in the next 7 days.
@@ -266,7 +270,7 @@ public class RoomServiceImpl implements RoomService {
      * @return the list containing several lists, each of which contains start time and end time
      */
     @Override
-    public List<List<LocalDateTime>> getRecordPeriodsById (Integer id) {
+    public List<List<LocalDateTime>> getRecordPeriodsById(Integer id) {
         // Get the current time
         LocalDateTime now = LocalDateTime.now();
 
@@ -303,8 +307,13 @@ public class RoomServiceImpl implements RoomService {
     public List<List<LocalDateTime>> getFreeTimesById(Integer id) {
         // Get the current time
         LocalDateTime now = LocalDateTime.now();
+
+        LocalDate today = now.toLocalDate();
+        LocalDateTime startOfDay = today.atStartOfDay(); // to 00:00
+        LocalDateTime endOfDay = today.plusDays(7).atStartOfDay(); // 7 days later
+
         // Get all the records of the next 7 days
-        List<Record> records = roomMapper.getFutureRecords(id, now);
+        List<Record> records = roomMapper.getFutureRecords(id, startOfDay, endOfDay);
         // Get busy times first
         List<List<LocalDateTime>> busyTimes = new ArrayList<>();
 
@@ -361,9 +370,9 @@ public class RoomServiceImpl implements RoomService {
      * Finds the nearest available room for the given time period, considering the user's role.
      *
      * @param currentRoomId the ID of the current room
-     * @param startTime the start time of the desired period
-     * @param endTime the end time of the desired period
-     * @param userRole the role of the user (e.g., "Student", "Lecturer")
+     * @param startTime     the start time of the desired period
+     * @param endTime       the end time of the desired period
+     * @param userRole      the role of the user (e.g., "Student", "Lecturer")
      * @return the nearest available room that meets the criteria, or null if none found
      */
     @Override
@@ -423,9 +432,12 @@ public class RoomServiceImpl implements RoomService {
         Map<String, Double> utilizationMap = new HashMap<>();
 
         LocalDateTime now = LocalDateTime.now();
+        LocalDate today = now.toLocalDate();
+        LocalDateTime endOfDay = today.atStartOfDay(); // today
+        LocalDateTime startOfDay = today.minusDays(7).atStartOfDay(); // 7 days before
 
         for (Room room : rooms) {
-            List<Record> pastRecords = roomMapper.getPastRecords(room.getId(), now);
+            List<Record> pastRecords = roomMapper.getPastRecords(room.getId(), startOfDay, endOfDay);
             double totalBusyMinutes = 0;
 
             for (Record record : pastRecords) {
