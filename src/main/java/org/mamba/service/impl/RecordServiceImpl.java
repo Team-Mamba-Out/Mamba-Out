@@ -125,8 +125,8 @@ public class RecordServiceImpl implements RecordService {
     }
 
     @Override
-    public List<Record> getRestrictedRecords() {
-        return recordMapper.getRecords(null,null,null,null,null,null,null,null,null,false);
+    public List<Record> getRestrictedRecords(Integer room_id) {
+        return recordMapper.getRecords(null,room_id,null,null,null,null,null,null,null,false);
     }
 
     private String convertStatus(Integer statusId) {

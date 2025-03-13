@@ -26,6 +26,11 @@ public interface AdminService {
      */
     void rejectRestrictedRoomRecord(Integer id);
 
+    /**
+     * Retrieves the list of all administrators.
+     * @param uid
+     */
+    String getNameByUid(Integer uid);
 
     /**
      * Retrieves the list of all administrators.

@@ -27,6 +27,17 @@ public interface AdminMapper {
     @Select("SELECT COUNT(*) from mamba.admin;")
     Integer count();
 
+
+    @Select("SELECT role FROM mamba.user WHERE uid = #{uid}")
+    String getRoleByUid(@Param("uid") Integer uid);
+
+    @Select("SELECT name FROM Student WHERE email = #{email} AND #{role} = '001' " +
+            "UNION ALL " +
+            "SELECT name FROM Lecturer WHERE email = #{email} AND #{role} = '002' " +
+            "UNION ALL " +
+            "SELECT name FROM Admin WHERE email = #{email} AND #{role} = '003'")
+    String getNameByEmailAndRole(@Param("email") String email, @Param("role") String role);
+
     /**
      * Insert a new admin.
      */

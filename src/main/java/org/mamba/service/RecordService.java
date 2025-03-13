@@ -72,7 +72,7 @@ public interface RecordService {
     void cancelRecordById(Integer id);
 
 
-    List<Record> getRestrictedRecords();
+    List<Record> getRestrictedRecords(Integer room_id);
 
 
 
