@@ -38,9 +38,11 @@ public interface RoomService {
      * @param requireApproval if the room requires approval from the admin when trying to book or not
      * @param isRestricted    if the room is only available to lecturers or not
      * @param roomType        the type of the room
-     * @param url             the description photo url of the room
+     * @param url             the description photo URL of the room
+     * @param description     the description of the room
+     * @param maxBookingDuration the maximum booking duration for the room in hours
      */
-    void createRoom(String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url, String description);
+    void createRoom(String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url, String description, Integer maxBookingDuration);
 
     /**
      * Update the permission of a room by id.
@@ -62,9 +64,11 @@ public interface RoomService {
      * @param requireApproval if the room requires approval from the admin when trying to book or not
      * @param isRestricted    if the room is only available to lecturers or not
      * @param roomType        the type of the room
-     * @param url             the description photo url of the room
+     * @param url             the description photo URL of the room
+     * @param description     the description of the room
+     * @param maxBookingDuration the maximum booking duration for the room in hours
      */
-    void updateRoom(Integer id, String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url, String description);
+    void updateRoom(Integer id, String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url, String description, Integer maxBookingDuration);
 
     /**
      * Deletes the room specified by id.

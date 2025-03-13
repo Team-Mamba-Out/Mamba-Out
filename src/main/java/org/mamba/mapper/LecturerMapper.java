@@ -98,9 +98,7 @@ public interface LecturerMapper {
         public static String buildUpdateLecturerSql(Map<String, Object> params) {
             return new SQL() {{
                 UPDATE("mamba.lecturer");
-                if (params.get("email") != null && !params.get("email").toString().isEmpty()) {
-                    SET("email = #{email}");
-                }
+
                 if (params.get("uid") != null) {
                     SET("uid = #{uid}");
                 }
@@ -109,6 +107,12 @@ public interface LecturerMapper {
                 }
                 if (params.get("phone") != null && !params.get("phone").toString().isEmpty()) {
                     SET("phone = #{phone}");
+                }
+
+                if (params.get("email") != null) {
+                    WHERE("email = #{email}");
+                } else {
+                    throw new IllegalArgumentException("Must contain: email");
                 }
             }}.toString();
         }

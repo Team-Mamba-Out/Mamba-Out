@@ -30,8 +30,8 @@ public interface RoomMapper {
     /**
      * Insert a new room.
      */
-    @Insert("INSERT INTO mamba.room (roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url, description) " +
-            "VALUES (#{roomName}, #{capacity}, #{isBusy}, #{location}, #{multimedia}, #{projector}, #{requireApproval}, #{isRestricted}, #{roomType}, #{url}, #{description})")
+    @Insert("INSERT INTO mamba.room (roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url, description, maxBookingDuration) " +
+            "VALUES (#{roomName}, #{capacity}, #{isBusy}, #{location}, #{multimedia}, #{projector}, #{requireApproval}, #{isRestricted}, #{roomType}, #{url}, #{description}, #{maxBookingDuration})")
     void createRoom(@Param("roomName") String roomName,
                     @Param("capacity") Integer capacity,
                     @Param("isBusy") Boolean isBusy,
@@ -42,7 +42,9 @@ public interface RoomMapper {
                     @Param("isRestricted") Boolean isRestricted,
                     @Param("roomType") Integer roomType,
                     @Param("url") String url,
-                    @Param("description") String description);
+                    @Param("description") String description,
+                    @Param("maxBookingDuration") Integer maxBookingDuration);
+
 
     /**
      * Obtains the room specified by ID.
@@ -87,7 +89,8 @@ public interface RoomMapper {
                     @Param("isRestricted") Boolean isRestricted,
                     @Param("roomType") Integer roomType,
                     @Param("url") String url,
-                    @Param("description") String description);
+                    @Param("description") String description,
+                    @Param("maxBookingDuration") Integer maxBookingDuration);
 
     /**
      * Deletes the room specified by ID.
@@ -291,8 +294,16 @@ public interface RoomMapper {
                 if (params.get("description") != null && !params.get("description").toString().isEmpty()) {
                     SET("description = #{description}");
                 }
+                if (params.get("maxBookingDuration") != null) {
+                    SET("maxBookingDuration = #{maxBookingDuration}");
+                }
+
+                if (params.get("id") != null) {
+                    WHERE("id = #{id}");
+                } else {
+                    throw new IllegalArgumentException("Must contain: id");
+                }
             }}.toString();
         }
-
     }
 }

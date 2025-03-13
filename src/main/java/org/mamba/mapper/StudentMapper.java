@@ -101,9 +101,7 @@ public interface StudentMapper {
         public static String buildUpdateStudentSql(Map<String, Object> params) {
             return new SQL() {{
                 UPDATE("mamba.student");
-                if (params.get("email") != null && !params.get("email").toString().isEmpty()) {
-                    SET("email = #{email}");
-                }
+
                 if (params.get("uid") != null) {
                     SET("uid = #{uid}");
                 }
@@ -115,6 +113,12 @@ public interface StudentMapper {
                 }
                 if (params.get("breakTimer") != null) {
                     SET("breakTimer = #{breakTimer}");
+                }
+
+                if (params.get("email") != null) {
+                    WHERE("email = #{email}");
+                } else {
+                    throw new IllegalArgumentException("Must contain: email");
                 }
             }}.toString();
         }
