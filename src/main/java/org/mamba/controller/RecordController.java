@@ -43,7 +43,15 @@ public class RecordController {
         Map<String, Object> recordsResult = recordService.getRecords(id, roomId, userId, startTime, endTime,hasCheckedIn,status, size, page, isApproved);
         return Result.success(recordsResult);
     }
-
+    @RequestMapping("/allowReserve")
+    public Result allowReserve(Integer roomId, Integer userId) {
+        boolean result = recordService.allowReserve(roomId, userId);
+        if (result) {
+            return Result.success("allow");
+        }else {
+            return Result.error("reserve failed");
+        }
+    }
     /**
      * Insert a new record.
      *

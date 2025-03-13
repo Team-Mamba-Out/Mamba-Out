@@ -144,7 +144,7 @@ public interface RecordService {
     List<Record> findRecordsByRoomAndTimeRange(String roomName, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime);
 
     void checkIn(Integer id);
-
+    boolean allowReserve(Integer roomId, Integer userId);
 
 }
 

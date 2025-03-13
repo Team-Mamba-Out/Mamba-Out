@@ -169,15 +169,12 @@ public class RecordServiceImpl implements RecordService {
     public void createRecord(Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn) {
         User user = userService.getUserByUid(userId);
         String role = user.getRole();
-        Room room = roomMapper.getRoomById(roomId);
-        List<Integer> permissionUsers = roomMapper.getPermissionUser(roomId);
+        Room room = roomService.getRoomById(roomId);
 
-        if (!"Admin".equals(role) && !permissionUsers.contains(userId)) {
-            throw new IllegalArgumentException("You do not have the permission to create a record for this room.");
-        }
         LocalDateTime recordTime = LocalDateTime.now();
 
-        if(room.isRestricted()){
+        //if the room requires admin's approval and the user is not the admin
+        if(room.isRequireApproval() && !role.contains("003")){
             recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn,false);
             throw new IllegalArgumentException("This room is restricted, please wait for the admin to approve your request.");
         }
@@ -204,13 +201,7 @@ public class RecordServiceImpl implements RecordService {
 //        }
 
         // Obtain the current time
-
-
-
         recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, true);
-
-
-
         messageService.createMessage(
                 userId,
                 "Reserve Room successfully",
@@ -262,6 +253,18 @@ public class RecordServiceImpl implements RecordService {
     @Override
     public void checkIn(Integer id) {
         recordMapper.checkIn(id);
+    }
+
+    @Override
+    public boolean allowReserve(Integer roomId, Integer userId) {
+        Room room = roomMapper.getRoomById(roomId);
+        if (room.isRestricted()){
+            List<Integer> permissionUsers = roomMapper.getPermissionUser(roomId);
+            if (permissionUsers.contains(userId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
