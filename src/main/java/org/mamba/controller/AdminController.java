@@ -53,13 +53,14 @@ public class AdminController {
     /**
      * Update the information of a room by id.
      *
-     * @param id   the id of the room with information to be updated (used for query)
+     * @param request the room with updated information
      * @return the result of the update operation
      */
     @PutMapping("/updateRoomPermission")
-    public Result updateRoomPermission(@RequestParam Integer id,
-                                       @RequestParam List<Integer> permissionUsers) {
-        roomService.updateRoomPermission(id,permissionUsers);
+    public Result updateRoomPermission(@RequestBody Map<String,Object> request) {
+        Integer room_id = Integer.parseInt(request.get("id").toString());
+        List<Integer> permissionUsers = (List<Integer>) request.get("permissionUsers");
+        roomService.updateRoomPermission(room_id,permissionUsers);
         return Result.success();
     }
 
