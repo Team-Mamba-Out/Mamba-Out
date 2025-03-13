@@ -46,8 +46,7 @@ public class AdminController {
      */
     @GetMapping("/getPermissionUser")
     public Result getPermissionUser(@RequestParam Integer room_id) {
-        roomService.getPermissionUser(room_id);
-        return Result.success();
+        return Result.success(roomService.getPermissionUser(room_id));
     }
 
     /**
@@ -72,6 +71,7 @@ public class AdminController {
         roomService.updateRoomPermission(id, userIds);
         return Result.success();
     }
+
     /**
      * Insert a new admin.
      *
@@ -89,8 +89,8 @@ public class AdminController {
      *
      * @return the result of the approval operation
      */
-    @GetMapping("/getRestrictedResources")
-    public Result getRestrictedResources() {
+    @GetMapping("/getApprovalResources")
+    public Result getApprovalResources() {
         return Result.success(recordService.getRestrictedRecords());
     }
 
@@ -100,8 +100,8 @@ public class AdminController {
      * @param id the id of the record to approve
      * @return the result of the approval operation
      */
-    @PutMapping("/approveRestrictedResource")
-    public Result approveRestrictedResource(@RequestParam Integer id) {
+    @PutMapping("/approveApprovalResource")
+    public Result approveApprovalResource(@RequestParam Integer id) {
         adminService.approveRestrictedRoomRecord(id);
         return Result.success();
     }
