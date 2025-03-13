@@ -72,7 +72,7 @@ public class EmailManager {
                         + "Your booking time: From "
                         + record.getStartTime().toString() + " to "
                         + record.getEndTime().toString() + ".\n\n"
-                        + "As a special reminder, you must sign in promptly at that time "
+                        + "As a special reminder, you must check in promptly 10 minutes before the start of your booking "
                         + "or it will be recorded as a breach of contract, "
                         + "which may affect your subsequent bookings.";
 
@@ -130,7 +130,7 @@ public class EmailManager {
                     + record.getStartTime().toString() + " to "
                     + record.getEndTime().toString() + ".\n\n"
                     + "This means your booking is now in effect."
-                    + "As a special reminder, you must sign in promptly at that time "
+                    + "As a special reminder, you must check in promptly 10 minutes before the start of your booking "
                     + "or it will be recorded as a breach of contract, "
                     + "which may affect your subsequent bookings.";
 
@@ -249,12 +249,12 @@ public class EmailManager {
     }
 
     /**
-     * Sends an email that notifies the user that the booking has been cancelled.
+     * Sends an email that notifies the user that the booking has been cancelled/reassigned.
      *
-     * @param userEmail the user's email
-     * @param record    the corresponding record
+     * @param userEmail               the user's email
+     * @param reassignSuccessful      if the reassignment is successful or not
      */
-    public static void sendRecordCancelledEmail(String userEmail, Record record) {
+    public static void sendRecordCancelledEmail(String userEmail, boolean reassignSuccessful) {
         // Set email server properties
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");            // enable authentication
@@ -270,20 +270,32 @@ public class EmailManager {
         });
 
         try {
-            // Create a new email
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(SMTP_SENDER_USERNAME)); // Set sender
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(userEmail)); // Set receiver
-            message.setSubject("Your booking has been cancelled"); // Set subject
 
-            String cancelledText = "Hi,\n\n"
-                    + "We are sorry to inform you that your booking for "
-                    + record.getCorrespondingRoom().getRoomName() + " has been cancelled.\n\n"
-                    + "This means that your booking record will be removed. "
-                    + "We apologize for any inconvenience this may cause you.";
+            if (reassignSuccessful) {
+                // Create a new email
+                message.setSubject("Your booking has been modified"); // Set subject
 
-            message.setText(cancelledText);  // Set text
+                String modifiedText = "Hi,\n\n"
+                        + "We are sorry to inform you that you have a booking record that has been modified.\n\n"
+                        + "Please check the updated details on the website or mini program. "
+                        + "We apologize for any inconvenience this may cause you.";
 
+                message.setText(modifiedText);  // Set text
+            } else {
+                // Create a new email
+                message.setSubject("Your booking has been cancelled"); // Set subject
+
+                String cancelledText = "Hi,\n\n"
+                        + "We are sorry to inform you that you have a booking record that has been cancelled. "
+                        + "Details can be checked on the website or mini program.\n\n"
+                        + "This means that your corresponding booking record will be removed. "
+                        + "We apologize for any inconvenience this may cause you.";
+
+                message.setText(cancelledText);  // Set text
+            }
             // Send email
             Transport.send(message);
 

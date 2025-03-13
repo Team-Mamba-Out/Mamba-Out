@@ -1,5 +1,6 @@
 package org.mamba.service.impl;
 
+import org.mamba.Utils.EmailManager;
 import org.mamba.entity.Lecturer;
 import org.mamba.entity.Record;
 import org.mamba.entity.Room;
@@ -46,6 +47,11 @@ public class RecordServiceImpl implements RecordService {
                 false,
                 "System Notification"
         );
+
+        Integer userId = record.getUserId();
+        String email = userService.getUserByUid(userId).getRole().split("-")[0];
+        // Send email: approval
+        EmailManager.sendRequestApprovedEmail(email, record);
     }
 
     @Override
@@ -61,6 +67,10 @@ public class RecordServiceImpl implements RecordService {
                 false,
                 "System Notification"
         );
+        Integer userId = record.getUserId();
+        String email = userService.getUserByUid(userId).getRole().split("-")[0];
+        // Send email: reject
+        EmailManager.sendRequestRejectedEmail(email, record);
     }
 
     /**
@@ -171,11 +181,21 @@ public class RecordServiceImpl implements RecordService {
         String role = user.getRole();
         Room room = roomService.getRoomById(roomId);
 
+        String email = role.split("-")[0];
+        Record temp = new Record();
+        temp.setCorrespondingRoom(room);
+        temp.setStartTime(startTime);
+        temp.setEndTime(endTime);
+
         LocalDateTime recordTime = LocalDateTime.now();
 
         //if the room requires admin's approval and the user is not the admin
         if(room.isRequireApproval() && !role.contains("003")){
             recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn,false);
+
+            // Send email: booking successful, pending approval
+            EmailManager.sendBookSuccessfulEmail(email, temp, true);
+
             throw new IllegalArgumentException("Booking this room needs to get the approval from the admin, please wait for the admin to approve your request.");
         }
 
@@ -189,6 +209,9 @@ public class RecordServiceImpl implements RecordService {
                 false,
                 "System Notification"
         );
+
+        // Send email on booking created
+        EmailManager.sendBookSuccessfulEmail(email, temp, false);
     }
 
     /**

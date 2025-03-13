@@ -126,7 +126,7 @@ public interface RoomService {
      * @param endTime   the end time of the desired period
      * @return the nearest available room, or null if none found
      */
-    Room findNearestAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime, String userRole, LocalDateTime newStartTime, LocalDateTime newEndTime);
+    Room findNearestAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime, Integer uid, LocalDateTime newStartTime, LocalDateTime newEndTime);
 
     /**
      * Set the permission of a user in a room.
