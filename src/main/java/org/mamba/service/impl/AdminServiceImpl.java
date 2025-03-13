@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -43,6 +45,34 @@ public class AdminServiceImpl implements AdminService {
         map.put("total", total);
         map.put("pageNumber", page);
         return map;
+    }
+
+    @Override
+    public String getNameByUid(Integer uid) {
+        String information = adminMapper.getRoleByUid(uid);
+        String[] result = parseEmailAndCode(information);
+        return adminMapper.getNameByEmailAndRole(result[0], result[1]);
+    }
+
+    public static void main(String[] args) {
+        String role = "2542737@dundee.ac.uk-001";
+        String[] result = parseEmailAndCode(role);
+        System.out.println("Email: " + result[0]);
+        System.out.println("Code: " + result[1]);
+    }
+
+    public static String[] parseEmailAndCode(String role) {
+        String regex = "(.+)-([0-9]{3})$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(role);
+
+        if (matcher.find()) {
+            String email = matcher.group(1);
+            String code = matcher.group(2);
+            return new String[]{email, code};
+        } else {
+            throw new IllegalArgumentException("Invalid role format");
+        }
     }
 
     /**

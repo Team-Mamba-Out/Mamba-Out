@@ -1,5 +1,6 @@
 package org.mamba.controller;
 
+import org.apache.ibatis.annotations.Param;
 import org.mamba.entity.Admin;
 import org.mamba.entity.Result;
 import org.mamba.service.impl.AdminServiceImpl;
@@ -90,10 +91,19 @@ public class AdminController {
      * @return the result of the approval operation
      */
     @GetMapping("/getApprovalResources")
-    public Result getApprovalResources() {
-        return Result.success(recordService.getRestrictedRecords());
+    public Result getApprovalResources(@RequestParam Integer roomId) {
+        return Result.success(recordService.getRestrictedRecords(roomId));
     }
 
+    /**
+     * Get the name of the user by uid.
+     * @param uid
+     * @return
+     */
+    @GetMapping("/getNameByUid")
+    public Result getNameByUid(@RequestParam Integer uid) {
+        return Result.success(adminService.getNameByUid(uid));
+    }
     /**
      * Approve a record.
      *

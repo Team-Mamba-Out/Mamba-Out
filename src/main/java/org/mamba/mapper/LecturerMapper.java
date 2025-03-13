@@ -114,6 +114,8 @@ public interface LecturerMapper {
                 } else {
                     throw new IllegalArgumentException("Must contain: email");
                 }
+
+
             }}.toString();
         }
 
