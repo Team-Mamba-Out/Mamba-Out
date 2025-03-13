@@ -43,8 +43,8 @@ public interface RecordMapper {
     @Select("SELECT * FROM mamba.record WHERE roomId = #{roomId} AND " +
             "(startTime < #{occupyEndTime} AND endTime > #{occupyStartTime})")
     List<Record> findRecordsByRoomAndTimeRange(@Param("roomId") Integer roomId,
-                                                         @Param("occupyStartTime") LocalDateTime occupyStartTime,
-                                                         @Param("occupyEndTime") LocalDateTime occupyEndTime);
+                                               @Param("occupyStartTime") LocalDateTime occupyStartTime,
+                                               @Param("occupyEndTime") LocalDateTime occupyEndTime);
 
 
     /**

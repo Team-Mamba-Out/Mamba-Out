@@ -176,29 +176,8 @@ public class RecordServiceImpl implements RecordService {
         //if the room requires admin's approval and the user is not the admin
         if(room.isRequireApproval() && !role.contains("003")){
             recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn,false);
-            throw new IllegalArgumentException("This room is restricted, please wait for the admin to approve your request.");
+            throw new IllegalArgumentException("Booking this room needs to get the approval from the admin, please wait for the admin to approve your request.");
         }
-//        // Check room permission type
-//        switch (roomTemp.getPermissionType()) {
-//            case 1: // Only students
-//                if (!"Student".equals(role) && !"Admin".equals(role) && !permissionUser.contains(userId)) {
-//                    throw new IllegalArgumentException("Only students can create a record for this room.");
-//                }
-//                break;
-//            case 2: // Only lecturers
-//                if (!"Lecturer".equals(role) && !"Admin".equals(role) && !permissionUser.contains(userId)) {
-//                    throw new IllegalArgumentException("Only lecturers can create a record for this room.");
-//                }
-//                break;
-//            case 3: // Only specific users
-//                boolean hasPermission = roomMapper.getPermissionUser(roomId).contains(userId);
-//                if (!hasPermission) {
-//                    throw new IllegalArgumentException("You do not have permission to create a record for this room.");
-//                }
-//                break;
-//            default: // Everyone can create a record
-//                break;
-//        }
 
         // Obtain the current time
         recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, true);
@@ -221,7 +200,6 @@ public class RecordServiceImpl implements RecordService {
     public void deleteRecordById(Integer id) {
         recordMapper.deleteRecordById(id);
     }
-
 
     /**
      * Cancel the record specified by id.
@@ -255,16 +233,24 @@ public class RecordServiceImpl implements RecordService {
         recordMapper.checkIn(id);
     }
 
+    /**
+     * Checks if the user is allowed to reserve the room.
+     * @param roomId
+     * @param userId
+     * @return
+     */
     @Override
     public boolean allowReserve(Integer roomId, Integer userId) {
+        User user = userService.getUserByUid(userId);
         Room room = roomMapper.getRoomById(roomId);
-        if (room.isRestricted()){
-            List<Integer> permissionUsers = roomMapper.getPermissionUser(roomId);
-            if (permissionUsers.contains(userId)) {
-                return true;
+        String role = user.getRole();
+        List<Integer> permissionUsers = roomMapper.getPermissionUser(roomId);
+        if(room.isRestricted()){
+            if (!role.contains("003") && !permissionUsers.contains(userId)) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     /**
