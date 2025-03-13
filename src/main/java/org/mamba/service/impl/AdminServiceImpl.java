@@ -1,5 +1,6 @@
 package org.mamba.service.impl;
 
+import org.mamba.Utils.EmailManager;
 import org.mamba.entity.*;
 import org.mamba.entity.Record;
 import org.mamba.mapper.AdminMapper;
@@ -161,11 +162,13 @@ public class AdminServiceImpl implements AdminService {
             Integer userID = (Integer) recordData.get("userID");
             LocalDateTime oldStartTime = (LocalDateTime) recordData.get("startTime");
             LocalDateTime oldEndTime = (LocalDateTime) recordData.get("endTime");
-            String userRole = (String) recordData.get("role");
 
             // Find the nearest available room for reassignment
-            Room nearestRoom = roomService.findNearestAvailableRoom(roomId, oldStartTime, oldEndTime, userRole, occupyStartTime, occupyEndTime);
+            Room nearestRoom = roomService.findNearestAvailableRoom(roomId, oldStartTime, oldEndTime, userID, occupyStartTime, occupyEndTime);
             if (nearestRoom == null) {
+                // email logic: cancelled because reassignment failed
+                EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userID).getRole().split("-")[0], false);
+
                 throw new IllegalStateException("No available room found for user " + userID);
             }
 
@@ -186,6 +189,9 @@ public class AdminServiceImpl implements AdminService {
                     false,
                     "System Notification"
             );
+
+            // email logic: cancel and reassign
+            EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userID).getRole().split("-")[0], true);
         }
     }
 

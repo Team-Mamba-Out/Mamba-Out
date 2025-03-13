@@ -372,12 +372,12 @@ public class RoomServiceImpl implements RoomService {
      * @param currentRoomId the ID of the current room
      * @param startTime     the start time of the desired period
      * @param endTime       the end time of the desired period
-     * @param userRole      the role of the user (e.g., "Student", "Lecturer")
+     * @param uid           userid
      * @return the nearest available room that meets the criteria, or null if none found
      */
     @Override
     public Room findNearestAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime,
-                                         String userRole, LocalDateTime newUnavailableStartTime, LocalDateTime newUnavailableEndTime) {
+                                         Integer uid, LocalDateTime newUnavailableStartTime, LocalDateTime newUnavailableEndTime) {
         // Get the list of all rooms
         List<Room> allRooms = roomMapper.getAllRooms();
 
@@ -392,8 +392,8 @@ public class RoomServiceImpl implements RoomService {
                     continue;
                 }
 
-                // If the room is restricted and the user is a student, skip this room
-                if (room.isRestricted() && userRole.equals("Student")) {
+                // If the room is restricted and the user is not permitted, skip this room
+                if (room.isRestricted() && !roomMapper.getPermissionUser(room.getId()).contains(uid)) {
                     continue;
                 }
 
