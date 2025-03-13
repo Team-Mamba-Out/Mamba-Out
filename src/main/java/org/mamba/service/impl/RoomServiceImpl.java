@@ -121,8 +121,8 @@ public class RoomServiceImpl implements RoomService {
      * @param url             the description photo url of the room
      */
     @Override
-    public void createRoom(String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url, String description) {
-        roomMapper.createRoom(roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url, description);
+    public void createRoom(String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url, String description, Integer maxBookingDuration) {
+        roomMapper.createRoom(roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url, description,maxBookingDuration);
 
         messageService.createMessage(
                 1,
@@ -173,8 +173,8 @@ public class RoomServiceImpl implements RoomService {
      * @param url             the description photo url of the room
      */
     @Override
-    public void updateRoom(Integer id, String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url, String description) {
-        roomMapper.updateRoom(id, roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url, description);
+    public void updateRoom(Integer id, String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url, String description, Integer maxBookingDuration) {
+        roomMapper.updateRoom(id, roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url, description, maxBookingDuration);
 
         messageService.createMessage(
                 1,

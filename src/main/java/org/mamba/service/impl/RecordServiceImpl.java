@@ -243,10 +243,9 @@ public class RecordServiceImpl implements RecordService {
     public boolean allowReserve(Integer roomId, Integer userId) {
         User user = userService.getUserByUid(userId);
         Room room = roomMapper.getRoomById(roomId);
-        String role = user.getRole();
         List<Integer> permissionUsers = roomMapper.getPermissionUser(roomId);
         if(room.isRestricted()){
-            if (!role.contains("003") && !permissionUsers.contains(userId)) {
+            if (!permissionUsers.contains(userId)) {
                 return false;
             }
         }

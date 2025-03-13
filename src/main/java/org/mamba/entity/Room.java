@@ -16,4 +16,5 @@ public class Room {
     private String description;
     private Integer roomType;
     private String url;
+    private Integer maxBookingDuration;
 }
