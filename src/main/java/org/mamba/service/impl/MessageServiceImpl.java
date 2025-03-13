@@ -26,11 +26,11 @@ public class MessageServiceImpl implements MessageService {
     /**
      * Creates a new message.
      *
-     * @param Uid the user ID
-     * @param title the title of the message
-     * @param text the text of the message
+     * @param Uid        the user ID
+     * @param title      the title of the message
+     * @param text       the text of the message
      * @param createTime the creation time of the message
-     * @param isRead the read status of the message
+     * @param isRead     the read status of the message
      */
     @Override
     public void createMessage(Integer Uid, String title, String text, LocalDateTime createTime, Boolean isRead, String sender) {
@@ -80,7 +80,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     /**
-     *  * Obtains the list of records that have a start time equal to the provided start time.
+     * * Obtains the list of records that have a start time equal to the provided start time.
      *
      * @param time the provided time
      */
