@@ -26,11 +26,12 @@ public class UserServiceImpl implements UserService {
     private LecturerMapper lecturerMapper;
     @Autowired
     private AdminMapper adminMapper;
+
     /**
      * Retrieves a list of users based on the given conditions.
      *
      * @param pageSize the number of records per page
-     * @param offset the offset for pagination
+     * @param offset   the offset for pagination
      * @return a list of users
      */
     @Override
@@ -41,7 +42,7 @@ public class UserServiceImpl implements UserService {
     /**
      * Updates user information based on the user ID.
      *
-     * @param uid the user ID
+     * @param uid  the user ID
      * @param role the user role
      */
     @Override
@@ -75,22 +76,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> getUserInfo(Integer uid) {
         Map<String, Object> result = new HashMap<>();
-        String role = userMapper.getUsers(uid,null,null,null).get(0).getRole();
+        String role = userMapper.getUsers(uid, null, null, null).get(0).getRole();
         String roleId = role.split("-")[1];
 
         switch (roleId) {
             case "001":
                 result.put("role", "Student");
-                Student s = studentMapper.getStudents(null,uid,null,null,null,null,null).get(0);
+                Student s = studentMapper.getStudents(null, uid, null, null, null, null, null).get(0);
                 result.put("name", s.getName());
                 result.put("email", s.getEmail());
                 result.put("phone", s.getPhone());
                 result.put("uid", s.getUid());
-                result.put("breakTimer",s.getBreakTimer());
+                result.put("breakTimer", s.getBreakTimer());
                 break;
             case "002":
                 result.put("role", "Lecturer");
-                Lecturer l = lecturerMapper.getLecturers(null,uid,null,null,null,null).get(0);
+                Lecturer l = lecturerMapper.getLecturers(null, uid, null, null, null, null).get(0);
                 result.put("name", l.getName());
                 result.put("email", l.getEmail());
                 result.put("phone", l.getPhone());
@@ -98,7 +99,7 @@ public class UserServiceImpl implements UserService {
                 break;
             case "003":
                 result.put("role", "admin");
-                Admin a =  adminMapper.getAdmins(null,uid,null,null,null,null).get(0);
+                Admin a = adminMapper.getAdmins(null, uid, null, null, null, null).get(0);
                 result.put("name", a.getName());
                 result.put("email", a.getEmail());
                 result.put("phone", a.getPhone());
@@ -111,15 +112,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String getUserName(Integer uid) {
-        String role = userMapper.getUsers(uid,null,null,null).get(0).getRole();
+        String role = userMapper.getUsers(uid, null, null, null).get(0).getRole();
         String roleId = role.split("-")[1];
         switch (roleId) {
             case "001":
-                return studentMapper.getStudents(null,uid,null,null,null,null,null).get(0).getName();
+                return studentMapper.getStudents(null, uid, null, null, null, null, null).get(0).getName();
             case "002":
-                return lecturerMapper.getLecturers(null,uid,null,null,null,null).get(0).getName();
+                return lecturerMapper.getLecturers(null, uid, null, null, null, null).get(0).getName();
             case "003":
-                return adminMapper.getAdmins(null,uid,null,null,null,null).get(0).getName();
+                return adminMapper.getAdmins(null, uid, null, null, null, null).get(0).getName();
             default:
                 return null;
         }
@@ -130,9 +131,9 @@ public class UserServiceImpl implements UserService {
         Integer result = userMapper.getUserIdByEmail(email);
         if (result == null) {
             //this means that it is the first time of the user login
-            userMapper.createUser(email+"001");
+            userMapper.createUser(email + "001");
             result = userMapper.getUserIdByEmail(email);
-            userMapper.createStudent(result,email);
+            userMapper.createStudent(result, email);
         }
         return result;
 

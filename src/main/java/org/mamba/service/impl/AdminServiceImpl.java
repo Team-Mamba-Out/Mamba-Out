@@ -47,19 +47,21 @@ public class AdminServiceImpl implements AdminService {
 
     /**
      * Approve a record.
+     *
      * @param id the id of the record to approve
      */
     @Override
-    public void approveRestrictedRoomRecord(Integer id){
+    public void approveRestrictedRoomRecord(Integer id) {
         recordService.approveRestrictedRoomRecord(id);
     }
 
     /**
      * Reject a record.
+     *
      * @param id the id of the record to reject
      */
     @Override
-    public void rejectRestrictedRoomRecord(Integer id){
+    public void rejectRestrictedRoomRecord(Integer id) {
         recordService.rejectRestrictedRoomRecord(id);
     }
 
@@ -132,7 +134,7 @@ public class AdminServiceImpl implements AdminService {
             String userRole = (String) recordData.get("role");
 
             // Find the nearest available room for reassignment
-            Room nearestRoom = roomService.findNearestAvailableRoom(roomId,oldStartTime, oldEndTime, userRole, occupyStartTime, occupyEndTime);
+            Room nearestRoom = roomService.findNearestAvailableRoom(roomId, oldStartTime, oldEndTime, userRole, occupyStartTime, occupyEndTime);
             if (nearestRoom == null) {
                 throw new IllegalStateException("No available room found for user " + userID);
             }
@@ -189,7 +191,6 @@ public class AdminServiceImpl implements AdminService {
 
         return recordsWithRoomNames;
     }
-
 
 
 }
