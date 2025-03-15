@@ -111,6 +111,7 @@ public interface RoomMapper {
             "WHERE r.roomId = #{id} " +
             "AND r.startTime >= #{startOfDay} " +
             "AND r.startTime <= #{endOfDay} " +
+            "AND r.statusId != 4 " +
             "ORDER BY r.startTime")
     List<Record> getFutureRecords(@Param("id") Integer id, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 

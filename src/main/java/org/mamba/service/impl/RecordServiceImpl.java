@@ -47,7 +47,6 @@ public class RecordServiceImpl implements RecordService {
                 false,
                 "System Notification"
         );
-
         Integer userId = record.getUserId();
         String email = userService.getUserByUid(userId).getRole().split("-")[0];
         // Send email: approval
@@ -101,10 +100,10 @@ public class RecordServiceImpl implements RecordService {
                     statusId = 3;
                     break;
                 case "Cancelled":
-                    statusId = 3;
+                    statusId = 4;
                     break;
                 case "Overdue":
-                    statusId = 3;
+                    statusId = 5;
                     break;
                 default:
                     statusId = 1;
