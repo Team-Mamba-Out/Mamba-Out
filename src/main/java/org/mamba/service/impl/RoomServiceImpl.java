@@ -72,7 +72,7 @@ public class RoomServiceImpl implements RoomService {
                 List<List<LocalDateTime>> conditionRoomBusyTimeList = getBusyTimesById(conditionRoomId);
                 for (List<LocalDateTime> busyTimeSlots : conditionRoomBusyTimeList) {
                     // Check if each busy time slot occupies the given period
-                    if (!busyTimeSlots.get(0).isBefore(start) && !busyTimeSlots.get(1).isAfter(end)) {
+                    if (start.isBefore(busyTimeSlots.get(1)) && end.isAfter(busyTimeSlots.get(0))) {
                         roomBusy = true;
                         break;
                     }
