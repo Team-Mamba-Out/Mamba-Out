@@ -1,5 +1,6 @@
 package org.mamba.controller;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.mamba.entity.Admin;
 import org.mamba.entity.Result;
@@ -37,6 +38,12 @@ public class AdminController {
                             @RequestParam(required = false) Integer page) {
         Map<String, Object> adminsResult = adminService.getAdmins(email, uid, name, phone, size, page);
         return Result.success(adminsResult);
+    }
+
+    @DeleteMapping("/cancelRecordAndReassign/{id}")
+    public Result cancelRecordAndReassign(@PathVariable Integer id, @RequestParam String reason) {
+        adminService.cancelRecordAndReassign(id, reason);
+        return Result.success();
     }
 
     /**

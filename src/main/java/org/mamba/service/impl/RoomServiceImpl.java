@@ -366,6 +366,61 @@ public class RoomServiceImpl implements RoomService {
         return roomMapper.countRooms();
     }
 
+    @Override
+    public String findNearAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime, Integer uid) {
+        // Get the list of all rooms
+        List<Room> allRooms = roomMapper.getAllRooms();
+
+        LocalDateTime startRecord = startTime;
+
+        // Loop to keep searching for an available room until one is found
+        while (true) {
+            // Iterate over all rooms
+            for (Room room : allRooms) {
+                // Skip rooms with insufficient capacity
+                if (room.getCapacity() < roomMapper.getRoomById(currentRoomId).getCapacity()) {
+                    continue;
+                }
+
+                // If the room is restricted and the user is not permitted, skip this room
+                if (room.isRestricted() && !roomMapper.getPermissionUser(room.getId()).contains(uid)) {
+                    continue;
+                }
+
+//                // If the room is the current room, check its availability based on the new unavailable time slot
+//                if (room.getId().equals(currentRoomId) &&
+//                        !(endTime.isBefore(startRecord) || startTime.isAfter(endRecord))) {
+//                    continue;
+//                }
+
+                // Get all busy times for this room
+                List<List<LocalDateTime>> busyTimes = getBusyTimesById(room.getId());
+                boolean isAvailable = true;
+
+                // Check if the room is available during the requested time slot
+                for (List<LocalDateTime> busyTime : busyTimes) {
+                    if (startTime.isBefore(busyTime.get(1)) && endTime.isAfter(busyTime.get(0))) {
+                        isAvailable = false;
+                        break;
+                    }
+                }
+
+                // If the room is available, return it
+                if (isAvailable) {
+                    return room.getId() + "," + startTime + "," + endTime;
+                }
+            }
+
+            // If no available room is found, adjust the time slot by adding 30 minutes
+            startTime = startTime.plusMinutes(30);
+            endTime = endTime.plusMinutes(30);
+
+            if(startTime.isAfter(startRecord.plusDays(7))) {
+                return null;
+            }
+        }
+    }
+
     /**
      * Finds the nearest available room for the given time period, considering the user's role.
      *
@@ -381,11 +436,17 @@ public class RoomServiceImpl implements RoomService {
         // Get the list of all rooms
         List<Room> allRooms = roomMapper.getAllRooms();
 
+        LocalDateTime startRecord = startTime;
+
         // Sort rooms by capacity in ascending order to find the closest match
         allRooms.sort(Comparator.comparingInt(Room::getCapacity));
 
         // Loop to keep searching for an available room until one is found
         while (true) {
+
+            if(startTime.isAfter(startRecord.plusDays(7))) {
+                return null;
+            }
             for (Room room : allRooms) {
                 // Skip rooms with insufficient capacity
                 if (room.getCapacity() < roomMapper.getRoomById(currentRoomId).getCapacity()) {
@@ -423,6 +484,8 @@ public class RoomServiceImpl implements RoomService {
             // If no available room is found, adjust the time slot by adding 30 minutes
             startTime = startTime.plusMinutes(PERIOD_MINUTE);
             endTime = endTime.plusMinutes(PERIOD_MINUTE);
+
+
         }
     }
 
