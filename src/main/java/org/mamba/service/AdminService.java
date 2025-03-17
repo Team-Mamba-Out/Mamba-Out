@@ -32,6 +32,8 @@ public interface AdminService {
      */
     String getNameByUid(Integer uid);
 
+    void cancelRecordAndReassign(Integer id, String reason);
+
     /**
      * Retrieves the list of all administrators.
      *

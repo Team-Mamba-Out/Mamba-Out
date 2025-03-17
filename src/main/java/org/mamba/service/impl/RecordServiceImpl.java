@@ -56,8 +56,16 @@ public class RecordServiceImpl implements RecordService {
     @Override
     public void rejectRestrictedRoomRecord(Integer id){
         Record record = recordMapper.getRecords(id, null, null,null,null,null,null,null,null,null).get(0);
-        recordMapper.deleteRecordById(id);
+
+        Integer userId = record.getUserId();
+        String email = userService.getUserByUid(userId).getRole().split("-")[0];
+        // Send email: reject
+        EmailManager.sendRequestRejectedEmail(email, record);
         Room room = roomMapper.getRoomById(record.getRoomId());
+
+
+        recordMapper.deleteRecordById(id);
+
         messageService.createMessage(
                 record.getUserId(),
                 "Room Reservation Rejected",
@@ -66,10 +74,7 @@ public class RecordServiceImpl implements RecordService {
                 false,
                 "System Notification"
         );
-        Integer userId = record.getUserId();
-        String email = userService.getUserByUid(userId).getRole().split("-")[0];
-        // Send email: reject
-        EmailManager.sendRequestRejectedEmail(email, record);
+
     }
 
     /**

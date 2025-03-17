@@ -55,7 +55,68 @@ public class AdminServiceImpl implements AdminService {
         return adminMapper.getNameByEmailAndRole(result[0], result[1]);
     }
 
+    /**
+     * Cancel a record and reassign the user to a new room.
+     *
+     * @param recordId the ID of the record to cancel
+     * @param reason   the reason for the cancellation
+     */
+    @Override
+    public void cancelRecordAndReassign(Integer recordId, String reason) {
+        Record record = recordService.getRecordById(recordId);
+        User user = userService.getUserByUid(record.getUserId());
+        Integer userID = user.getUid();
+        LocalDateTime oldStartTime = record.getStartTime();
+        String nearestRoomInfo = roomService.findNearAvailableRoom(record.getRoomId(),record.getStartTime(), record.getEndTime(), user.getUid());
 
+        if (nearestRoomInfo == null) {
+            // email logic: cancelled because reassignment failed
+            EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userID).getRole().split("-")[0], false);
+
+            throw new IllegalStateException("No available room found for user " + userID);
+        }
+
+        String[] roomInfo = parseRoomInfo(nearestRoomInfo);
+
+        Room nearestRoom = roomService.getRoomByName(roomInfo[0]);
+        LocalDateTime newStartTime = LocalDateTime.parse(roomInfo[1]);
+        LocalDateTime newEndTime = LocalDateTime.parse(roomInfo[2]);
+
+        recordService.deleteRecordById(recordId);
+        recordService.createRecord(nearestRoom.getId(), userID, newStartTime, newEndTime, false);
+
+        Record newRecord = recordService.getRecordById(nearestRoom.getId());
+        // Send a notification message about the reassignment
+        messageService.createMessage(
+                userID,
+                "Room Reassignment Notification",
+                "Your reserved room at " + oldStartTime + " is no longer available. " +
+                        "You have been reassigned to room " + newRecord.getRoomId() + " from " + newRecord.getStartTime() + " to " + newRecord.getEndTime() +
+                        ". The reason is: " + reason + ". Please check your reservation details.",
+                LocalDateTime.now(),
+                false,
+                "System Notification"
+        );
+
+        // email logic: cancel and reassign
+        EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userID).getRole().split("-")[0], true);
+
+    }
+
+    /**
+     * Parse the room information.
+     * @param roomInfo the room information
+     * @return the room information
+     */
+    public static String[] parseRoomInfo(String roomInfo) {
+        return roomInfo.split(",");
+    }
+
+    /**
+     * Parse the email and code.
+     * @param role the role
+     * @return the email and code
+     */
     public static String[] parseEmailAndCode(String role) {
         String regex = "(.+)-([0-9]{3})$";
         Pattern pattern = Pattern.compile(regex);

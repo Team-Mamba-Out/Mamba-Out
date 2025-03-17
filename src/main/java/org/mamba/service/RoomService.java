@@ -119,6 +119,8 @@ public interface RoomService {
      */
     List<List<LocalDateTime>> getFreeTimesById(Integer id);
 
+    String findNearAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime, Integer uid);
+
     /**
      * Finds the nearest available room for the given time period.
      *

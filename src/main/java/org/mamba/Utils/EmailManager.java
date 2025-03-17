@@ -1,16 +1,27 @@
 package org.mamba.Utils;
 
 import org.mamba.entity.Record;
+import org.mamba.entity.Room;
+import org.mamba.service.impl.RoomServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
+@Component
 public class EmailManager {
+
+    @Autowired
+    private static RoomServiceImpl roomService;
     // Sender email address
     private static final String SMTP_SENDER_USERNAME = "1607329575@qq.com"; // NEVER MODIFY!!!
     private static final String SMTP_SENDER_PASSWORD = "vkykpbjednzsfibc";  // NEVER MODIFY!!!
+
+    private static final DateTimeFormatter notificationFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     /**
      * Sends an email that notifies the user that the booking is successful.
@@ -56,8 +67,8 @@ public class EmailManager {
                         + "We have received your request for reservation for "
                         + record.getCorrespondingRoom().getRoomName() + ".\n\n"
                         + "Your requested booking time: From "
-                        + record.getStartTime().toString() + " to "
-                        + record.getEndTime().toString() + ".\n\n"
+                        + record.getStartTime().format(notificationFormatter) + " to "
+                        + record.getEndTime().format(notificationFormatter) + ".\n\n"
                         + "Administrators will review your request as soon as possible. "
                         + "Thanks for your understanding.";
 
@@ -70,8 +81,8 @@ public class EmailManager {
                         + "We have received your reservation for "
                         + record.getCorrespondingRoom().getRoomName() + ".\n\n"
                         + "Your booking time: From "
-                        + record.getStartTime().toString() + " to "
-                        + record.getEndTime().toString() + ".\n\n"
+                        + record.getStartTime().format(notificationFormatter) + " to "
+                        + record.getEndTime().format(notificationFormatter) + ".\n\n"
                         + "As a special reminder, you must check in promptly 10 minutes before the start of your booking "
                         + "or it will be recorded as a breach of contract, "
                         + "which may affect your subsequent bookings.";
@@ -127,8 +138,8 @@ public class EmailManager {
                     + "This is a reminder that your booking request for "
                     + record.getCorrespondingRoom().getRoomName() + " has been approved.\n\n"
                     + "Your booking time: From "
-                    + record.getStartTime().toString() + " to "
-                    + record.getEndTime().toString() + ".\n\n"
+                    + record.getStartTime().format(notificationFormatter) + " to "
+                    + record.getEndTime().format(notificationFormatter) + ".\n\n"
                     + "This means your booking is now in effect."
                     + "As a special reminder, you must check in promptly 10 minutes before the start of your booking "
                     + "or it will be recorded as a breach of contract, "
@@ -154,8 +165,9 @@ public class EmailManager {
      * @param record    the corresponding record
      */
     public static void sendRequestRejectedEmail(String userEmail, Record record) {
+        Room room = roomService.getRoomById(record.getRoomId());
         // Error check only
-        if (!record.getCorrespondingRoom().isRequireApproval()) {
+        if (room.isRequireApproval()) {
             throw new RuntimeException("ERROR: This room does not require approval!");
         }
 
@@ -182,7 +194,7 @@ public class EmailManager {
 
             String requestRejectedText = "Hi,\n\n"
                     + "This is a reminder that your booking request for "
-                    + record.getCorrespondingRoom().getRoomName() + " has been rejected.\n\n"
+                    + room.getRoomName() + " has been rejected.\n\n"
                     + "This means that your booking record will be removed. "
                     + "We apologize for any inconvenience this may cause you.";
 
@@ -232,8 +244,8 @@ public class EmailManager {
                     + "Check in will close at the start of your booking time. "
                     + "Failure to check in could affect your subsequent bookings.\n\n"
                     + "Your booking time: From "
-                    + record.getStartTime().toString() + " to "
-                    + record.getEndTime().toString() + ".\n\n"
+                    + record.getStartTime().format(notificationFormatter) + " to "
+                    + record.getEndTime().format(notificationFormatter) + ".\n\n"
                     + "Thanks for your understanding.";
 
             message.setText(almostTimeText);  // Set text
