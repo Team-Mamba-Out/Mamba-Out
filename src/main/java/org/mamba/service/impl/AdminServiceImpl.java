@@ -55,12 +55,6 @@ public class AdminServiceImpl implements AdminService {
         return adminMapper.getNameByEmailAndRole(result[0], result[1]);
     }
 
-    public static void main(String[] args) {
-        String role = "2542737@dundee.ac.uk-001";
-        String[] result = parseEmailAndCode(role);
-        System.out.println("Email: " + result[0]);
-        System.out.println("Code: " + result[1]);
-    }
 
     public static String[] parseEmailAndCode(String role) {
         String regex = "(.+)-([0-9]{3})$";

@@ -101,8 +101,8 @@ public class AdminController {
      * @param uid
      * @return
      */
-    @GetMapping("/getNameByUid")
-    public Result getNameByUid(@RequestParam Integer uid) {
+    @GetMapping("/getNameByUid/{uid}")
+    public Result getNameByUid(@PathVariable Integer uid) {
         return Result.success(adminService.getNameByUid(uid));
     }
     /**
