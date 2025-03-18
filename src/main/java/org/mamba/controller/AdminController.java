@@ -179,11 +179,11 @@ public class AdminController {
      * @return a success result indicating the operation was completed
      */
     @DeleteMapping("/roomRecord/{roomName}")
-    public Result deleteRecordAndReassignRoom(@PathVariable String roomName,
+    public Result occupyAndReassignRoom(@PathVariable String roomName,
                                               @RequestParam LocalDateTime newStartTime,
                                               @RequestParam LocalDateTime newEndTime,
                                               @RequestParam String reason) {
-        adminService.deleteAndReassignRoom(roomName, newStartTime, newEndTime, reason);
+        adminService.occupyAndReassignRoom(roomName, newStartTime, newEndTime, reason);
         return Result.success();
     }
 
