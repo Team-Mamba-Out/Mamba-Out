@@ -34,11 +34,12 @@ public class MaintenanceController {
                                  @RequestParam(required = false) Integer roomId,
                                  @RequestParam(required = false) Date scheduledStart,
                                  @RequestParam(required = false) Date scheduledEnd,
-                                 @RequestParam(required = false) Integer pageSize,
-                                 @RequestParam(required = false) Integer page) {
+                                 @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+                                 @RequestParam(required = false, defaultValue = "1") Integer page) {
         Map<String, Object> maintenanceResult = maintenanceService.getMaintenance(id, roomId, scheduledStart, scheduledEnd, pageSize, page);
         return Result.success(maintenanceResult);
     }
+
 
     /**
      * Add a new maintenance record
@@ -48,7 +49,7 @@ public class MaintenanceController {
      */
     @PostMapping("/create")
     public Result createMaintenance(@RequestBody Maintenance maintenance) {
-        maintenanceService.createMaintenance(maintenance.getId(), maintenance.getScheduledStart(), maintenance.getScheduledEnd(), maintenance.getDescription());
+        maintenanceService.createMaintenance(maintenance.getRoomId(), maintenance.getScheduledStart(), maintenance.getScheduledEnd(), maintenance.getDescription());
         return Result.success();
     }
 

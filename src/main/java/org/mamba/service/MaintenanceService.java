@@ -2,6 +2,7 @@ package org.mamba.service;
 
 import org.mamba.entity.Maintenance;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ public interface MaintenanceService {
      * @param ScheduledEnd the scheduled end time of the maintenance
      * @param description the description of the maintenance
      */
-    void createMaintenance(int roomId, Date ScheduledStart, Date ScheduledEnd, String description);
+    void createMaintenance(int roomId, LocalDateTime ScheduledStart, LocalDateTime  ScheduledEnd, String description);
 
     /**
      * Delete a maintenance record by ID
