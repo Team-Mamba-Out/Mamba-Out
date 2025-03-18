@@ -220,7 +220,7 @@ public class AdminServiceImpl implements AdminService {
             LocalDateTime oldEndTime = (LocalDateTime) recordData.get("endTime");
 
             // Find the nearest available room for reassignment
-            Room nearestRoom = roomService.findNearestAvailableRoom(roomId, oldStartTime, oldEndTime, userID, occupyStartTime, occupyEndTime);
+            Room nearestRoom = roomService.findNearestAvailableRoom(roomId, oldStartTime, oldEndTime, userID);
             if (nearestRoom == null) {
                 // email logic: cancelled because reassignment failed
                 EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userID).getRole().split("-")[0], false);
