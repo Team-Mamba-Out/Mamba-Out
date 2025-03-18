@@ -27,7 +27,7 @@ public class RoomServiceImpl implements RoomService {
     @Autowired
     private MessageService messageService;
     @Autowired
-    private  MaintenanceService maintenanceService;
+    private MaintenanceService maintenanceService;
 
     /* IMPORTANT NUMBERS - DO NOT MODIFY */
     private final int DAILY_START_HOUR = 8;
@@ -62,35 +62,57 @@ public class RoomServiceImpl implements RoomService {
         List<Room> conditionRoomList = roomMapper.getRooms(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, roomType, size, offset);
 
         List<Room> roomList = new ArrayList<>();
+        if (start != null && end != null) {
+            for (Room conditionRoom : conditionRoomList) {
+                Integer conditionRoomId = conditionRoom.getId();
+                boolean roomBusy = false;
 
-        for (Room conditionRoom : conditionRoomList) {
-            Integer conditionRoomId = conditionRoom.getId();
-            boolean roomBusy = false;
-            boolean isUnderMaintenance = false;
+                // Check if the room is occupied due to existing bookings (time overlap check)
+                List<Map<String, Object>> conditionRoomBusyTimeList = getBusyTimesById(conditionRoomId);
+                for (Map<String, Object> busyTimeSlots : conditionRoomBusyTimeList) {
+                    // Check if each busy time slot occupies the given period
+                    if (start.isBefore((LocalDateTime) busyTimeSlots.get("endTime")) && end.isAfter((LocalDateTime) busyTimeSlots.get("startTime"))) {
+                        roomBusy = true;
+                        break;
+                    }
+                }
 
-            // Check if the room is occupied due to existing bookings (time overlap check)
-            List<Map<String, Object>> conditionRoomBusyTimeList = getBusyTimesById(conditionRoomId);
-            for (Map<String, Object> busyTimeSlots : conditionRoomBusyTimeList) {
-                // Check if each busy time slot occupies the given period
-                if (start.isBefore((LocalDateTime)busyTimeSlots.get("endTime")) && end.isAfter((LocalDateTime)busyTimeSlots.get("startTime"))) {
-                    roomBusy = true;
-                    break;
+                // Add the room to the list if it is not occupied
+                if (!roomBusy) {
+                    roomList.add(conditionRoom);
                 }
             }
-
-            // Check if the room is under maintenance (time overlap check)
-            List<List<LocalDateTime>> maintenanceTimes = getMaintenanceTimesById(conditionRoomId);
-            for (List<LocalDateTime> maintenanceTimeSlots : maintenanceTimes) {
-                if (start.isBefore(maintenanceTimeSlots.get(1)) && end.isAfter(maintenanceTimeSlots.get(0))) {
-                    isUnderMaintenance = true;  // The room is under maintenance
-                    break;
+        } else {
+            roomList = conditionRoomList;
+        }
+        if (start == null && end == null) {
+            start = LocalDateTime.now();
+            for (Room conditionRoom : roomList) {
+                Integer conditionRoomId = conditionRoom.getId();
+                boolean isUnderMaintenance = false;
+                // Check if the room is under maintenance (time overlap check)
+                List<List<LocalDateTime>> maintenanceTimes = getMaintenanceTimesById(conditionRoomId);
+                for (List<LocalDateTime> maintenanceTimeSlots : maintenanceTimes) {
+                    if (start.isBefore(maintenanceTimeSlots.get(1)) && start.isAfter(maintenanceTimeSlots.get(0))) {
+                        isUnderMaintenance = true;  // The room is under maintenance
+                        break;
+                    }
                 }
-            }
-
-            // Add the room to the list if it is not occupied
-            if (!roomBusy) {
                 conditionRoom.setMaintenance(isUnderMaintenance);
-                roomList.add(conditionRoom);
+            }
+        } else {
+            for (Room conditionRoom : roomList) {
+                Integer conditionRoomId = conditionRoom.getId();
+                boolean isUnderMaintenance = false;
+                // Check if the room is under maintenance (time overlap check)
+                List<List<LocalDateTime>> maintenanceTimes = getMaintenanceTimesById(conditionRoomId);
+                for (List<LocalDateTime> maintenanceTimeSlots : maintenanceTimes) {
+                    if (start.isBefore(maintenanceTimeSlots.get(1)) && end.isAfter(maintenanceTimeSlots.get(0))) {
+                        isUnderMaintenance = true;  // The room is under maintenance
+                        break;
+                    }
+                }
+                conditionRoom.setMaintenance(isUnderMaintenance);
             }
         }
 
@@ -291,7 +313,6 @@ public class RoomServiceImpl implements RoomService {
     }
 
 
-
     /**
      * Get all the RECORD PERIODS times of the room by id.
      * Returns all the RECORD PERIODS of the room in the next 7 days.
@@ -431,7 +452,7 @@ public class RoomServiceImpl implements RoomService {
 
                 // Check if the room is available during the requested time slot
                 for (Map<String, Object> busyTime : busyTimes) {
-                    if (startTime.isBefore((LocalDateTime)busyTime.get("endTime")) && endTime.isAfter((LocalDateTime)busyTime.get("startTime"))) {
+                    if (startTime.isBefore((LocalDateTime) busyTime.get("endTime")) && endTime.isAfter((LocalDateTime) busyTime.get("startTime"))) {
                         isAvailable = false;
                         break;
                     }
@@ -447,7 +468,7 @@ public class RoomServiceImpl implements RoomService {
             startTime = startTime.plusMinutes(30);
             endTime = endTime.plusMinutes(30);
 
-            if(startTime.isAfter(startRecord.plusDays(7))) {
+            if (startTime.isAfter(startRecord.plusDays(7))) {
                 return null;
             }
         }
@@ -476,7 +497,7 @@ public class RoomServiceImpl implements RoomService {
         // Loop to keep searching for an available room until one is found
         while (true) {
 
-            if(startTime.isAfter(startRecord.plusDays(7))) {
+            if (startTime.isAfter(startRecord.plusDays(7))) {
                 return null;
             }
 
@@ -515,7 +536,7 @@ public class RoomServiceImpl implements RoomService {
                 // Check if the room is available based on busy times
                 boolean isAvailable = true;
                 for (Map<String, Object> busyTime : busyTimes) {
-                    if (startTime.isBefore((LocalDateTime)busyTime.get("endTime")) && endTime.isAfter((LocalDateTime)busyTime.get("startTime"))) {
+                    if (startTime.isBefore((LocalDateTime) busyTime.get("endTime")) && endTime.isAfter((LocalDateTime) busyTime.get("startTime"))) {
                         isAvailable = false;
                         break;
                     }
