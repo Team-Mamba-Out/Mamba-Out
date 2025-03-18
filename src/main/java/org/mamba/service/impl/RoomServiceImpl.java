@@ -52,70 +52,59 @@ public class RoomServiceImpl implements RoomService {
      */
     @Override
     public Map<String, Object> getRooms(Integer id, String roomName, Integer capacity, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, LocalDateTime start, LocalDateTime end, Integer size, Integer page) {
-        // Calculate offset
+        // Calculate pagination offset
         Integer offset = null;
         if (size != null && page != null) {
             offset = (page - 1) * size;
         }
 
-        // Get the list of rooms that satisfy other search conditions first
+        // Retrieve the list of rooms that meet the search conditions
         List<Room> conditionRoomList = roomMapper.getRooms(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, roomType, size, offset);
 
         List<Room> roomList = new ArrayList<>();
 
-        if (start != null && end != null) {
-            // This search has time limit conditions
+        for (Room conditionRoom : conditionRoomList) {
+            Integer conditionRoomId = conditionRoom.getId();
             boolean roomBusy = false;
+            boolean isUnderMaintenance = false;
 
-            // Check for the busy times of each room (maintenance and other busy times)
-            for (Room conditionRoom : conditionRoomList) {
-                roomBusy = false;
-                Integer conditionRoomId = conditionRoom.getId();
-
-                // 1. Check if the room is busy due to existing bookings (time overlap check)
-                List<Map<String, Object>> conditionRoomBusyTimeList = getBusyTimesById(conditionRoomId);
-                for (Map<String, Object> busyTimeSlots : conditionRoomBusyTimeList) {
-                    // Check if each busy time slot occupies the given period
-                    if (start.isBefore((LocalDateTime)busyTimeSlots.get("endTime")) && end.isAfter((LocalDateTime)busyTimeSlots.get("startTime"))) {
-                        roomBusy = true;
-                        break;
-                    }
-                }
-
-                // 2. Check if the room is busy due to maintenance (time overlap check)
-                List<List<LocalDateTime>> maintenanceTimes = getMaintenanceTimesById(conditionRoomId);
-                for (List<LocalDateTime> maintenanceTimeSlots : maintenanceTimes) {
-                    // Check if the maintenance time slot occupies the given period
-                    if (start.isBefore(maintenanceTimeSlots.get(1)) && end.isAfter(maintenanceTimeSlots.get(0))) {
-                        roomBusy = true;
-                        break;
-                    }
-                }
-
-                // If this room is available (not busy due to bookings or maintenance)
-                if (!roomBusy) {
-                    roomList.add(conditionRoom);
+            // Check if the room is occupied due to existing bookings (time overlap check)
+            List<Map<String, Object>> conditionRoomBusyTimeList = getBusyTimesById(conditionRoomId);
+            for (Map<String, Object> busyTimeSlots : conditionRoomBusyTimeList) {
+                // Check if each busy time slot occupies the given period
+                if (start.isBefore((LocalDateTime)busyTimeSlots.get("endTime")) && end.isAfter((LocalDateTime)busyTimeSlots.get("startTime"))) {
+                    roomBusy = true;
+                    break;
                 }
             }
-        } else {
-            // This search has no time limit conditions, obtain the direct result
-            roomList = conditionRoomList;
+
+            // Check if the room is under maintenance (time overlap check)
+            List<List<LocalDateTime>> maintenanceTimes = getMaintenanceTimesById(conditionRoomId);
+            for (List<LocalDateTime> maintenanceTimeSlots : maintenanceTimes) {
+                if (start.isBefore(maintenanceTimeSlots.get(1)) && end.isAfter(maintenanceTimeSlots.get(0))) {
+                    isUnderMaintenance = true;  // The room is under maintenance
+                    break;
+                }
+            }
+
+            // Add the room to the list if it is not occupied
+            if (!roomBusy) {
+                conditionRoom.setMaintenance(isUnderMaintenance);
+                roomList.add(conditionRoom);
+            }
         }
 
+        // Calculate pagination information
         Map<String, Object> map = new HashMap<>();
         int total = roomMapper.count(id, roomName, capacity, multimedia, projector, requireApproval, isRestricted, roomType);
-        Integer totalPage = null;
-        if (size != null) {
-            totalPage = total % size == 0 ? total / size : total / size + 1;
-        }
+        Integer totalPage = (size != null) ? (total % size == 0 ? total / size : total / size + 1) : null;
+
         map.put("rooms", roomList);
         map.put("totalPage", totalPage);
         map.put("total", total);
         map.put("pageNumber", page);
         return map;
     }
-
-
 
     @Override
     public List<Room> getAllRooms() {
