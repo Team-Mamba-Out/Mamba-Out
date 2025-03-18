@@ -43,14 +43,9 @@ public interface MessageMapper {
 
     /**
      * Retrieves a paginated list of messages for a given user ID.
-     *
-     * @param Uid the user ID
-     * @param pageSize the number of messages to retrieve
-     * @param offset the offset for pagination
-     * @return a list of messages for the specified user
      */
-    @Select("SELECT * FROM mamba.message WHERE Uid = #{Uid} LIMIT #{pageSize} OFFSET #{offset}")
-    List<Message> getMessagesByUid(@Param("Uid") Integer Uid,
+    @SelectProvider(type = MessageMapper.MessageSqlBuilder.class, method = "buildGetMessagesSql")
+    List<Message> getMessagesByUid(@Param("uid") Integer uid,
                                    @Param("pageSize") Integer pageSize,
                                    @Param("offset") Integer offset);
 
@@ -82,9 +77,34 @@ public interface MessageMapper {
     List<Record> getRecordsByStartTime(@Param("startTime") LocalDateTime startTime);
 
     /**
+     * if the user reads the message, modify its status
+     */
+    @Update("update message set isRead=TRUE where id = #{id}")
+    void updateIsRead(@Param("id") Integer id);
+    /**
      * Static class for building SQL queries.
      */
     class MessageSqlBuilder {
+        public static String buildGetMessagesSql(Map<String, Object> params) {
+            SQL sql = new SQL() {{
+                SELECT("*");
+                FROM("mamba.message");
+                if (params.get("uid") != null) {
+                    WHERE("uid = #{uid}");
+                }
+            }};
+            // Deal with LIMIT and OFFSET
+            String query = sql.toString();
+            if (params.get("pageSize") != null) {
+                if (params.get("offset") != null) {
+                    query += " LIMIT #{pageSize} OFFSET #{offset}";
+                } else {
+                    query += " LIMIT #{pageSize}";
+                }
+            }
+            return query;
+        }
+
         public static String buildCountMessagesSql(Map<String, Object> params) {
 //            @Param("Uid") Integer Uid,
 //            @Param("title") String title,

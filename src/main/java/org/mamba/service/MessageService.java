@@ -46,4 +46,9 @@ public interface MessageService {
      * @return the corresponding record list
      */
     void Reminder(LocalDateTime startTime);
+
+    /**
+     * if the user reads the message, modify its status
+     */
+    void readMessage(Integer id);
 }

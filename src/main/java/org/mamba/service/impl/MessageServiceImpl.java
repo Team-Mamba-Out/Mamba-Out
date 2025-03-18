@@ -57,9 +57,11 @@ public class MessageServiceImpl implements MessageService {
      */
     @Override
     public Map<String, Object> getMessagesByUid(Integer Uid, Integer size, Integer page) {
-        // Calculate the offset for pagination
-        Integer offset = (page - 1) * size;
-
+        // Calculate offset
+        Integer offset = null;
+        if (size != null && page != null) {
+            offset = (page - 1) * size;
+        }
         // Retrieve the paginated list of messages
         List<Message> messageList = messageMapper.getMessagesByUid(Uid, size, offset);
 
@@ -67,8 +69,10 @@ public class MessageServiceImpl implements MessageService {
         int total = messageMapper.getMessagesCountByUid(Uid);
 
         // Calculate the total number of pages
-        int totalPage = (total + size - 1) / size;
-
+        Integer totalPage = null;
+        if (size != null) {
+            totalPage = total % size == 0 ? total / size : total / size + 1;
+        }
         // Prepare the response map
         Map<String, Object> result = new HashMap<>();
         result.put("messages", messageList);
@@ -103,6 +107,11 @@ public class MessageServiceImpl implements MessageService {
                     "System Notification"  // Sender
             );
         }
+    }
+
+    @Override
+    public void readMessage(Integer id) {
+        messageMapper.updateIsRead(id);
     }
 
 }

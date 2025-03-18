@@ -1,5 +1,6 @@
 package org.mamba.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.mamba.entity.Message;
 import org.mamba.entity.Result;
 import org.mamba.service.RecordService;
@@ -14,6 +15,7 @@ import java.util.Map;
 /**
  * REST controller for managing messages.
  */
+@Slf4j
 @RestController
 @RequestMapping("/messages")
 public class MessageController {
@@ -42,6 +44,7 @@ public class MessageController {
      */
     @DeleteMapping("/delete/{id}")
     public Result deleteMessage(@PathVariable Integer id) {
+        System.out.println(id);
         messageService.deleteMessage(id);
         return Result.success();
     }
@@ -54,15 +57,22 @@ public class MessageController {
      * @param page the current page number (optional, default is 1)
      * @return a success result containing the paginated list of messages
      */
-    @GetMapping("/messages/{Uid}")
+    @GetMapping("/getMessage/{Uid}")
     public Result getMessagesByUid(@PathVariable Integer Uid,
-                                   @RequestParam(required = false, defaultValue = "10") Integer size,
-                                   @RequestParam(required = false, defaultValue = "1") Integer page) {
+                                   @RequestParam(required = false) Integer size,
+                                   @RequestParam(required = false) Integer page) {
         // Retrieve paginated messages from the service layer
         Map<String, Object> messagesResult = messageService.getMessagesByUid(Uid, size, page);
         return Result.success(messagesResult);
     }
 
+    @PostMapping("/read")
+    public Result readMessage(@RequestBody Map<String, Object> request) {
+        Integer id = Integer.parseInt(request.get("id").toString());
+        messageService.readMessage(id);
+
+        return Result.success();
+    }
     /**
      * Sends appointment reminders for records that have a start time equal to the provided time plus 10 minutes.
      *
