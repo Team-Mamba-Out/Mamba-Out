@@ -494,8 +494,19 @@ public class RoomServiceImpl implements RoomService {
                 // Check if the room is under maintenance during the requested time slot
                 Map<String, Object> maintenanceResult = maintenanceService.getMaintenance(null, room.getId(), startTime, endTime, 10, 1);
                 List<Maintenance> maintenanceList = (List<Maintenance>) maintenanceResult.get("maintenanceList");
-                if (!maintenanceList.isEmpty()) {
-                    continue;  // Skip this room if it is under maintenance
+                // Check if there is any maintenance that overlaps with the requested time period
+                boolean isUnderMaintenance = false;
+                for (Maintenance maintenance : maintenanceList) {
+                    // If the maintenance start time is before the requested end time,
+                    // and the maintenance end time is after the requested start time, there is an overlap
+                    if (maintenance.getScheduledStart().isBefore(endTime) && maintenance.getScheduledEnd().isAfter(startTime)) {
+                        isUnderMaintenance = true;
+                        break;  // If there's an overlap, mark the room as under maintenance
+                    }
+                }
+                // Skip the room if it is under maintenance during the requested time period
+                if (isUnderMaintenance) {
+                    continue;
                 }
 
                 // Get all busy times for this room
