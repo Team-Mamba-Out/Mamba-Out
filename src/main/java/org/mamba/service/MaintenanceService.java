@@ -23,7 +23,7 @@ public interface MaintenanceService {
      * @param page         the current page number
      * @return the list of maintenance records
      */
-    Map<String, Object> getMaintenance(Integer id, Integer roomId, Date scheduledStart, Date scheduledEnd, Integer pageSize, Integer page);
+    Map<String, Object> getMaintenance(Integer id, Integer roomId, LocalDateTime scheduledStart, LocalDateTime scheduledEnd, Integer pageSize, Integer page);
 
     /**
      * Add a new maintenance record

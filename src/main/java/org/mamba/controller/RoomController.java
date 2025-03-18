@@ -128,6 +128,21 @@ public class RoomController {
     }
 
     /**
+     * Get the maintenance times of the room by id.
+     * Returns all the maintenance time periods of the room in the next 7 days.
+     * (including the current day)
+     * The format: the list of minimal unit of time period.
+     *
+     * @param id the room id
+     * @return the list containing several lists, each of which contains start time and end time
+     */
+    @GetMapping("/getMaintenance")
+    public Result getMaintenanceById(Integer id) {
+        List<List<LocalDateTime>> maintenanceTimes = roomService.getMaintenanceTimesById(id);
+        return Result.success(maintenanceTimes);
+    }
+
+    /**
      * Get all the RECORD PERIODS times of the room by id.
      * Returns all the RECORD PERIODS of the room in the next 7 days.
      * (including the current day)
