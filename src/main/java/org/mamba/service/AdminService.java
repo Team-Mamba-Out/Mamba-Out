@@ -63,7 +63,7 @@ public interface AdminService {
 
     int getUserAccount();
 
-    void deleteAndReassignRoom(String roomName, LocalDateTime newStartTime, LocalDateTime newEndTime, String reason);
+    void occupyAndReassignRoom(String roomName, LocalDateTime newStartTime, LocalDateTime newEndTime, String reason);
 
     /**
      * Retrieves all records with their corresponding room names.

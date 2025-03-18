@@ -6,6 +6,7 @@ import org.mamba.entity.Record;
 import org.mamba.mapper.AdminMapper;
 import org.mamba.service.AdminService;
 import org.mamba.service.UserService;
+import org.mamba.service.MaintenanceService;
 import org.mamba.service.MessageService;
 import org.mamba.service.RecordService;
 import org.mamba.service.RoomService;
@@ -33,6 +34,8 @@ public class AdminServiceImpl implements AdminService {
     private MessageService messageService;
     @Autowired
     private AdminMapper adminMapper;
+    @Autowired
+    private MaintenanceService maintenanceService;
 
     @Override
     public Map<String, Object> getAdmins(String email, Integer uid, String name, String phone, Integer size, Integer page) {
@@ -188,7 +191,7 @@ public class AdminServiceImpl implements AdminService {
 
 
     @Override
-    public void deleteAndReassignRoom(String roomName, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime, String reason) {
+    public void occupyAndReassignRoom(String roomName, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime, String reason) {
         // Retrieve the list of records within the specified time range for the given room
         List<Record> list = recordService.findRecordsByRoomAndTimeRange(roomName, occupyStartTime, occupyEndTime);
         Integer roomId = roomService.getRoomByName(roomName).getId();  // Get the room ID
@@ -211,7 +214,7 @@ public class AdminServiceImpl implements AdminService {
         }
 
         // Create a new reservation for the occupied room
-        recordService.createRecord(roomId, 1, occupyStartTime, occupyEndTime, true);
+        maintenanceService.createMaintenance(roomId,occupyStartTime,occupyEndTime,reason);
 
         // Iterate through extracted records and reassign each user to a new room
         for (Map<String, Object> recordData : extractedRecords) {
