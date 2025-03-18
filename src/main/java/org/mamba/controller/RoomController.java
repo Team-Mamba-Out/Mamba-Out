@@ -123,7 +123,7 @@ public class RoomController {
      */
     @GetMapping("/getBusyTime")
     public Result getBusyTimesById(Integer id) {
-        List<List<LocalDateTime>> busyTimesList = roomService.getBusyTimesById(id);
+        List<Map<String, Object>> busyTimesList = roomService.getBusyTimesById(id);
         return Result.success(busyTimesList);
     }
 
