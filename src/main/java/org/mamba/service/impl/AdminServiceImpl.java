@@ -78,20 +78,21 @@ public class AdminServiceImpl implements AdminService {
 
         String[] roomInfo = parseRoomInfo(nearestRoomInfo);
 
-        Room nearestRoom = roomService.getRoomByName(roomInfo[0]);
+        Integer roomId = Integer.parseInt(roomInfo[0]);
+
+        Room nearestRoom = roomService.getRoomById(roomId);
         LocalDateTime newStartTime = LocalDateTime.parse(roomInfo[1]);
         LocalDateTime newEndTime = LocalDateTime.parse(roomInfo[2]);
 
         recordService.deleteRecordById(recordId);
         recordService.createRecord(nearestRoom.getId(), userID, newStartTime, newEndTime, false);
 
-        Record newRecord = recordService.getRecordById(nearestRoom.getId());
         // Send a notification message about the reassignment
         messageService.createMessage(
                 userID,
                 "Room Reassignment Notification",
                 "Your reserved room at " + oldStartTime + " is no longer available. " +
-                        "You have been reassigned to room " + newRecord.getRoomId() + " from " + newRecord.getStartTime() + " to " + newRecord.getEndTime() +
+                        "You have been reassigned to room " + roomId + " from " + newStartTime + " to " + newEndTime +
                         ". The reason is: " + reason + ". Please check your reservation details.",
                 LocalDateTime.now(),
                 false,
@@ -219,7 +220,7 @@ public class AdminServiceImpl implements AdminService {
             LocalDateTime oldEndTime = (LocalDateTime) recordData.get("endTime");
 
             // Find the nearest available room for reassignment
-            Room nearestRoom = roomService.findNearestAvailableRoom(roomId, oldStartTime, oldEndTime, userID, occupyStartTime, occupyEndTime);
+            Room nearestRoom = roomService.findNearestAvailableRoom(roomId, oldStartTime, oldEndTime, userID);
             if (nearestRoom == null) {
                 // email logic: cancelled because reassignment failed
                 EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userID).getRole().split("-")[0], false);

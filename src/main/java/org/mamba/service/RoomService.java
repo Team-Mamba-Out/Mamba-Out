@@ -104,7 +104,7 @@ public interface RoomService {
      * @param id the room id
      * @return the list containing several lists, each of which contains start time and end time
      */
-    List<List<LocalDateTime>> getBusyTimesById(Integer id);
+    List<Map<String, Object>> getBusyTimesById(Integer id);
 
     /**
      * Get all the RECORD PERIODS times of the room by id.
