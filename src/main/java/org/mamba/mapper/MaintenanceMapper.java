@@ -4,13 +4,14 @@ import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.jdbc.SQL;
 import org.mamba.entity.Maintenance;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 @Mapper
 public interface MaintenanceMapper {
-    @SelectProvider(type = RoomMapper.RoomSqlBuilder.class, method = "buildGetMaintenanceSql")
+    @SelectProvider(type = MaintenanceSqlBuilder.class, method = "buildGetMaintenanceSql")
     List<Maintenance> getMaintenance(@Param("id") Integer id,
                                      @Param("roomId") Integer roomId,
                                      @Param("scheduledStart") Date scheduledStart,
@@ -18,45 +19,42 @@ public interface MaintenanceMapper {
                                      @Param("pageSize") Integer pageSize,
                                      @Param("offset") Integer offset);
 
-    @Update("UPDATE maintenance SET maintenanceStatusId = 1 WHERE scheduledEnd <= NOW() AND maintenanceStatusId = 2")
+    @Update("UPDATE maintenance " +
+            "SET maintenanceStatusId = 1 " +
+            "WHERE scheduledEnd <= CURRENT_TIMESTAMP " +
+            "AND maintenanceStatusId = 2 " +
+            "AND scheduledEnd IS NOT NULL")
     int updateMaintenanceStatus();
 
-    @Update("UPDATE maintenance SET maintenanceStatusId = 2 WHERE scheduledStart <= NOW() AND maintenanceStatusId = 1")
+    @Update("UPDATE maintenance " +
+            "SET maintenanceStatusId = 2 " +
+            "WHERE scheduledStart <= CURRENT_TIMESTAMP " +
+            "AND maintenanceStatusId = 1 " +
+            "AND scheduledStart IS NOT NULL " +
+            "AND scheduledEnd > CURRENT_TIMESTAMP")
     int setRoomUnderMaintenance();
 
-    @SelectProvider(type = RoomMapper.RoomSqlBuilder.class, method = "buildCountMaintenanceSql")
-    int countMaintenance();
 
-    @Insert("INSERT INTO maintenance (roomId,scheduledStart, scheduledEnd, description) " +
-            "VALUES (#{roomId},#{scheduledStart}, #{scheduledEnd}, #{description})")
-    void insertMaintenance(Integer roomId, Date ScheduledStart, Date ScheduledEnd, String description);
+
+    @SelectProvider(type = MaintenanceSqlBuilder.class, method = "buildCountMaintenanceSql")
+    int countMaintenance(@Param("id") Integer id,
+                         @Param("roomId") Integer roomId,
+                         @Param("scheduledStart") Date scheduledStart,
+                         @Param("scheduledEnd") Date scheduledEnd);
+
+
+    @Insert("INSERT INTO maintenance (roomId, scheduledStart, scheduledEnd, description) " +
+            "VALUES (#{roomId}, #{scheduledStart}, #{scheduledEnd}, #{description})")
+    void insertMaintenance(@Param("roomId") Integer roomId,
+                           @Param("scheduledStart") LocalDateTime scheduledStart,
+                           @Param("scheduledEnd") LocalDateTime  scheduledEnd,
+                           @Param("description") String description);
 
     @Delete("DELETE FROM maintenance WHERE id = #{id}")
     void deleteMaintenanceById(@Param("id") Integer id);
 
-    public static class MaintenanceSqlBuilder {
-        public String buildGetRoomMaintenanceSql(Map<String, Object> params) {
-            return new SQL() {{
-                SELECT("*");
-                FROM("maintenance");
-                if (params.get("roomId") != null) {
-                    WHERE("roomId = #{roomId}");
-                }
-                ORDER_BY("scheduledStart DESC");
-            }}.toString() + " LIMIT #{pageSize} OFFSET #{offset}";
-        }
-
-        public String buildCountMaintenanceSql(Map<String, Object> params) {
-            return new SQL() {{
-                SELECT("COUNT(*)");
-                FROM("maintenance");
-                if (params.get("roomId") != null) {
-                    WHERE("roomId = #{roomId}");
-                }
-            }}.toString();
-        }
-
-        public String buildGetMaintenanceSql(Map<String, Object> params) {
+    class MaintenanceSqlBuilder {
+        public static String buildGetMaintenanceSql(Map<String, Object> params) {
             return new SQL() {{
                 SELECT("*");
                 FROM("maintenance");
@@ -75,5 +73,30 @@ public interface MaintenanceMapper {
                 ORDER_BY("scheduledStart DESC");
             }}.toString() + " LIMIT #{pageSize} OFFSET #{offset}";
         }
+
+        public static String buildCountMaintenanceSql(Map<String, Object> params) {
+            Integer id = (Integer) params.get("id");
+            Integer roomId = (Integer) params.get("roomId");
+            Date scheduledStart = (Date) params.get("scheduledStart");
+            Date scheduledEnd = (Date) params.get("scheduledEnd");
+
+            StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM maintenance WHERE 1=1");
+
+            if (id != null) {
+                sql.append(" AND id = #{id}");
+            }
+            if (roomId != null) {
+                sql.append(" AND room_id = #{roomId}");
+            }
+            if (scheduledStart != null) {
+                sql.append(" AND scheduled_start >= #{scheduledStart}");
+            }
+            if (scheduledEnd != null) {
+                sql.append(" AND scheduled_end <= #{scheduledEnd}");
+            }
+
+            return sql.toString();
+        }
+
     }
 }
