@@ -14,8 +14,8 @@ public interface MaintenanceMapper {
     @SelectProvider(type = MaintenanceSqlBuilder.class, method = "buildGetMaintenanceSql")
     List<Maintenance> getMaintenance(@Param("id") Integer id,
                                      @Param("roomId") Integer roomId,
-                                     @Param("scheduledStart") Date scheduledStart,
-                                     @Param("scheduledEnd") Date scheduledEnd,
+                                     @Param("scheduledStart") LocalDateTime scheduledStart,
+                                     @Param("scheduledEnd") LocalDateTime scheduledEnd,
                                      @Param("pageSize") Integer pageSize,
                                      @Param("offset") Integer offset);
 
@@ -39,8 +39,8 @@ public interface MaintenanceMapper {
     @SelectProvider(type = MaintenanceSqlBuilder.class, method = "buildCountMaintenanceSql")
     int countMaintenance(@Param("id") Integer id,
                          @Param("roomId") Integer roomId,
-                         @Param("scheduledStart") Date scheduledStart,
-                         @Param("scheduledEnd") Date scheduledEnd);
+                         @Param("scheduledStart") LocalDateTime scheduledStart,
+                         @Param("scheduledEnd") LocalDateTime scheduledEnd);
 
 
     @Insert("INSERT INTO maintenance (roomId, scheduledStart, scheduledEnd, description) " +
@@ -77,8 +77,8 @@ public interface MaintenanceMapper {
         public static String buildCountMaintenanceSql(Map<String, Object> params) {
             Integer id = (Integer) params.get("id");
             Integer roomId = (Integer) params.get("roomId");
-            Date scheduledStart = (Date) params.get("scheduledStart");
-            Date scheduledEnd = (Date) params.get("scheduledEnd");
+            LocalDateTime scheduledStart = (LocalDateTime) params.get("scheduledStart");
+            LocalDateTime scheduledEnd = (LocalDateTime) params.get("scheduledEnd");
 
             StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM maintenance WHERE 1=1");
 
@@ -86,17 +86,16 @@ public interface MaintenanceMapper {
                 sql.append(" AND id = #{id}");
             }
             if (roomId != null) {
-                sql.append(" AND room_id = #{roomId}");
+                sql.append(" AND roomId = #{roomId}");
             }
             if (scheduledStart != null) {
-                sql.append(" AND scheduled_start >= #{scheduledStart}");
+                sql.append(" AND scheduledStart >= #{scheduledStart}");
             }
             if (scheduledEnd != null) {
-                sql.append(" AND scheduled_end <= #{scheduledEnd}");
+                sql.append(" AND scheduledEnd <= #{scheduledEnd}");
             }
 
             return sql.toString();
         }
-
     }
 }

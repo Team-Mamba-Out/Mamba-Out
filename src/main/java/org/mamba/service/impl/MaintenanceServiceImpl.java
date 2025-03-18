@@ -24,16 +24,14 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     @Scheduled(cron = "0 * * * * ?")
     @Override
     public void updateMaintenanceStatus() {
-        System.out.println("Scheduled task started...");
         maintenanceMapper.updateMaintenanceStatus();
         maintenanceMapper.setRoomUnderMaintenance();
-        System.out.println("Scheduled task finished...");
     }
 
 
 
     @Override
-    public Map<String, Object> getMaintenance(Integer id, Integer roomId, Date scheduledStart, Date scheduledEnd, Integer pageSize, Integer page) {
+    public Map<String, Object> getMaintenance(Integer id, Integer roomId, LocalDateTime scheduledStart, LocalDateTime scheduledEnd, Integer pageSize, Integer page) {
         int offset = (page - 1) * pageSize;
         List<Maintenance> maintenanceList = maintenanceMapper.getMaintenance(id, roomId, scheduledStart, scheduledEnd, pageSize, offset);
         int total = maintenanceMapper.countMaintenance(id, roomId, scheduledStart, scheduledEnd);

@@ -8,6 +8,7 @@ public class Room {
     private String roomName;
     private Integer capacity;
     private boolean isBusy;
+    private boolean isMaintenance;
     private String location;
     private boolean multimedia;
     private boolean projector;

@@ -7,6 +7,7 @@ import org.mamba.service.MaintenanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +33,8 @@ public class MaintenanceController {
     @GetMapping("/getMaintenance")
     public Result getMaintenance(@RequestParam(required = false) Integer id,
                                  @RequestParam(required = false) Integer roomId,
-                                 @RequestParam(required = false) Date scheduledStart,
-                                 @RequestParam(required = false) Date scheduledEnd,
+                                 @RequestParam(required = false) LocalDateTime scheduledStart,
+                                 @RequestParam(required = false) LocalDateTime scheduledEnd,
                                  @RequestParam(required = false, defaultValue = "10") Integer pageSize,
                                  @RequestParam(required = false, defaultValue = "1") Integer page) {
         Map<String, Object> maintenanceResult = maintenanceService.getMaintenance(id, roomId, scheduledStart, scheduledEnd, pageSize, page);
