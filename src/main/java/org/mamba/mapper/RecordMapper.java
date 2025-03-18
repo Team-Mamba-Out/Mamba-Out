@@ -35,9 +35,9 @@ public interface RecordMapper {
     /**
      * Finds records for a given room within a specified time range, including those that partially overlap.
      *
-     * @param roomId the ID of the room
+     * @param roomId          the ID of the room
      * @param occupyStartTime the start time of the range
-     * @param occupyEndTime the end time of the range
+     * @param occupyEndTime   the end time of the range
      * @return a list of records that overlap with the specified time range
      */
     @Select("SELECT * FROM mamba.record WHERE roomId = #{roomId} AND " +
@@ -62,15 +62,16 @@ public interface RecordMapper {
     /**
      * Insert a new record.
      */
-    @Insert("INSERT INTO mamba.record (roomId, userId, startTime, endTime, recordTime, hasCheckedIn,isApproved) " +
-            "VALUES (#{roomId}, #{userId}, #{startTime}, #{endTime}, #{recordTime}, #{hasCheckedIn}, #{isApproved})")
+    @Insert("INSERT INTO mamba.record (roomId, userId, startTime, endTime, recordTime, hasCheckedIn,isApproved, comment) " +
+            "VALUES (#{roomId}, #{userId}, #{startTime}, #{endTime}, #{recordTime}, #{hasCheckedIn}, #{isApproved}, #{comment})")
     void createRecord(@Param("roomId") Integer roomId,
                       @Param("userId") Integer userId,
                       @Param("startTime") LocalDateTime startTime,
                       @Param("endTime") LocalDateTime endTime,
                       @Param("recordTime") LocalDateTime recordTime,
                       @Param("hasCheckedIn") Boolean hasCheckedIn,
-                      @Param("isApproved") Boolean isApproved);
+                      @Param("isApproved") Boolean isApproved,
+                      @Param("comment") String comment);
 
     /**
      * Deletes the record specified by id.
@@ -79,7 +80,7 @@ public interface RecordMapper {
     void deleteRecordById(@Param("id") Integer id);
 
     /**
-     *  allow update record list.
+     * allow update record list.
      */
     @Update("UPDATE Record " +
             "SET " +

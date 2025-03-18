@@ -35,8 +35,8 @@ public class RecordServiceImpl implements RecordService {
 
 
     @Override
-    public void approveRestrictedRoomRecord(Integer id){
-        Record record = recordMapper.getRecords(id, null, null,null,null,null,null,null,null,null).get(0);
+    public void approveRestrictedRoomRecord(Integer id) {
+        Record record = recordMapper.getRecords(id, null, null, null, null, null, null, null, null, null).get(0);
         recordMapper.approveRestrictedRoomRecord(id);
         Room room = roomMapper.getRoomById(record.getRoomId());
         messageService.createMessage(
@@ -54,8 +54,8 @@ public class RecordServiceImpl implements RecordService {
     }
 
     @Override
-    public void rejectRestrictedRoomRecord(Integer id){
-        Record record = recordMapper.getRecords(id, null, null,null,null,null,null,null,null,null).get(0);
+    public void rejectRestrictedRoomRecord(Integer id) {
+        Record record = recordMapper.getRecords(id, null, null, null, null, null, null, null, null, null).get(0);
 
         Integer userId = record.getUserId();
         String email = userService.getUserByUid(userId).getRole().split("-")[0];
@@ -89,12 +89,12 @@ public class RecordServiceImpl implements RecordService {
      * @param page         the page No.
      */
     @Override
-    public Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn,String status, Integer size, Integer page, Boolean isApproved) {
+    public Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, String status, Integer size, Integer page, Boolean isApproved) {
         // Calculate offset
         Integer offset = (page - 1) * size;
         Integer statusId = null;
-        if (status!=null){
-            switch (status){
+        if (status != null) {
+            switch (status) {
                 case "Pending":
                     statusId = 1;
                     break;
@@ -114,7 +114,7 @@ public class RecordServiceImpl implements RecordService {
                     statusId = 1;
             }
         }
-        List<Record> recordList = recordMapper.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn,statusId, size, offset,isApproved);
+        List<Record> recordList = recordMapper.getRecords(id, roomId, userId, startTime, endTime, hasCheckedIn, statusId, size, offset, isApproved);
 
         // Obtain the corresponding room of each record
         for (Record record : recordList) {
@@ -129,7 +129,7 @@ public class RecordServiceImpl implements RecordService {
         Map<String, Object> map = new HashMap<>();
 
         // TODO
-        int total = recordMapper.count(id, roomId, userId, startTime, endTime, hasCheckedIn,statusId);
+        int total = recordMapper.count(id, roomId, userId, startTime, endTime, hasCheckedIn, statusId);
         int totalPage = total % size == 0 ? total / size : total / size + 1;
         map.put("records", recordList);
         map.put("totalPage", totalPage);
@@ -140,7 +140,7 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     public List<Record> getRestrictedRecords(Integer room_id) {
-        return recordMapper.getRecords(null,room_id,null,null,null,null,null,null,null,false);
+        return recordMapper.getRecords(null, room_id, null, null, null, null, null, null, null, false);
     }
 
     private String convertStatus(Integer statusId) {
@@ -159,6 +159,7 @@ public class RecordServiceImpl implements RecordService {
                 return "Unknown";
         }
     }
+
     /**
      * Obtains the record specified by ID given.
      *
@@ -167,7 +168,7 @@ public class RecordServiceImpl implements RecordService {
      */
     @Override
     public Record getRecordById(int id) {
-        return recordMapper.getRecords(id, null, null,null,null,null,null,null,null,null).get(0);
+        return recordMapper.getRecords(id, null, null, null, null, null, null, null, null, null).get(0);
     }
 
     /**
@@ -178,9 +179,10 @@ public class RecordServiceImpl implements RecordService {
      * @param startTime    Start Time
      * @param endTime      End Time
      * @param hasCheckedIn whether the user has checked in
+     * @param comment      the user's request message
      */
     @Override
-    public void createRecord(Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn) {
+    public void createRecord(Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, String comment) {
         User user = userService.getUserByUid(userId);
         String role = user.getRole();
         Room room = roomService.getRoomById(roomId);
@@ -194,8 +196,8 @@ public class RecordServiceImpl implements RecordService {
         LocalDateTime recordTime = LocalDateTime.now();
 
         //if the room requires admin's approval and the user is not the admin
-        if(room.isRequireApproval() && !role.contains("003")){
-            recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn,false);
+        if (room.isRequireApproval() && !role.contains("003")) {
+            recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, false, null);
 
             // Send email: booking successful, pending approval
             EmailManager.sendBookSuccessfulEmail(email, temp, true);
@@ -204,7 +206,7 @@ public class RecordServiceImpl implements RecordService {
         }
 
         // Obtain the current time
-        recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, true);
+        recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, true, comment);
         messageService.createMessage(
                 userId,
                 "Reserve Room successfully",
@@ -235,7 +237,7 @@ public class RecordServiceImpl implements RecordService {
      */
     @Override
     public void cancelRecordById(Integer id) {
-        Record record = recordMapper.getRecords(id, null, null,null,null,null,null,null,null,null).get(0);
+        Record record = recordMapper.getRecords(id, null, null, null, null, null, null, null, null, null).get(0);
         Room room = roomMapper.getRoomById(record.getRoomId());
         recordMapper.cancelRecordById(id);
 
@@ -262,6 +264,7 @@ public class RecordServiceImpl implements RecordService {
 
     /**
      * Checks if the user is allowed to reserve the room.
+     *
      * @param roomId
      * @param userId
      * @return
@@ -269,7 +272,7 @@ public class RecordServiceImpl implements RecordService {
     @Override
     public boolean allowReserve(Integer roomId, Integer userId) {
         Room room = roomMapper.getRoomById(roomId);
-        if (room.isRestricted()){
+        if (room.isRestricted()) {
             List<Integer> permissionUsers = roomMapper.getPermissionUser(roomId);
             if (permissionUsers.contains(userId)) {
                 return true;
@@ -313,13 +316,13 @@ public class RecordServiceImpl implements RecordService {
     @Override
     public Map<String, Object> getRecordsByRoomAndTime(String roomName, LocalDateTime startTime, LocalDateTime endTime) {
         Room room = roomMapper.getRoomByName(roomName);
-        return getRecords(null,room.getId(),null,startTime,endTime,null,null,null,null,null);
+        return getRecords(null, room.getId(), null, startTime, endTime, null, null, null, null, null);
     }
 
     @Override
     public void createAdminRecord(String roomName, LocalDateTime startTime, LocalDateTime endTime) {
         Room room = roomMapper.getRoomByName(roomName);
-        createRecord(room.getId(),1,startTime,endTime,true);
+        createRecord(room.getId(), 1, startTime, endTime, true, null);
     }
 
     /**

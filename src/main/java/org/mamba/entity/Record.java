@@ -18,4 +18,5 @@ public class Record {
     private boolean hasCheckedIn;
     private boolean allowCheckIn;
     private boolean isApproved;
+    private String comment; // the user's request message
 }
