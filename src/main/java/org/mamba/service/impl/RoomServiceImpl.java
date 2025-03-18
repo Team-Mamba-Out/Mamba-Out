@@ -73,10 +73,10 @@ public class RoomServiceImpl implements RoomService {
                 Integer conditionRoomId = conditionRoom.getId();
 
                 // 1. Check if the room is busy due to existing bookings (time overlap check)
-                List<List<LocalDateTime>> conditionRoomBusyTimeList = getBusyTimesById(conditionRoomId);
-                for (List<LocalDateTime> busyTimeSlots : conditionRoomBusyTimeList) {
+                List<Map<String, Object>> conditionRoomBusyTimeList = getBusyTimesById(conditionRoomId);
+                for (Map<String, Object> busyTimeSlots : conditionRoomBusyTimeList) {
                     // Check if each busy time slot occupies the given period
-                    if (start.isBefore(busyTimeSlots.get(1)) && end.isAfter(busyTimeSlots.get(0))) {
+                    if (start.isBefore((LocalDateTime)busyTimeSlots.get("endTime")) && end.isAfter((LocalDateTime)busyTimeSlots.get("startTime"))) {
                         roomBusy = true;
                         break;
                     }
@@ -254,22 +254,26 @@ public class RoomServiceImpl implements RoomService {
      * @return the list containing several lists, each of which contains start time and end time
      */
     @Override
-    public List<List<LocalDateTime>> getBusyTimesById(Integer id) {
-        // Get the current time
+    public List<Map<String, Object>> getBusyTimesById(Integer id) {
+        // 获取当前时间
         LocalDateTime now = LocalDateTime.now();
-
         LocalDate today = now.toLocalDate();
-        LocalDateTime startOfDay = today.atStartOfDay(); // to 00:00
-        LocalDateTime endOfDay = today.plusDays(7).atStartOfDay(); // 7 days later
+        LocalDateTime startOfDay = today.atStartOfDay(); // 当天 00:00
+        LocalDateTime endOfDay = today.plusDays(7).atStartOfDay(); // 7 天后 00:00
 
-        // Get all the records of the next 7 days
+        // 获取未来 7 天的所有记录
         List<Record> records = roomMapper.getFutureRecords(id, startOfDay, endOfDay);
 
-        List<List<LocalDateTime>> busyTimes = new ArrayList<>();
+        List<Map<String, Object>> busyTimes = new ArrayList<>();
 
-        // Put all the record time periods into the busy times list (each contains start/end time)
+        // 将每个预订记录的 id、开始时间和结束时间放入列表
         for (Record record : records) {
-            busyTimes.add(Arrays.asList(record.getStartTime(), record.getEndTime()));
+            Map<String, Object> recordInfo = new HashMap<>();
+            recordInfo.put("uid", record.getUserId());
+            recordInfo.put("startTime", record.getStartTime());
+            recordInfo.put("endTime", record.getEndTime());
+
+            busyTimes.add(recordInfo);
         }
 
         return busyTimes;
@@ -296,6 +300,7 @@ public class RoomServiceImpl implements RoomService {
         }
         return maintenanceTimes;
     }
+
 
 
     /**
@@ -432,12 +437,12 @@ public class RoomServiceImpl implements RoomService {
 //                }
 
                 // Get all busy times for this room
-                List<List<LocalDateTime>> busyTimes = getBusyTimesById(room.getId());
+                List<Map<String, Object>> busyTimes = getBusyTimesById(room.getId());
                 boolean isAvailable = true;
 
                 // Check if the room is available during the requested time slot
-                for (List<LocalDateTime> busyTime : busyTimes) {
-                    if (startTime.isBefore(busyTime.get(1)) && endTime.isAfter(busyTime.get(0))) {
+                for (Map<String, Object> busyTime : busyTimes) {
+                    if (startTime.isBefore((LocalDateTime)busyTime.get("endTime")) && endTime.isAfter((LocalDateTime)busyTime.get("startTime"))) {
                         isAvailable = false;
                         break;
                     }
@@ -505,12 +510,12 @@ public class RoomServiceImpl implements RoomService {
                 }
 
                 // Get all busy times for this room
-                List<List<LocalDateTime>> busyTimes = getBusyTimesById(room.getId());
+                List<Map<String, Object>> busyTimes = getBusyTimesById(room.getId());
 
                 // Check if the room is available based on busy times
                 boolean isAvailable = true;
-                for (List<LocalDateTime> busyTime : busyTimes) {
-                    if (startTime.isBefore(busyTime.get(1)) && endTime.isAfter(busyTime.get(0))) {
+                for (Map<String, Object> busyTime : busyTimes) {
+                    if (startTime.isBefore((LocalDateTime)busyTime.get("endTime")) && endTime.isAfter((LocalDateTime)busyTime.get("startTime"))) {
                         isAvailable = false;
                         break;
                     }
