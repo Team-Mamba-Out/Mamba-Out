@@ -60,7 +60,7 @@ public class RecordController {
      */
     @PostMapping
     public Result createRecord(@RequestBody Record record) {
-        recordService.createRecord(record.getRoomId(), record.getUserId(), record.getStartTime(), record.getEndTime(), record.isHasCheckedIn());
+        recordService.createRecord(record.getRoomId(), record.getUserId(), record.getStartTime(), record.getEndTime(), record.isHasCheckedIn(), record.getComment());
         return Result.success();
     }
 

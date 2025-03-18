@@ -1,73 +1,82 @@
-CREATE TABLE Admin (
-                       email VARCHAR(255) NOT NULL PRIMARY KEY,
-                       uid INT NOT NULL UNIQUE,
-                       name VARCHAR(255) NOT NULL,
-                       phone VARCHAR(20)
+CREATE TABLE Admin
+(
+    email VARCHAR(255) NOT NULL PRIMARY KEY,
+    uid   INT          NOT NULL UNIQUE,
+    name  VARCHAR(255) NOT NULL,
+    phone VARCHAR(20)
 );
 
-CREATE TABLE Lecturer (
-                          email VARCHAR(255) NOT NULL PRIMARY KEY,
-                          uid INT NOT NULL UNIQUE,
-                          name VARCHAR(255) NOT NULL,
-                          phone VARCHAR(20)
+CREATE TABLE Lecturer
+(
+    email VARCHAR(255) NOT NULL PRIMARY KEY,
+    uid   INT          NOT NULL UNIQUE,
+    name  VARCHAR(255) NOT NULL,
+    phone VARCHAR(20)
 );
 
-CREATE TABLE Room (
-                      id INT AUTO_INCREMENT PRIMARY KEY,
-                      roomName VARCHAR(255) NOT NULL,
-                      capacity INT NOT NULL,
-                      isBusy BOOLEAN NOT NULL DEFAULT FALSE,
-                      location VARCHAR(255),
-                      multimedia BOOLEAN NOT NULL DEFAULT FALSE,
-                      projector BOOLEAN NOT NULL DEFAULT FALSE,
-                      requireApproval BOOLEAN NOT NULL DEFAULT FALSE,
-                      isRestricted BOOLEAN NOT NULL DEFAULT FALSE,
-                      roomType INT NOT NULL,
-                      url VARCHAR(500) DEFAULT NULL
+CREATE TABLE Room
+(
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    roomName        VARCHAR(255) NOT NULL,
+    capacity        INT          NOT NULL,
+    isBusy          BOOLEAN      NOT NULL DEFAULT FALSE,
+    location        VARCHAR(255),
+    multimedia      BOOLEAN      NOT NULL DEFAULT FALSE,
+    projector       BOOLEAN      NOT NULL DEFAULT FALSE,
+    requireApproval BOOLEAN      NOT NULL DEFAULT FALSE,
+    isRestricted    BOOLEAN      NOT NULL DEFAULT FALSE,
+    roomType        INT          NOT NULL,
+    url             VARCHAR(500)          DEFAULT NULL
 );
 
-CREATE TABLE Room_User (
-                           room_id INT NOT NULL,
-                           uid INT NOT NULL,
-                           PRIMARY KEY (room_id, uid),
-                           FOREIGN KEY (room_id) REFERENCES Room(id) ON DELETE CASCADE,
-                           FOREIGN KEY (uid) REFERENCES User(uid) ON DELETE CASCADE
+CREATE TABLE Room_User
+(
+    room_id INT NOT NULL,
+    uid     INT NOT NULL,
+    PRIMARY KEY (room_id, uid),
+    FOREIGN KEY (room_id) REFERENCES Room (id) ON DELETE CASCADE,
+    FOREIGN KEY (uid) REFERENCES User (uid) ON DELETE CASCADE
 );
 
-CREATE TABLE Student (
-                         email VARCHAR(255) NOT NULL PRIMARY KEY,
-                         uid INT NOT NULL UNIQUE,
-                         name VARCHAR(255) NOT NULL,
-                         phone VARCHAR(20),
-                         breakTimer INT DEFAULT 0
+CREATE TABLE Student
+(
+    email      VARCHAR(255) NOT NULL PRIMARY KEY,
+    uid        INT          NOT NULL UNIQUE,
+    name       VARCHAR(255) NOT NULL,
+    phone      VARCHAR(20),
+    breakTimer INT DEFAULT 0
 );
 
-CREATE TABLE User (
-                      uid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-                      role ENUM('Admin', 'Lecturer', 'Student') NOT NULL
+CREATE TABLE User
+(
+    uid  INT                                   NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    role ENUM ('Admin', 'Lecturer', 'Student') NOT NULL
 );
 
-CREATE TABLE Record (
-                        id INT AUTO_INCREMENT PRIMARY KEY,
-                        roomId INT NOT NULL,
-                        userId INT ,
-                        startTime DATETIME NOT NULL,
-                        endTime DATETIME NOT NULL,
-                        recordTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                        hasCheckedIn BOOLEAN NOT NULL DEFAULT FALSE,
-                        isCancelled BOOLEAN NOT NULL DEFAULT FALSE,
-                        statusId tinyint NOT NULL DEFAULT 1,
-                        isApproved BOOLEAN NOT NULL DEFAULT TRUE
+CREATE TABLE Record
+(
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    roomId       INT      NOT NULL,
+    userId       INT,
+    startTime    DATETIME NOT NULL,
+    endTime      DATETIME NOT NULL,
+    recordTime   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    hasCheckedIn BOOLEAN  NOT NULL DEFAULT FALSE,
+    isCancelled  BOOLEAN  NOT NULL DEFAULT FALSE,
+    statusId     tinyint  NOT NULL DEFAULT 1,
+    isApproved   BOOLEAN  NOT NULL DEFAULT TRUE
 );
 
-CREATE TABLE Message (
-                         id INT AUTO_INCREMENT PRIMARY KEY,
-                         uid INT NOT NULL,
-                         title VARCHAR(255) NOT NULL,
-                         text TEXT NOT NULL,
-                         createTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                         isRead BOOLEAN NOT NULL DEFAULT FALSE,
-                         sender VARCHAR(255) NOT NULL
+CREATE TABLE Message
+(
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    uid        INT          NOT NULL,
+    title      VARCHAR(255) NOT NULL,
+    text       TEXT         NOT NULL,
+    createTime DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    isRead     BOOLEAN      NOT NULL DEFAULT FALSE,
+    sender     VARCHAR(255) NOT NULL,
+    comment    VARCHAR(500)          DEFAULT NULL
 );
 
 # -- 插入用户数据

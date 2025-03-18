@@ -85,7 +85,7 @@ public class AdminServiceImpl implements AdminService {
         LocalDateTime newEndTime = LocalDateTime.parse(roomInfo[2]);
 
         recordService.deleteRecordById(recordId);
-        recordService.createRecord(nearestRoom.getId(), userID, newStartTime, newEndTime, false);
+        recordService.createRecord(nearestRoom.getId(), userID, newStartTime, newEndTime, false, null);
 
         // Send a notification message about the reassignment
         messageService.createMessage(
@@ -211,7 +211,7 @@ public class AdminServiceImpl implements AdminService {
         }
 
         // Create a new reservation for the occupied room
-        recordService.createRecord(roomId, 1, occupyStartTime, occupyEndTime, true);
+        recordService.createRecord(roomId, 1, occupyStartTime, occupyEndTime, true, null);
 
         // Iterate through extracted records and reassign each user to a new room
         for (Map<String, Object> recordData : extractedRecords) {
@@ -229,7 +229,7 @@ public class AdminServiceImpl implements AdminService {
             }
 
             // Create a new reservation for the reassigned room
-            recordService.createRecord(nearestRoom.getId(), userID, oldStartTime, oldEndTime, false);
+            recordService.createRecord(nearestRoom.getId(), userID, oldStartTime, oldEndTime, false, null);
 
             // Retrieve the newly assigned record
             Record newRecord = recordService.getRecordById(nearestRoom.getId());

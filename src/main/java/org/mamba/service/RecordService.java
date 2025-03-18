@@ -1,4 +1,5 @@
 package org.mamba.service;
+
 import org.mamba.entity.Record;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -36,7 +37,7 @@ public interface RecordService {
      * @param size         the size of each page
      * @param page         the page No.
      */
-    Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn,String status, Integer size, Integer page, Boolean isApproved);
+    Map<String, Object> getRecords(Integer id, Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, String status, Integer size, Integer page, Boolean isApproved);
 
     /**
      * Obtains the record specified by ID given.
@@ -54,8 +55,9 @@ public interface RecordService {
      * @param startTime    Start Time
      * @param endTime      End Time
      * @param hasCheckedIn whether the user has checked in
+     * @param comment      the user's request message
      */
-    void createRecord(Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn);
+    void createRecord(Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, String comment);
 
     /**
      * Deletes the record specified by id.
@@ -67,13 +69,12 @@ public interface RecordService {
     /**
      * Cancel the record specified by id.
      *
-     * @param id  the provided id
+     * @param id the provided id
      */
     void cancelRecordById(Integer id);
 
 
     List<Record> getRestrictedRecords(Integer room_id);
-
 
 
     /**
@@ -120,7 +121,7 @@ public interface RecordService {
     /**
      * Queries records based on room ID, start time, and end time.
      *
-     * @param roomName    the room ID
+     * @param roomName  the room ID
      * @param startTime the start time
      * @param endTime   the end time
      * @return the list of records matching the criteria
@@ -130,7 +131,7 @@ public interface RecordService {
     /**
      * Queries records based on room ID, start time, and end time.
      *
-     * @param roomName    the room ID
+     * @param roomName  the room ID
      * @param startTime the start time
      * @param endTime   the end time
      */
@@ -139,9 +140,9 @@ public interface RecordService {
     /**
      * Finds records for a given room within a specified time range, including those that partially overlap.
      *
-     * @param roomName the name of the room
+     * @param roomName        the name of the room
      * @param occupyStartTime the start time of the range
-     * @param occupyEndTime the end time of the range
+     * @param occupyEndTime   the end time of the range
      * @return a list of records that overlap with the specified time range
      */
     List<Record> findRecordsByRoomAndTimeRange(String roomName, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime);
