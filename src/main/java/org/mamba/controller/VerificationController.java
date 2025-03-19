@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
@@ -75,12 +76,13 @@ public class VerificationController {
         try {
             // Create a new email
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(SMTP_SENDER_USERNAME)); // Set sender
+            message.setFrom(new InternetAddress(SMTP_SENDER_USERNAME, "DIICSU Room Booking System")); // Set sender
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email)); // Set receiver
 
             message.setSubject("Your verification code"); // Set subject
 
-            String requireApprovalText = "Hi,\n\n"
+            // Message content
+            String verificationText = "Hi,\n\n"
                     + "You are using this email address for DIICSU room booking system user authentication.\n\n"
                     + "Your verification code is: "
                     + codeString + "\n\n"
@@ -88,7 +90,7 @@ public class VerificationController {
                     + "If you believe this email is not relevant to you, please ignore. "
                     + "As long as this code is not compromised, your account remains secure.";
 
-            message.setText(requireApprovalText);  // Set text
+            message.setText(verificationText);  // Set text
 
             // Send email
             Transport.send(message);
@@ -97,6 +99,8 @@ public class VerificationController {
 
         } catch (MessagingException e) {
             throw new RuntimeException("EMAIL SENDING FAILURE: " + e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
 
         return Result.success("Verification code has been successfully sent. Check spam folder if not found.");
@@ -127,25 +131,27 @@ public class VerificationController {
             failedAttemptsMap.remove(email);
             Integer uid = userService.getUserId(email);
             String name = userService.getUserName(uid);
-            Map<String,Object> claims = new HashMap<>();
-            claims.put("uid",uid);
-            claims.put("email",email);
-            claims.put("name",name);
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("uid", uid);
+            claims.put("email", email);
+            claims.put("name", name);
             String token = JwtUtil.getToken(claims);
             return Result.success(token);
         }
         failedAttemptsMap.put(email, attempts + 1);
         return Result.error("Incorrect code. " + (5 - failedAttemptsMap.get(email)) + " attempts left.");
     }
+
     @RequestMapping("/getUserInfo")
-    public Result getUserInfo(HttpServletRequest request){
+    public Result getUserInfo(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
         System.out.println(token);
-        Map<String,Object> claims = JwtUtil.parseToken(token);
+        Map<String, Object> claims = JwtUtil.parseToken(token);
         Integer uid = (Integer) claims.get("uid");
         Map<String, Object> result = userService.getUserInfo(uid);
         return Result.success(result);
     }
+
     /**
      * Compares two string in constant time. This is to prevent timing attack.
      *
@@ -155,5 +161,14 @@ public class VerificationController {
      */
     private static boolean constantTimeCompare(String a, String b) {
         return MessageDigest.isEqual(a.getBytes(), b.getBytes());
+    }
+
+    /**
+     * test only, do not call from outside :)
+     *
+     * @param args arguments
+     */
+    public static void main(String[] args) {
+        startVerify("2542682@dundee.ac.uk");
     }
 }
