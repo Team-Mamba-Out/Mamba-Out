@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
@@ -56,7 +58,7 @@ public class EmailManager {
         try {
             // Create a new email
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(SMTP_SENDER_USERNAME)); // Set sender
+            message.setFrom(new InternetAddress(SMTP_SENDER_USERNAME, "DIICSU Room Booking System")); // Set sender // Set sender
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(userEmail)); // Set receiver
 
             if (roomRequireApproval) {
@@ -74,6 +76,9 @@ public class EmailManager {
 
                 message.setText(requireApprovalText);  // Set text
             } else {
+                // Generate Outlook calendar link
+                String link = CalendarManager.generateEventLink(record.getStartTime(), record.getEndTime(), record.getCorrespondingRoom().getRoomName());
+
                 // This room does not require approval
                 message.setSubject("Your booking is successful"); // Set subject
 
@@ -82,7 +87,8 @@ public class EmailManager {
                         + record.getCorrespondingRoom().getRoomName() + ".\n\n"
                         + "Your booking time: From "
                         + record.getStartTime().format(notificationFormatter) + " to "
-                        + record.getEndTime().format(notificationFormatter) + ".\n\n"
+                        + record.getEndTime().format(notificationFormatter) + ". "
+                        + "You can add it to your Outlook calendar via this link: " + link + "\n\n"
                         + "As a special reminder, you must check in promptly 10 minutes before the start of your booking "
                         + "or it will be recorded as a breach of contract, "
                         + "which may affect your subsequent bookings.";
@@ -97,6 +103,8 @@ public class EmailManager {
 
         } catch (MessagingException e) {
             throw new RuntimeException("EMAIL SENDING FAILURE: " + e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -130,16 +138,20 @@ public class EmailManager {
         try {
             // Create a new email
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(SMTP_SENDER_USERNAME)); // Set sender
+            message.setFrom(new InternetAddress(SMTP_SENDER_USERNAME, "DIICSU Room Booking System")); // Set sender // Set sender
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(userEmail)); // Set receiver
             message.setSubject("Your booking request is approved"); // Set subject
+
+            // Generate Outlook calendar link
+            String link = CalendarManager.generateEventLink(record.getStartTime(), record.getEndTime(), record.getCorrespondingRoom().getRoomName());
 
             String requestApprovedText = "Hi,\n\n"
                     + "This is a reminder that your booking request for "
                     + record.getCorrespondingRoom().getRoomName() + " has been approved.\n\n"
                     + "Your booking time: From "
                     + record.getStartTime().format(notificationFormatter) + " to "
-                    + record.getEndTime().format(notificationFormatter) + ".\n\n"
+                    + record.getEndTime().format(notificationFormatter) + ". "
+                    + "You can add it to your Outlook calendar via this link: " + link + "\n\n"
                     + "This means your booking is now in effect."
                     + "As a special reminder, you must check in promptly 10 minutes before the start of your booking "
                     + "or it will be recorded as a breach of contract, "
@@ -154,6 +166,8 @@ public class EmailManager {
 
         } catch (MessagingException e) {
             throw new RuntimeException("EMAIL SENDING FAILURE: " + e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -188,7 +202,7 @@ public class EmailManager {
         try {
             // Create a new email
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(SMTP_SENDER_USERNAME)); // Set sender
+            message.setFrom(new InternetAddress(SMTP_SENDER_USERNAME, "DIICSU Room Booking System")); // Set sender // Set sender
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(userEmail)); // Set receiver
             message.setSubject("Your booking request is rejected"); // Set subject
 
@@ -207,6 +221,8 @@ public class EmailManager {
 
         } catch (MessagingException e) {
             throw new RuntimeException("EMAIL SENDING FAILURE: " + e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -234,7 +250,7 @@ public class EmailManager {
         try {
             // Create a new email
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(SMTP_SENDER_USERNAME)); // Set sender
+            message.setFrom(new InternetAddress(SMTP_SENDER_USERNAME, "DIICSU Room Booking System")); // Set sender // Set sender
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(userEmail)); // Set receiver
             message.setSubject("Please check in for your booking"); // Set subject
 
@@ -257,14 +273,16 @@ public class EmailManager {
 
         } catch (MessagingException e) {
             throw new RuntimeException("EMAIL SENDING FAILURE: " + e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
 
     /**
      * Sends an email that notifies the user that the booking has been cancelled/reassigned.
      *
-     * @param userEmail               the user's email
-     * @param reassignSuccessful      if the reassignment is successful or not
+     * @param userEmail          the user's email
+     * @param reassignSuccessful if the reassignment is successful or not
      */
     public static void sendRecordCancelledEmail(String userEmail, boolean reassignSuccessful) {
         // Set email server properties
@@ -283,7 +301,7 @@ public class EmailManager {
 
         try {
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(SMTP_SENDER_USERNAME)); // Set sender
+            message.setFrom(new InternetAddress(SMTP_SENDER_USERNAME, "DIICSU Room Booking System")); // Set sender // Set sender
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(userEmail)); // Set receiver
 
             if (reassignSuccessful) {
@@ -315,6 +333,29 @@ public class EmailManager {
 
         } catch (MessagingException e) {
             throw new RuntimeException("EMAIL SENDING FAILURE: " + e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * test only, do not call from outside
+     *
+     * @param args arguments
+     */
+    public static void main(String[] args) {
+        Record testRecord = new Record();
+        Room testRoom = new Room();
+
+        LocalDateTime startTime = LocalDateTime.now().plusDays(1);
+        LocalDateTime endTime = startTime.plusHours(2);
+
+        testRecord.setStartTime(startTime);
+        testRecord.setEndTime(endTime);
+
+        testRoom.setRoomName("Laoda's 208");
+        testRecord.setCorrespondingRoom(testRoom);
+
+        sendBookSuccessfulEmail("2542682@dundee.ac.uk", testRecord, false);
     }
 }
