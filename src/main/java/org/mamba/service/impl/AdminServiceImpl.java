@@ -99,7 +99,9 @@ public class AdminServiceImpl implements AdminService {
                         ". The reason is: " + reason + ". Please check your reservation details.",
                 LocalDateTime.now(),
                 false,
-                "System Notification"
+                "1;Admin",
+                0,
+                roomId
         );
 
         // email logic: cancel and reassign
@@ -166,7 +168,9 @@ public class AdminServiceImpl implements AdminService {
                 "Dear " + name + ", your admin account has been created successfully.",
                 LocalDateTime.now(),
                 false,
-                "System Notification"
+                "1;JinhaoZhang",
+                0,
+                0
         );
     }
 
@@ -180,7 +184,9 @@ public class AdminServiceImpl implements AdminService {
                 "Dear " + name + ", your admin information has been successfully updated.",
                 LocalDateTime.now(),
                 false,
-                "System Notification"
+                "1;JinhaoZhang",
+                0,
+                0
         );
     }
 
@@ -245,7 +251,9 @@ public class AdminServiceImpl implements AdminService {
                             ". The reason is: " + reason + ". Please check your reservation details.",
                     LocalDateTime.now(),
                     false,
-                    "System Notification"
+                    "1;JinhaoZhang",
+                    0,
+                    newRecord.getRoomId()
             );
 
             // email logic: cancel and reassign

@@ -33,6 +33,8 @@ public class RoomServiceImpl implements RoomService {
     private final int DAILY_START_HOUR = 8;
     private final int DAILY_END_HOUR = 22;
     private final long PERIOD_MINUTE = 30;
+    @Autowired
+    private RoomService roomService;
 
     /**
      * Obtains the room specified by the information given.
@@ -151,13 +153,17 @@ public class RoomServiceImpl implements RoomService {
     public void createRoom(String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url, String description, Integer maxBookingDuration) {
         roomMapper.createRoom(roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url, description, maxBookingDuration);
 
+
+
         messageService.createMessage(
                 1,
                 "New Room Created",
                 "A new room named '" + roomName + "' has been successfully created. Details: Capacity: " + capacity + ", Location: " + location,
                 LocalDateTime.now(),
                 false,
-                "System Notification"
+                "1;JinhaoZhang",
+                roomService.getRoomByName(roomName).getId(),
+                3
         );
     }
 
@@ -213,7 +219,9 @@ public class RoomServiceImpl implements RoomService {
                         ", Description: " + description,
                 LocalDateTime.now(),
                 false,
-                "System Notification"
+                "1;JinhaoZhang",
+                0,
+                id
         );
     }
 
@@ -251,7 +259,9 @@ public class RoomServiceImpl implements RoomService {
                 "The room with ID " + id + " has been successfully deleted.",
                 LocalDateTime.now(),
                 false,
-                "System Notification"
+                "1;JinhaoZhang",
+                0,
+                id
         );
     }
 
@@ -311,7 +321,14 @@ public class RoomServiceImpl implements RoomService {
         }
         return maintenanceTimes;
     }
-
+    /**
+     * Cancel the room by id.
+     * @param id the provided id
+     */
+    @Override
+    public void cancelRoomById(Integer id) {
+        roomMapper.cancelRoomById(id);
+    }
 
     /**
      * Get all the RECORD PERIODS times of the room by id.
@@ -552,7 +569,6 @@ public class RoomServiceImpl implements RoomService {
             endTime = endTime.plusMinutes(PERIOD_MINUTE);
         }
     }
-
 
     @Override
     public Map<String, Double> calculateRoomUtilization() {

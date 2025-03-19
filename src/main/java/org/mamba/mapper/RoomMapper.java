@@ -45,6 +45,9 @@ public interface RoomMapper {
                     @Param("description") String description,
                     @Param("maxBookingDuration") Integer maxBookingDuration);
 
+    @Update("UPDATE mamba.room SET isCanceled = 1 WHERE id = #{id}")
+    void cancelRoomById(@Param("id") Integer id);
+
 
     /**
      * Obtains the room specified by ID.

@@ -45,7 +45,9 @@ public class RecordServiceImpl implements RecordService {
                 "Your reservation for room " + room.getRoomName() + " has been approved.",
                 LocalDateTime.now(),
                 false,
-                "System Notification"
+                "1;JinhaoZhang",
+                0,
+                record.getRoomId()
         );
         Integer userId = record.getUserId();
         String email = userService.getUserByUid(userId).getRole().split("-")[0];
@@ -72,7 +74,9 @@ public class RecordServiceImpl implements RecordService {
                 "Your reservation for room " + room.getRoomName() + " has been rejected.",
                 LocalDateTime.now(),
                 false,
-                "System Notification"
+                "1;JinhaoZhang",
+                0,
+                id
         );
 
     }
@@ -213,7 +217,9 @@ public class RecordServiceImpl implements RecordService {
                 "Your room reservation for: " + room.getRoomName() + " has been successfully created. The reservation is from " + startTime + " to " + endTime + ". Please check in on time.",
                 recordTime,
                 false,
-                "System Notification"
+                "1;JinhaoZhang",
+                0,
+                roomId
         );
 
         // Send email on booking created
@@ -247,7 +253,9 @@ public class RecordServiceImpl implements RecordService {
                 "Your room reservation for: " + room.getRoomName() + " has been successfully cancelled.",
                 LocalDateTime.now(),
                 false,
-                "System Notification"
+                "1;JinhaoZhang",
+                0,
+                room.getId()
         );
     }
 

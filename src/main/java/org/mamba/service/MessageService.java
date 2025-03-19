@@ -20,7 +20,7 @@ public interface MessageService {
      * @param createTime the creation time of the message
      * @param isRead the read status of the message
      */
-    void createMessage(Integer receiver, String title, String text, LocalDateTime createTime, Boolean isRead,String sender);
+    void createMessage(Integer receiver, String title, String text, LocalDateTime createTime, Boolean isRead,String sender,Integer type,Integer roomId);
 
     /**
      * Deletes a message by its ID.

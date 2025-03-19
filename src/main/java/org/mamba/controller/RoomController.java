@@ -89,6 +89,17 @@ public class RoomController {
     }
 
     /**
+     * Cancel the room by id.
+     * @param id the room id
+     * @return the result of the operation
+     */
+    @DeleteMapping("/cancelRoom/{id}")
+    public Result cancelRoomById(@PathVariable Integer id) {
+        roomService.cancelRoomById(id);
+        return Result.success();
+    }
+
+    /**
      * Get the permission of the user in the room.
      *
      * @param room_id the room id

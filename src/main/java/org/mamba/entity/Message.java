@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 public class Message {
     private Integer id;
     private Integer receiver;
+    private Integer roomId;
+    private Integer type;
     private String title;
     private String text;
     private LocalDateTime createTime;

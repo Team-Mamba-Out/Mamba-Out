@@ -32,7 +32,7 @@ public class MessageController {
      */
     @PostMapping("/create")
     public Result createMessage(@RequestBody Message message) {
-        messageService.createMessage(message.getReceiver(), message.getTitle(), message.getText(), message.getCreateTime(), message.isRead(), message.getSender());
+        messageService.createMessage(message.getReceiver(), message.getTitle(), message.getText(), message.getCreateTime(), message.isRead(), message.getSender(),message.getType(),message.getRoomId());
         return Result.success();
     }
 
@@ -66,6 +66,11 @@ public class MessageController {
         return Result.success(messagesResult);
     }
 
+    /**
+     * Marks a message as read.
+     * @param request the request containing the message ID
+     * @return a success result
+     */
     @PostMapping("/read")
     public Result readMessage(@RequestBody Map<String, Object> request) {
         Integer id = Integer.parseInt(request.get("id").toString());

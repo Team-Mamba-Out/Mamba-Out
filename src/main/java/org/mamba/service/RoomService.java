@@ -26,6 +26,8 @@ public interface RoomService {
      */
     Map<String, Object> getRooms(Integer id, String roomName, Integer capacity, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, LocalDateTime start, LocalDateTime end, Integer size, Integer page);
 
+    void cancelRoomById(Integer id);
+
     /**
      * Insert a new room.
      *
