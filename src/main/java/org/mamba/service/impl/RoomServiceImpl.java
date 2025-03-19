@@ -1,5 +1,6 @@
 package org.mamba.service.impl;
 
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.mamba.entity.Maintenance;
 import org.mamba.entity.Record;
 import org.mamba.entity.Room;
@@ -33,8 +34,6 @@ public class RoomServiceImpl implements RoomService {
     private final int DAILY_START_HOUR = 8;
     private final int DAILY_END_HOUR = 22;
     private final long PERIOD_MINUTE = 30;
-    @Autowired
-    private RoomService roomService;
 
     /**
      * Obtains the room specified by the information given.
@@ -153,8 +152,6 @@ public class RoomServiceImpl implements RoomService {
     public void createRoom(String roomName, Integer capacity, Boolean isBusy, String location, Boolean multimedia, Boolean projector, Boolean requireApproval, Boolean isRestricted, Integer roomType, String url, String description, Integer maxBookingDuration) {
         roomMapper.createRoom(roomName, capacity, isBusy, location, multimedia, projector, requireApproval, isRestricted, roomType, url, description, maxBookingDuration);
 
-
-
         messageService.createMessage(
                 1,
                 "New Room Created",
@@ -162,7 +159,7 @@ public class RoomServiceImpl implements RoomService {
                 LocalDateTime.now(),
                 false,
                 "1;JinhaoZhang",
-                roomService.getRoomByName(roomName).getId(),
+                roomMapper.getRoomByName(roomName).getId(),
                 3
         );
     }
