@@ -92,9 +92,9 @@ public class RoomServiceImpl implements RoomService {
                 Integer conditionRoomId = conditionRoom.getId();
                 boolean isUnderMaintenance = false;
                 // Check if the room is under maintenance (time overlap check)
-                List<List<LocalDateTime>> maintenanceTimes = getMaintenanceTimesById(conditionRoomId);
-                for (List<LocalDateTime> maintenanceTimeSlots : maintenanceTimes) {
-                    if (start.isBefore(maintenanceTimeSlots.get(1)) && start.isAfter(maintenanceTimeSlots.get(0))) {
+                List<Map<String, Object>> maintenanceTimes = getMaintenanceTimesById(conditionRoomId);
+                for (Map<String, Object> maintenanceTimeSlots : maintenanceTimes) {
+                    if (start.isBefore((LocalDateTime) maintenanceTimeSlots.get("endTime")) && start.isAfter((LocalDateTime) maintenanceTimeSlots.get("startTime"))) {
                         isUnderMaintenance = true;  // The room is under maintenance
                         break;
                     }
@@ -106,9 +106,9 @@ public class RoomServiceImpl implements RoomService {
                 Integer conditionRoomId = conditionRoom.getId();
                 boolean isUnderMaintenance = false;
                 // Check if the room is under maintenance (time overlap check)
-                List<List<LocalDateTime>> maintenanceTimes = getMaintenanceTimesById(conditionRoomId);
-                for (List<LocalDateTime> maintenanceTimeSlots : maintenanceTimes) {
-                    if (start.isBefore(maintenanceTimeSlots.get(1)) && end.isAfter(maintenanceTimeSlots.get(0))) {
+                List<Map<String, Object>> maintenanceTimes = getMaintenanceTimesById(conditionRoomId);
+                for (Map<String, Object> maintenanceTimeSlots : maintenanceTimes) {
+                    if (start.isBefore((LocalDateTime) maintenanceTimeSlots.get("endTime")) && end.isAfter((LocalDateTime) maintenanceTimeSlots.get("startTime"))) {
                         isUnderMaintenance = true;  // The room is under maintenance
                         break;
                     }
@@ -298,26 +298,30 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<List<LocalDateTime>> getMaintenanceTimesById(Integer id) {
-        // Get the current time
+    public List<Map<String, Object>> getMaintenanceTimesById(Integer id) {
+        // 获取当前时间
         LocalDateTime now = LocalDateTime.now();
-
         LocalDate today = now.toLocalDate();
-        LocalDateTime startOfDay = today.atStartOfDay(); // to 00:00
-        LocalDateTime endOfDay = today.plusDays(7).atStartOfDay(); // 7 days later
+        LocalDateTime startOfDay = today.atStartOfDay(); // 当天 00:00
+        LocalDateTime endOfDay = today.plusDays(7).atStartOfDay(); // 7 天后 00:00
 
-        // Get all the maintenance records of the next 7 days
-        Map<String, Object> maintenanceResult = maintenanceService.getMaintenance(null, id, startOfDay, endOfDay, 10, 1);
-        List<Maintenance> maintenances = (List<Maintenance>) maintenanceResult.get("maintenanceList");
+        // 获取未来 7 天的所有维护记录
+        List<Maintenance> maintenances = roomMapper.getFutureMaintenances(id, startOfDay, endOfDay);
 
-        List<List<LocalDateTime>> maintenanceTimes = new ArrayList<>();
+        List<Map<String, Object>> maintenanceTimes = new ArrayList<>();
 
-        // Put all the maintenance time periods into the maintenance times list (each contains start/end time)
+        // 将每个维护记录的开始时间和结束时间放入列表
         for (Maintenance maintenance : maintenances) {
-            maintenanceTimes.add(Arrays.asList(maintenance.getScheduledStart(), maintenance.getScheduledEnd()));
+            Map<String, Object> maintenanceInfo = new HashMap<>();
+            maintenanceInfo.put("startTime", maintenance.getScheduledStart());
+            maintenanceInfo.put("endTime", maintenance.getScheduledEnd());
+
+            maintenanceTimes.add(maintenanceInfo);
         }
+
         return maintenanceTimes;
     }
+
     /**
      * Cancel the room by id.
      * @param id the provided id
@@ -498,15 +502,12 @@ public class RoomServiceImpl implements RoomService {
      * @return the nearest available room that meets the criteria, or null if none found
      */
     @Override
-    public Room findNearestAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime,
+    public String findNearestAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime,
                                          Integer uid) {
         // Get the list of all rooms
         List<Room> allRooms = roomMapper.getAllRooms();
 
         LocalDateTime startRecord = startTime;
-
-        // Sort rooms by capacity in ascending order to find the closest match
-        allRooms.sort(Comparator.comparingInt(Room::getCapacity));
 
         // Loop to keep searching for an available room until one is found
         while (true) {
@@ -526,22 +527,15 @@ public class RoomServiceImpl implements RoomService {
                     continue;
                 }
 
-                // Check if the room is under maintenance during the requested time slot
-                Map<String, Object> maintenanceResult = maintenanceService.getMaintenance(null, room.getId(), startTime, endTime, 10, 1);
-                List<Maintenance> maintenanceList = (List<Maintenance>) maintenanceResult.get("maintenanceList");
-                // Check if there is any maintenance that overlaps with the requested time period
-                boolean isUnderMaintenance = false;
-                for (Maintenance maintenance : maintenanceList) {
-                    // If the maintenance start time is before the requested end time,
-                    // and the maintenance end time is after the requested start time, there is an overlap
-                    if (maintenance.getScheduledStart().isBefore(endTime) && maintenance.getScheduledEnd().isAfter(startTime)) {
-                        isUnderMaintenance = true;
-                        break;  // If there's an overlap, mark the room as under maintenance
+                List<Map<String, Object>> maintenance = getMaintenanceTimesById(room.getId());
+
+                // Check if the room is available based on busy times
+                boolean flag = true;
+                for (Map<String, Object> busyTime : maintenance) {
+                    if (startTime.isBefore((LocalDateTime) busyTime.get("endTime")) && endTime.isAfter((LocalDateTime) busyTime.get("startTime"))) {
+                        flag = false;
+                        break;
                     }
-                }
-                // Skip the room if it is under maintenance during the requested time period
-                if (isUnderMaintenance) {
-                    continue;
                 }
 
                 // Get all busy times for this room
@@ -556,8 +550,8 @@ public class RoomServiceImpl implements RoomService {
                     }
                 }
 
-                if (isAvailable) {
-                    return room;  // Return the first available room
+                if (isAvailable && flag) {
+                    return room.getId() + "," + startTime + "," + endTime;  // Return the first available room
                 }
             }
 

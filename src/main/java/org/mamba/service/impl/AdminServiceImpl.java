@@ -4,6 +4,7 @@ import org.mamba.Utils.EmailManager;
 import org.mamba.entity.*;
 import org.mamba.entity.Record;
 import org.mamba.mapper.AdminMapper;
+import org.mamba.mapper.RecordMapper;
 import org.mamba.service.AdminService;
 import org.mamba.service.UserService;
 import org.mamba.service.MaintenanceService;
@@ -15,10 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +34,8 @@ public class AdminServiceImpl implements AdminService {
     private AdminMapper adminMapper;
     @Autowired
     private MaintenanceService maintenanceService;
+    @Autowired
+    private RecordMapper recordMapper;
 
     @Override
     public Map<String, Object> getAdmins(String email, Integer uid, String name, String phone, Integer size, Integer page) {
@@ -87,7 +87,7 @@ public class AdminServiceImpl implements AdminService {
         LocalDateTime newStartTime = LocalDateTime.parse(roomInfo[1]);
         LocalDateTime newEndTime = LocalDateTime.parse(roomInfo[2]);
 
-        recordService.deleteRecordById(recordId);
+        recordService.cancelRecordById(recordId);
         recordService.createRecord(nearestRoom.getId(), userID, newStartTime, newEndTime, false, null);
 
         // Send a notification message about the reassignment
@@ -197,68 +197,52 @@ public class AdminServiceImpl implements AdminService {
 
 
     @Override
-    public void occupyAndReassignRoom(String roomName, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime, String reason) {
+    public void occupyAndReassignRoom(Integer roomId, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime, String reason) {
+        maintenanceService.createMaintenance(roomId,occupyStartTime,occupyEndTime,reason);
         // Retrieve the list of records within the specified time range for the given room
-        List<Record> list = recordService.findRecordsByRoomAndTimeRange(roomName, occupyStartTime, occupyEndTime);
-        Integer roomId = roomService.getRoomByName(roomName).getId();  // Get the room ID
-
-        // Create a list to store extracted reservation data
-        List<Map<String, Object>> extractedRecords = new ArrayList<>();
+        List<Record> list = recordService.findRecordsByRoomAndTimeRange(roomId, occupyStartTime, occupyEndTime);
 
         for (Record record : list) {
-            Map<String, Object> recordData = new HashMap<>();
-            recordData.put("userID", record.getUserId());
-            recordData.put("startTime", record.getStartTime());
-            recordData.put("endTime", record.getEndTime());
 
-            // Retrieve the user's role
-            String userRole = userService.getUserByUid(record.getUserId()).getRole();
-            recordData.put("role", userRole);
+            Integer userId = record.getUserId();
 
-            extractedRecords.add(recordData);
-            recordService.deleteRecordById(record.getId());
-        }
+            recordService.cancelRecordById(record.getId());
 
-        maintenanceService.createMaintenance(roomId,occupyStartTime,occupyEndTime,reason);
+            String nearestRoomInfo = roomService.findNearestAvailableRoom(roomId, record.getStartTime(), record.getEndTime(), userId);
 
-        // Iterate through extracted records and reassign each user to a new room
-        for (Map<String, Object> recordData : extractedRecords) {
-            Integer userID = (Integer) recordData.get("userID");
-            LocalDateTime oldStartTime = (LocalDateTime) recordData.get("startTime");
-            LocalDateTime oldEndTime = (LocalDateTime) recordData.get("endTime");
+            String[] roomInfo = parseRoomInfo(nearestRoomInfo);
 
-            // Find the nearest available room for reassignment
-            Room nearestRoom = roomService.findNearestAvailableRoom(roomId, oldStartTime, oldEndTime, userID);
+            Integer newRoomId = Integer.parseInt(roomInfo[0]);
+
+            Room nearestRoom = roomService.getRoomById(newRoomId);
+            LocalDateTime newStartTime = LocalDateTime.parse(roomInfo[1]);
+            LocalDateTime newEndTime = LocalDateTime.parse(roomInfo[2]);
+
             if (nearestRoom == null) {
                 // email logic: cancelled because reassignment failed
-                EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userID).getRole().split("-")[0], false);
+                EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userId).getRole().split("-")[0], false);
 
-                throw new IllegalStateException("No available room found for user " + userID);
+                throw new IllegalStateException("No available room found for user " + userId);
             }
 
-            // Create a new reservation for the reassigned room
-            recordService.createRecord(nearestRoom.getId(), userID, oldStartTime, oldEndTime, false, null);
+            recordService.createRecord(nearestRoom.getId(), userId, newStartTime, newEndTime, false, null);
 
-            // Retrieve the newly assigned record
-            Record newRecord = recordService.getRecordById(nearestRoom.getId());
-
-            // Send a notification message about the reassignment
             messageService.createMessage(
-                    userID,
+                    userId,
                     "Room Reassignment Notification",
-                    "Your reserved room at " + oldStartTime + " is no longer available. " +
-                            "You have been reassigned to room " + newRecord.getRoomId() + " from " + newRecord.getStartTime() + " to " + newRecord.getEndTime() +
+                    "Your reserved room at " + record.getStartTime() + " is no longer available. " +
+                            "You have been reassigned to room " + nearestRoom.getRoomName() + " from " + newStartTime + " to " + newEndTime +
                             ". The reason is: " + reason + ". Please check your reservation details.",
                     LocalDateTime.now(),
                     false,
                     "1;JinhaoZhang",
                     0,
-                    newRecord.getRoomId()
+                    nearestRoom.getId()
             );
-
             // email logic: cancel and reassign
-            EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userID).getRole().split("-")[0], true);
+            EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userId).getRole().split("-")[0], true);
         }
+
     }
 
     @Override

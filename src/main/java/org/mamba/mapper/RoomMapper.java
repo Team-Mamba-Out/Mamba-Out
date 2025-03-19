@@ -2,6 +2,7 @@ package org.mamba.mapper;
 
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.jdbc.SQL;
+import org.mamba.entity.Maintenance;
 import org.mamba.entity.Record;
 import org.mamba.entity.Room;
 
@@ -117,6 +118,15 @@ public interface RoomMapper {
             "AND r.statusId != 4 " +
             "ORDER BY r.startTime")
     List<Record> getFutureRecords(@Param("id") Integer id, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
+
+    @Select("SELECT * " +
+            "FROM mamba.maintenance m " +
+            "WHERE m.roomId = #{id} " +
+            "AND m.scheduledStart >= #{startOfDay} " +
+            "AND m.scheduledStart <= #{endOfDay} " +
+            "ORDER BY m.scheduledStart")
+    List<Maintenance> getFutureMaintenances(@Param("id") Integer id, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
+
 
     /**
      * Retrieves all records related to a specific room in the past 7 days.
