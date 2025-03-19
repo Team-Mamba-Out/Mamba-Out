@@ -32,7 +32,7 @@ public class MessageController {
      */
     @PostMapping("/create")
     public Result createMessage(@RequestBody Message message) {
-        messageService.createMessage(message.getUid(), message.getTitle(), message.getText(), message.getCreateTime(), message.isRead(), message.getSender());
+        messageService.createMessage(message.getReceiver(), message.getTitle(), message.getText(), message.getCreateTime(), message.isRead(), message.getSender());
         return Result.success();
     }
 
@@ -62,7 +62,7 @@ public class MessageController {
                                    @RequestParam(required = false) Integer size,
                                    @RequestParam(required = false) Integer page) {
         // Retrieve paginated messages from the service layer
-        Map<String, Object> messagesResult = messageService.getMessagesByUid(Uid, size, page);
+        Map<String, Object> messagesResult = messageService.getMessagesByReceiver(Uid, size, page);
         return Result.success(messagesResult);
     }
 
@@ -83,5 +83,18 @@ public class MessageController {
     public Result appointmentReminder(@RequestParam LocalDateTime time) {
         messageService.Reminder(time);
         return Result.success();
+    }
+
+    /**
+     * Retrieves the latest messages for a user after the given timestamp.
+     *
+     * @param receiver the user ID
+     * @param lastTimestamp the last retrieved message timestamp
+     * @return a success result containing the list of new messages
+     */
+    @GetMapping("/latest")
+    public Result getLatestMessages(@RequestParam Integer receiver, @RequestParam LocalDateTime lastTimestamp) {
+        List<Message> newMessages = messageService.getMessagesAfter(receiver, lastTimestamp);
+        return Result.success(newMessages);
     }
 }
