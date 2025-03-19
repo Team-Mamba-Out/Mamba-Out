@@ -25,7 +25,7 @@ public interface MessageMapper {
      * @param isRead the read status of the message
      * @param sender the sender of the message
      */
-    @Insert("INSERT INTO mamba.message (Uid, title, text, createTime, isRead, sender) VALUES (#{Uid}, #{title}, #{text}, #{createTime}, #{isRead}, #{sender})")
+    @Insert("INSERT INTO mamba.message (receiver, title, text, createTime, isRead, sender) VALUES (#{Uid}, #{title}, #{text}, #{createTime}, #{isRead}, #{sender})")
     void createMessage(@Param("Uid") Integer Uid,
                        @Param("title") String title,
                        @Param("text") String text,
@@ -45,7 +45,7 @@ public interface MessageMapper {
      * Retrieves a paginated list of messages for a given user ID.
      */
     @SelectProvider(type = MessageMapper.MessageSqlBuilder.class, method = "buildGetMessagesSql")
-    List<Message> getMessagesByUid(@Param("uid") Integer uid,
+    List<Message> getMessagesByReceiver(@Param("receiver") Integer uid,
                                    @Param("pageSize") Integer pageSize,
                                    @Param("offset") Integer offset);
 
@@ -55,7 +55,7 @@ public interface MessageMapper {
      * @param Uid the user ID
      * @return the total number of messages for the specified user
      */
-    @Select("SELECT COUNT(*) FROM mamba.message WHERE Uid = #{Uid}")
+    @Select("SELECT COUNT(*) FROM mamba.message WHERE receiver = #{receiver}")
     int getMessagesCountByUid(@Param("Uid") Integer Uid);
 
 
@@ -63,7 +63,7 @@ public interface MessageMapper {
      * counts the total number of messages (or those satisfying the conditions)
      */
     @SelectProvider(type = MessageMapper.MessageSqlBuilder.class, method = "buildCountMessagesSql")
-    Integer count(@Param("Uid") Integer Uid,
+    Integer count(@Param("receiver") Integer receiver,
                   @Param("title") String title,
                   @Param("text") String text,
                   @Param("createTime") LocalDateTime createTime,
@@ -81,6 +81,10 @@ public interface MessageMapper {
      */
     @Update("update message set isRead=TRUE where id = #{id}")
     void updateIsRead(@Param("id") Integer id);
+
+    @Select("SELECT * FROM mamba.message WHERE receiver = #{receiver} AND createTime > #{lastTimestamp} ORDER BY createTime ASC")
+    List<Message> getMessagesAfter(@Param("receiver") Integer uid, @Param("lastTimestamp") LocalDateTime lastTimestamp);
+
     /**
      * Static class for building SQL queries.
      */
@@ -89,8 +93,8 @@ public interface MessageMapper {
             SQL sql = new SQL() {{
                 SELECT("*");
                 FROM("mamba.message");
-                if (params.get("uid") != null) {
-                    WHERE("uid = #{uid}");
+                if (params.get("receiver") != null) {
+                    WHERE("receiver = #{receiver}");
                 }
             }};
             // Deal with LIMIT and OFFSET
@@ -116,8 +120,8 @@ public interface MessageMapper {
                 SELECT("count(*)");
                 FROM("mamba.message");
 
-                if (params.get("uid") != null) {
-                    WHERE("uid = #{uid}");
+                if (params.get("receiver") != null) {
+                    WHERE("receiver = #{receiver}");
                 }
                 if (params.get("title") != null && !params.get("title").toString().isEmpty()) {
                     WHERE("title = #{title}");
