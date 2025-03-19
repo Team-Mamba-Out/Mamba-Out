@@ -55,7 +55,7 @@ public interface MaintenanceMapper {
 
     class MaintenanceSqlBuilder {
         public static String buildGetMaintenanceSql(Map<String, Object> params) {
-            return new SQL() {{
+            SQL sql = new SQL() {{
                 SELECT("*");
                 FROM("maintenance");
                 if (params.get("id") != null) {
@@ -71,7 +71,17 @@ public interface MaintenanceMapper {
                     WHERE("scheduledEnd <= #{scheduledEnd}");
                 }
                 ORDER_BY("scheduledStart DESC");
-            }}.toString() + " LIMIT #{pageSize} OFFSET #{offset}";
+            }};
+
+            String query = sql.toString();
+            if (params.get("pageSize") != null) {
+                if (params.get("offset") != null) {
+                    query += " LIMIT #{pageSize} OFFSET #{offset}";
+                } else {
+                    query += " LIMIT #{pageSize}";
+                }
+            }
+            return query;
         }
 
         public static String buildCountMaintenanceSql(Map<String, Object> params) {

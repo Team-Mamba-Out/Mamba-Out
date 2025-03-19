@@ -95,7 +95,7 @@ public interface RoomService {
      * @param id the room id
      * @return the list containing several lists, each of which contains start time and end time
      */
-    List<List<LocalDateTime>> getMaintenanceTimesById(Integer id);
+    List<Map<String, Object>> getMaintenanceTimesById(Integer id);
 
     /**
      * Get the BUSY times of the room by id.
@@ -139,7 +139,7 @@ public interface RoomService {
      * @param endTime   the end time of the desired period
      * @return the nearest available room, or null if none found
      */
-    Room findNearestAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime, Integer uid);
+    String findNearestAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime, Integer uid);
 
     /**
      * Set the permission of a user in a room.

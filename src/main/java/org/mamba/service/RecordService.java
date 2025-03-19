@@ -145,7 +145,7 @@ public interface RecordService {
      * @param occupyEndTime   the end time of the range
      * @return a list of records that overlap with the specified time range
      */
-    List<Record> findRecordsByRoomAndTimeRange(String roomName, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime);
+    List<Record> findRecordsByRoomAndTimeRange(Integer roomName, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime);
 
     void checkIn(Integer id);
 

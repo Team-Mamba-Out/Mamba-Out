@@ -260,9 +260,8 @@ public class RecordServiceImpl implements RecordService {
     }
 
     @Override
-    public List<Record> findRecordsByRoomAndTimeRange(String roomName, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime) {
-        Room room = roomMapper.getRoomByName(roomName);
-        return recordMapper.findRecordsByRoomAndTimeRange(room.getId(), occupyStartTime, occupyEndTime);
+    public List<Record> findRecordsByRoomAndTimeRange(Integer roomId, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime) {
+        return recordMapper.findRecordsByRoomAndTimeRange(roomId, occupyStartTime, occupyEndTime);
     }
 
     @Override

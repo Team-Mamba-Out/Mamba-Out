@@ -149,7 +149,7 @@ public class RoomController {
      */
     @GetMapping("/getMaintenance")
     public Result getMaintenanceById(Integer id) {
-        List<List<LocalDateTime>> maintenanceTimes = roomService.getMaintenanceTimesById(id);
+        List<Map<String, Object>> maintenanceTimes = roomService.getMaintenanceTimesById(id);
         return Result.success(maintenanceTimes);
     }
 

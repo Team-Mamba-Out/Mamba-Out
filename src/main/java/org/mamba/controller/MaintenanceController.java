@@ -35,8 +35,8 @@ public class MaintenanceController {
                                  @RequestParam(required = false) Integer roomId,
                                  @RequestParam(required = false) LocalDateTime scheduledStart,
                                  @RequestParam(required = false) LocalDateTime scheduledEnd,
-                                 @RequestParam(required = false, defaultValue = "10") Integer pageSize,
-                                 @RequestParam(required = false, defaultValue = "1") Integer page) {
+                                 @RequestParam(required = false) Integer pageSize,
+                                 @RequestParam(required = false) Integer page) {
         Map<String, Object> maintenanceResult = maintenanceService.getMaintenance(id, roomId, scheduledStart, scheduledEnd, pageSize, page);
         return Result.success(maintenanceResult);
     }
