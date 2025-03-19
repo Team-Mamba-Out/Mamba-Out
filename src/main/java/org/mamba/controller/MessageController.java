@@ -52,17 +52,17 @@ public class MessageController {
     /**
      * Retrieves a paginated list of messages for a given user ID.
      *
-     * @param Uid  the user ID
+     * @param receiver  the user ID
      * @param size the number of messages per page (optional, default is 10)
      * @param page the current page number (optional, default is 1)
      * @return a success result containing the paginated list of messages
      */
-    @GetMapping("/getMessage/{Uid}")
-    public Result getMessagesByUid(@PathVariable Integer Uid,
+    @GetMapping("/getMessage/{receiver}")
+    public Result getMessagesByUReceiver(@PathVariable Integer receiver,
                                    @RequestParam(required = false) Integer size,
                                    @RequestParam(required = false) Integer page) {
         // Retrieve paginated messages from the service layer
-        Map<String, Object> messagesResult = messageService.getMessagesByReceiver(Uid, size, page);
+        Map<String, Object> messagesResult = messageService.getMessagesByReceiver(receiver, size, page);
         return Result.success(messagesResult);
     }
 

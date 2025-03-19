@@ -47,7 +47,7 @@ public interface MessageMapper {
      * Retrieves a paginated list of messages for a given user ID.
      */
     @SelectProvider(type = MessageMapper.MessageSqlBuilder.class, method = "buildGetMessagesSql")
-    List<Message> getMessagesByReceiver(@Param("receiver") Integer uid,
+    List<Message> getMessagesByReceiver(@Param("receiver") Integer receiver,
                                    @Param("pageSize") Integer pageSize,
                                    @Param("offset") Integer offset);
 
