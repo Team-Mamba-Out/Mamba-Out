@@ -18,20 +18,22 @@ public interface MessageMapper {
     /**
      * Inserts a new message into the database.
      *
-     * @param Uid the user ID
+     * @param receiver the user ID
      * @param title the title of the message
      * @param text the text of the message
      * @param createTime the creation time of the message
      * @param isRead the read status of the message
      * @param sender the sender of the message
      */
-    @Insert("INSERT INTO mamba.message (receiver, title, text, createTime, isRead, sender) VALUES (#{Uid}, #{title}, #{text}, #{createTime}, #{isRead}, #{sender})")
-    void createMessage(@Param("Uid") Integer Uid,
+    @Insert("INSERT INTO mamba.message (receiver, title, text, createTime, isRead, sender, type, roomId) VALUES (#{receiver}, #{title}, #{text}, #{createTime}, #{isRead}, #{sender}, #{type}, #{roomId})")
+    void createMessage(@Param("receiver") Integer receiver,
                        @Param("title") String title,
                        @Param("text") String text,
                        @Param("createTime") LocalDateTime createTime,
                        @Param("isRead") boolean isRead,
-                       @Param("sender") String sender);
+                       @Param("sender") String sender,
+                       @Param("type") Integer type,
+                       @Param("roomId") Integer roomId);
 
     /**
      * Deletes a message from the database by its ID.
@@ -52,11 +54,11 @@ public interface MessageMapper {
     /**
      * Retrieves the total count of messages for a given user ID.
      *
-     * @param Uid the user ID
+     * @param receiver the user ID
      * @return the total number of messages for the specified user
      */
     @Select("SELECT COUNT(*) FROM mamba.message WHERE receiver = #{receiver}")
-    int getMessagesCountByUid(@Param("Uid") Integer Uid);
+    int getMessagesCountByUid(@Param("receiver") Integer receiver);
 
 
     /**
@@ -68,7 +70,9 @@ public interface MessageMapper {
                   @Param("text") String text,
                   @Param("createTime") LocalDateTime createTime,
                   @Param("isRead") Boolean isRead,
-                  @Param("sender") String sender);
+                  @Param("sender") String sender,
+                  @Param("type") Integer type,
+                  @Param("roomId") Integer roomId);
 
     /**
      * Obtains the list of records specified by the start time.
@@ -83,7 +87,7 @@ public interface MessageMapper {
     void updateIsRead(@Param("id") Integer id);
 
     @Select("SELECT * FROM mamba.message WHERE receiver = #{receiver} AND createTime > #{lastTimestamp} ORDER BY createTime ASC")
-    List<Message> getMessagesAfter(@Param("receiver") Integer uid, @Param("lastTimestamp") LocalDateTime lastTimestamp);
+    List<Message> getMessagesAfter(@Param("receiver") Integer receiver, @Param("lastTimestamp") LocalDateTime lastTimestamp);
 
     /**
      * Static class for building SQL queries.
@@ -137,6 +141,12 @@ public interface MessageMapper {
                 }
                 if (params.get("sender") != null && !params.get("sender").toString().isEmpty()) {
                     WHERE("sender = #{sender}");
+                }
+                if (params.get("type") != null) {
+                    WHERE("type = #{type}");
+                }
+                if (params.get("roomId") != null) {
+                    WHERE("roomId = #{roomId}");
                 }
             }};
 

@@ -71,7 +71,9 @@ public class LecturerServiceImpl implements LecturerService {
                 "Dear " + name + ", your lecturer account has been created successfully.",
                 LocalDateTime.now(),
                 false,
-                "System Notification"
+                "1;JinhaoZhang",
+                0,
+                0
         );
 
     }
@@ -94,7 +96,9 @@ public class LecturerServiceImpl implements LecturerService {
                 "Dear " + name + ", your lecturer information has been successfully updated.",
                 LocalDateTime.now(),
                 false,
-                "System Notification"
+                "1;JinhaoZhang",
+                0,
+                0
         );
     }
 
@@ -113,7 +117,9 @@ public class LecturerServiceImpl implements LecturerService {
                 "Lecturer account associated with the email " + email + " has been successfully deleted.",
                 LocalDateTime.now(),
                 false,
-                "System Notification"
+                "1;JinhaoZhang",
+                0,
+                0
         );
     }
 

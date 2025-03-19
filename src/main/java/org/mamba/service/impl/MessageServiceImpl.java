@@ -33,8 +33,8 @@ public class MessageServiceImpl implements MessageService {
      * @param isRead     the read status of the message
      */
     @Override
-    public void createMessage(Integer receiver, String title, String text, LocalDateTime createTime, Boolean isRead, String sender) {
-        messageMapper.createMessage(receiver, title, text, createTime, isRead, sender);
+    public void createMessage(Integer receiver, String title, String text, LocalDateTime createTime, Boolean isRead, String sender, Integer type, Integer roomId) {
+        messageMapper.createMessage(receiver, title, text, createTime, isRead, sender, type, roomId);
     }
 
     /**
@@ -104,7 +104,8 @@ public class MessageServiceImpl implements MessageService {
                     "Your reserved room " + record.getRoomId() + " is scheduled to start at " + record.getStartTime() + ". Please arrive on time.",
                     LocalDateTime.now(),  // Message creation time
                     false,  // Default to unread
-                    "System Notification"  // Sender
+                    "1;JinhaoZhang"  // Sender
+                    , 0, record.getRoomId()
             );
         }
     }
