@@ -444,6 +444,8 @@ public class RoomServiceImpl implements RoomService {
 
         LocalDateTime startRecord = startTime;
 
+        long durationMinutes = Duration.between(startTime, endTime).toMinutes();
+
         // Loop to keep searching for an available room until one is found
         while (true) {
             // Iterate over all rooms
@@ -489,6 +491,16 @@ public class RoomServiceImpl implements RoomService {
             if (startTime.isAfter(startRecord.plusDays(7))) {
                 return null;
             }
+
+            if (startTime.toLocalTime().isBefore(LocalTime.of(8, 0))) {
+                startTime = startTime.toLocalDate().atTime(8, 0);
+                endTime = endTime.plusMinutes(durationMinutes);
+                continue;
+            } else if (endTime.toLocalTime().isAfter(LocalTime.of(22, 0))) {
+                startTime = startTime.toLocalDate().plusDays(1).atTime(8, 0);
+                endTime = endTime.plusMinutes(durationMinutes);
+                continue;
+            }
         }
     }
 
@@ -507,6 +519,8 @@ public class RoomServiceImpl implements RoomService {
         // Get the list of all rooms
         List<Room> allRooms = roomMapper.getAllRooms();
 
+        long durationMinutes = Duration.between(startTime, endTime).toMinutes();
+
         LocalDateTime startRecord = startTime;
 
         // Loop to keep searching for an available room until one is found
@@ -514,6 +528,16 @@ public class RoomServiceImpl implements RoomService {
 
             if (startTime.isAfter(startRecord.plusDays(7))) {
                 return null;
+            }
+
+            if (startTime.toLocalTime().isBefore(LocalTime.of(8, 0))) {
+                startTime = startTime.toLocalDate().atTime(8, 0);
+                endTime = endTime.plusMinutes(durationMinutes);
+                continue;
+            } else if (endTime.toLocalTime().isAfter(LocalTime.of(22, 0))) {
+                startTime = startTime.toLocalDate().plusDays(1).atTime(8, 0);
+                endTime = endTime.plusMinutes(durationMinutes);
+                continue;
             }
 
             for (Room room : allRooms) {
@@ -584,7 +608,7 @@ public class RoomServiceImpl implements RoomService {
                 totalBusyMinutes += Duration.between(start, end).toMinutes();
             }
 
-            double totalMinutesInWeek = 7 * 24 * 60;
+            double totalMinutesInWeek = 7 * 24 * 14 ;
             double utilization = (totalBusyMinutes / totalMinutesInWeek) * 100;
             utilizationMap.put(room.getRoomName(), utilization);
         }
