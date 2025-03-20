@@ -51,8 +51,8 @@ public interface AdminMapper {
     /**
      * Update admin information by email.
      */
-    @Update("UPDATE mamba.admin SET uid = #{uid}, name = #{name}, phone = #{phone} WHERE email = #{email}")
-    void updateAdminByEmail(@Param("email") String email,
+    @UpdateProvider(type = AdminMapper.AdminSqlBuilder.class, method = "buildUpdateAdminSql")
+    void updateAdminByUid(@Param("email") String email,
                             @Param("uid") Integer uid,
                             @Param("name") String name,
                             @Param("phone") String phone);
@@ -96,7 +96,29 @@ public interface AdminMapper {
             }
             return query;
         }
+        public static String buildUpdateAdminSql(Map<String, Object> params) {
+            return new SQL() {{
+                UPDATE("mamba.admin");
 
+                if (params.get("email") != null) {
+                    SET("email = #{email}");
+                }
+                if (params.get("name") != null && !params.get("name").toString().isEmpty()) {
+                    SET("name = #{name}");
+                }
+                if (params.get("phone") != null && !params.get("phone").toString().isEmpty()) {
+                    SET("phone = #{phone}");
+                }
+
+                if (params.get("uid") != null) {
+                    WHERE("uid = #{uid}");
+                } else {
+                    throw new IllegalArgumentException("Must contain: email");
+                }
+
+
+            }}.toString();
+        }
 
 
     }

@@ -25,7 +25,7 @@ public interface MessageMapper {
      * @param isRead the read status of the message
      * @param sender the sender of the message
      */
-    @Insert("INSERT INTO mamba.message (receiver, title, text, createTime, isRead, sender, type, roomId) VALUES (#{receiver}, #{title}, #{text}, #{createTime}, #{isRead}, #{sender}, #{type}, #{roomId})")
+    @Insert("INSERT INTO mamba.message (receiver, title, text, createTime, isRead, sender, type, roomId) VALUES (#{receiver}, #{title}, #{text}, now(), #{isRead}, #{sender}, #{type}, #{roomId})")
     void createMessage(@Param("receiver") Integer receiver,
                        @Param("title") String title,
                        @Param("text") String text,
@@ -47,7 +47,17 @@ public interface MessageMapper {
      * Retrieves a paginated list of messages for a given user ID.
      */
     @SelectProvider(type = MessageMapper.MessageSqlBuilder.class, method = "buildGetMessagesSql")
+    List<Message>getMessagesBySender(@Param("sender") Integer sender,
+                                     @Param("receiver") Integer receiver,
+                                     @Param("pageSize") Integer pageSize,
+                                     @Param("offset") Integer offset);
+
+    /**
+     * Retrieves a paginated list of messages for a given user ID.
+     */
+    @SelectProvider(type = MessageMapper.MessageSqlBuilder.class, method = "buildGetMessagesSql")
     List<Message> getMessagesByReceiver(@Param("receiver") Integer receiver,
+                                        @Param("sender") Integer sender,
                                    @Param("pageSize") Integer pageSize,
                                    @Param("offset") Integer offset);
 
@@ -59,7 +69,14 @@ public interface MessageMapper {
      */
     @Select("SELECT COUNT(*) FROM mamba.message WHERE receiver = #{receiver}")
     int getMessagesCountByUid(@Param("receiver") Integer receiver);
-
+    /**
+     * Retrieves the total count of messages for a given user ID.
+     *
+     * @param sender the user ID
+     * @return the total number of messages for the specified user
+     */
+    @Select("SELECT COUNT(*) from mamba.message where sender like CONCAT(#{sender}, '%')")
+    int getMessagesCountBySender(@Param("sender") Integer sender);
 
     /**
      * counts the total number of messages (or those satisfying the conditions)
@@ -99,6 +116,9 @@ public interface MessageMapper {
                 FROM("mamba.message");
                 if (params.get("receiver") != null) {
                     WHERE("receiver = #{receiver}");
+                }
+                if (params.get("sender") != null) {
+                    WHERE("sender like CONCAT(#{sender}, '%')");
                 }
             }};
             // Deal with LIMIT and OFFSET

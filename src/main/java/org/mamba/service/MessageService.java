@@ -29,6 +29,7 @@ public interface MessageService {
      */
     void deleteMessage(Integer id);
 
+    Map<String,Object> getMessagesBySender(Integer sender, Integer size, Integer page);
     /**
      * Retrieves a paginated list of messages for a given user ID.
      *

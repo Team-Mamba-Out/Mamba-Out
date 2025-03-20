@@ -47,6 +47,34 @@ public class MessageServiceImpl implements MessageService {
         messageMapper.deleteMessage(id);
     }
 
+    @Override
+    public Map<String, Object> getMessagesBySender(Integer sender, Integer size, Integer page) {
+        // Calculate offset
+        Integer offset = null;
+        if (size != null && page != null) {
+            offset = (page - 1) * size;
+        }
+        // Retrieve the paginated list of messages
+        List<Message> messageList = messageMapper.getMessagesBySender(sender,null, size, offset);
+
+        // Retrieve the total number of messages for the given user ID
+        int total = messageMapper.getMessagesCountBySender(sender);
+
+        // Calculate the total number of pages
+        Integer totalPage = null;
+        if (size != null) {
+            totalPage = total % size == 0 ? total / size : total / size + 1;
+        }
+        // Prepare the response map
+        Map<String, Object> result = new HashMap<>();
+        result.put("messages", messageList);
+        result.put("totalPage", totalPage);
+        result.put("total", total);
+        result.put("pageNumber", page);
+        return result;
+    }
+
+
     /**
      * Retrieves a paginated list of messages for a given user ID.
      *
@@ -63,7 +91,7 @@ public class MessageServiceImpl implements MessageService {
             offset = (page - 1) * size;
         }
         // Retrieve the paginated list of messages
-        List<Message> messageList = messageMapper.getMessagesByReceiver(receiver, size, offset);
+        List<Message> messageList = messageMapper.getMessagesByReceiver(receiver,null, size, offset);
 
         // Retrieve the total number of messages for the given user ID
         int total = messageMapper.getMessagesCountByUid(receiver);
@@ -79,7 +107,6 @@ public class MessageServiceImpl implements MessageService {
         result.put("totalPage", totalPage);
         result.put("total", total);
         result.put("pageNumber", page);
-
         return result;
     }
 

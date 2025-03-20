@@ -42,7 +42,7 @@ public interface StudentMapper {
      * Update student information by email.
      */
     @UpdateProvider(type = StudentMapper.StudentSqlBuilder.class, method = "buildUpdateStudentSql")
-    void updateStudentByEmail(@Param("email") String email,
+    void updateStudentByUid(@Param("email") String email,
                               @Param("uid") Integer uid,
                               @Param("name") String name,
                               @Param("phone") String phone,
@@ -102,8 +102,8 @@ public interface StudentMapper {
             return new SQL() {{
                 UPDATE("mamba.student");
 
-                if (params.get("uid") != null) {
-                    SET("uid = #{uid}");
+                if (params.get("email") != null) {
+                    SET("email = #{email}");
                 }
                 if (params.get("name") != null && !params.get("name").toString().isEmpty()) {
                     SET("name = #{name}");
@@ -115,8 +115,8 @@ public interface StudentMapper {
                     SET("breakTimer = #{breakTimer}");
                 }
 
-                if (params.get("email") != null) {
-                    WHERE("email = #{email}");
+                if (params.get("uid") != null) {
+                    WHERE("uid = #{uid}");
                 } else {
                     throw new IllegalArgumentException("Must contain: email");
                 }

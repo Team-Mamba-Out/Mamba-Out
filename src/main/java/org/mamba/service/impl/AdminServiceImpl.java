@@ -168,7 +168,7 @@ public class AdminServiceImpl implements AdminService {
                 "Dear " + name + ", your admin account has been created successfully.",
                 LocalDateTime.now(),
                 false,
-                "1;JinhaoZhang",
+                "1;Jinhao Zhang",
                 0,
                 0
         );
@@ -176,7 +176,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void updateAdminByEmail(String email, Integer uid, String name, String phone) {
-        adminMapper.updateAdminByEmail(email, uid, name, phone);
+        adminMapper.updateAdminByUid(email, uid, name, phone);
 
         messageService.createMessage(
                 uid,
@@ -184,7 +184,7 @@ public class AdminServiceImpl implements AdminService {
                 "Dear " + name + ", your admin information has been successfully updated.",
                 LocalDateTime.now(),
                 false,
-                "1;JinhaoZhang",
+                "1;Jinhao Zhang",
                 0,
                 0
         );

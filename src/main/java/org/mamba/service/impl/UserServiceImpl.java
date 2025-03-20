@@ -46,8 +46,19 @@ public class UserServiceImpl implements UserService {
      * @param role the user role
      */
     @Override
-    public void updateUserByUid(Integer uid, String role) {
-        userMapper.updateUserByUid(uid, role);
+    public void updateUserByUid(Integer uid,String phone, String name, String role) {
+        switch (role){
+            case "Student":
+                studentMapper.updateStudentByUid(null,uid,name,phone,null);
+              break;
+            case "Lecturer":
+                lecturerMapper.updateLecturerByUid(null,uid,name,phone);
+                break;
+            case "Admin":
+                adminMapper.updateAdminByUid(null,uid,name,phone);
+                break;
+        }
+
     }
 
     /**
