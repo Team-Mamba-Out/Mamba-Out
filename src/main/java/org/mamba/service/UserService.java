@@ -22,8 +22,10 @@ public interface UserService {
      *
      * @param uid the user ID
      * @param role the user role
+     * @param phone the user's phone
+     * @param name username
      */
-    void updateUserByUid(Integer uid, String role);
+    void updateUserByUid(Integer uid,String phone, String name, String role);
 
     /**
      * Adds a new user.

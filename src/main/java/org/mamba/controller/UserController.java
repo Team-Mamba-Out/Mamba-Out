@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -32,13 +33,17 @@ public class UserController {
 
     /**
      * Updates user information based on the user ID.
-     * @param uid the user ID
-     * @param user the user object containing the update information
+     * @param request request body from front-end
      * @return a result object for the update operation
      */
-    @PutMapping("/{uid}")
-    public Result updateUserByUid(@PathVariable Integer uid, @RequestBody User user) {
-        userService.updateUserByUid(uid, user.getRole());
+    @PutMapping("/update")
+    public Result updateUserByUid(@RequestBody Map<String, Object> request) {
+        Integer uid =  Integer.parseInt(request.get("uid").toString());
+        String phone = (String) request.get("phone");
+        String name =  (String) request.get("name");
+        String role = (String) request.get("role");
+        System.out.println(role);
+        userService.updateUserByUid(uid, phone, name,role);
         return Result.success();
     }
 

@@ -31,20 +31,21 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
 
     @Override
-    public Map<String, Object> getMaintenance(Integer id, Integer roomId, LocalDateTime scheduledStart, LocalDateTime scheduledEnd, Integer pageSize, Integer page) {
-        if (page == null) {
-            page = 1;
+    public Map<String, Object> getMaintenance(Integer id, Integer roomId, LocalDateTime scheduledStart, LocalDateTime scheduledEnd, Integer size, Integer page) {
+        Integer offset = null;
+        if (size != null && page != null) {
+            offset = (page - 1) * size;
         }
-        if (pageSize == null) {
-            pageSize = 500;
-        }
-
-        Integer offset = (page - 1) * pageSize;
-        List<Maintenance> maintenanceList = maintenanceMapper.getMaintenance(id, roomId, scheduledStart, scheduledEnd, pageSize, offset);
-
+        List<Maintenance> maintenanceList = maintenanceMapper.getMaintenance(id, roomId, scheduledStart, scheduledEnd, size, offset);
         int total = maintenanceMapper.countMaintenance(id, roomId, scheduledStart, scheduledEnd);
+        Integer totalPage = null;
+        if (size != null) {
+            totalPage = total % size == 0 ? total / size : total / size + 1;
+        }
         Map<String, Object> result = new HashMap<>();
+        result.put("totalPage", totalPage);
         result.put("total", total);
+        result.put("pageNumber", page);
         result.put("maintenanceList", maintenanceList);
         return result;
     }

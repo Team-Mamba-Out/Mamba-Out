@@ -88,7 +88,7 @@ public class LecturerServiceImpl implements LecturerService {
      */
     @Override
     public void updateLecturerByEmail(String email, Integer uid, String name, String phone) {
-        lecturerMapper.updateLecturerByEmail(email, uid, name, phone);
+        lecturerMapper.updateLecturerByUid(email, uid, name, phone);
 
         messageService.createMessage(
                 uid,

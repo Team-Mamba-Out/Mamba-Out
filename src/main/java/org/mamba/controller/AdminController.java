@@ -172,21 +172,18 @@ public class AdminController {
     /**
      * Deletes records for a specified room within a given time range and reassigns users to new rooms.
      *
-     * @param roomId    the id of the room
-     * @param newStartTime the new start time for the reassignment
-     * @param newEndTime   the new end time for the reassignment
-     * @param reason       the reason for the reassignment
+     * @param request the request body from front-end
      * @return a success result indicating the operation was completed
      */
-    @PostMapping("/roomRecord/{roomId}")
-    public Result occupyAndReassignRoom(@PathVariable Integer roomId,
-                                              @RequestParam LocalDateTime newStartTime,
-                                              @RequestParam LocalDateTime newEndTime,
-                                              @RequestParam String reason) {
+    @PostMapping("/roomRecord")
+    public Result occupyAndReassignRoom(@RequestBody Map<String,Object> request) {
+        Integer roomId = Integer.parseInt(request.get("roomId").toString());
+        LocalDateTime newStartTime = LocalDateTime.parse(request.get("startTime").toString());
+        LocalDateTime newEndTime = LocalDateTime.parse(request.get("endTime").toString());
+        String reason = (String)request.get("reason");
         adminService.occupyAndReassignRoom(roomId, newStartTime, newEndTime, reason);
         return Result.success();
     }
-
     /**
      * Retrieves all records with their corresponding room names.
      *

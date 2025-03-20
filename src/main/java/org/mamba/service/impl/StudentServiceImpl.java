@@ -82,7 +82,7 @@ public class StudentServiceImpl implements StudentService {
      */
     @Override
     public void updateStudentByEmail(String email, Integer uid, String name, String phone, Integer breakTimer) {
-        studentMapper.updateStudentByEmail(email, uid, name, phone, breakTimer);
+        studentMapper.updateStudentByUid(email, uid, name, phone, breakTimer);
 
         messageService.createMessage(
                 uid,
