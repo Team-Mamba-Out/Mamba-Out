@@ -46,6 +46,8 @@ public class StudentServiceImpl implements StudentService {
         return map;
     }
 
+
+
     /**
      * Insert a new student.
      *
@@ -120,5 +122,15 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public int getTotalStudents() {
         return studentMapper.count();
+    }
+
+    @Override
+    public void updateBreakTimer(Integer uid, Integer breakTimer) {
+        studentMapper.updateStudentByUid(null, uid, null, null, breakTimer);
+    }
+
+    @Override
+    public Student getStudentByUid(Integer uid) {
+        return studentMapper.getStudentByUid(uid);
     }
 }

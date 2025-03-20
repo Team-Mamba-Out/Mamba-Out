@@ -54,4 +54,14 @@ public interface StudentService {
      * @return the total number of students
      */
     int getTotalStudents();
+    /**
+     * update the student break times.
+     *
+     * @param uid user id
+     * @param breakTimer student break times
+     */
+    void updateBreakTimer(Integer uid,Integer breakTimer);
+
+
+    Student getStudentByUid(Integer uid);
 }

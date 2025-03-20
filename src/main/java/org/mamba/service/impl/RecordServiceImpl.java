@@ -1,10 +1,8 @@
 package org.mamba.service.impl;
 
 import org.mamba.Utils.EmailManager;
-import org.mamba.entity.Lecturer;
+import org.mamba.entity.*;
 import org.mamba.entity.Record;
-import org.mamba.entity.Room;
-import org.mamba.entity.User;
 import org.mamba.mapper.RecordMapper;
 import org.mamba.mapper.RoomMapper;
 import org.mamba.service.*;
@@ -22,6 +20,8 @@ import java.util.Map;
 
 @Service
 public class RecordServiceImpl implements RecordService {
+    @Autowired
+    private StudentService studentService;
     @Autowired
     private RecordMapper recordMapper;
     @Autowired
@@ -201,7 +201,7 @@ public class RecordServiceImpl implements RecordService {
 
         //if the room requires admin's approval and the user is not the admin
         if (room.isRequireApproval() && !role.contains("003")) {
-            recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, false, null);
+            recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, false, comment);
 
             // Send email: booking successful, pending approval
             EmailManager.sendBookSuccessfulEmail(email, temp, true);
@@ -246,7 +246,14 @@ public class RecordServiceImpl implements RecordService {
         Record record = recordMapper.getRecords(id, null, null, null, null, null, null, null, null, null).get(0);
         Room room = roomMapper.getRoomById(record.getRoomId());
         recordMapper.cancelRecordById(id);
+        Integer userId = record.getUserId();
+        String role = userService.getUserByUid(userId).getRole().split("-")[1];
 
+        if (role.equals("001")){
+            Integer oldBreakTimer = studentService.getStudentByUid(userId).getBreakTimer();
+            Integer newBreakTimer = oldBreakTimer<4?oldBreakTimer+1:oldBreakTimer;
+            studentService.updateBreakTimer(userId,newBreakTimer);
+        }
         messageService.createMessage(
                 record.getUserId(),
                 "Room Reservation Cancellation",
@@ -339,11 +346,20 @@ public class RecordServiceImpl implements RecordService {
     @Transactional
     @Override
     public void updateStatus() {
+        List<Integer> updatedUids = recordMapper.getUsersWithNewStatus5();
         recordMapper.updateRecordStatus();
+        if (!updatedUids.isEmpty()) {
+            updatedUids.forEach(item->{
+                String role = userService.getUserByUid(item).getRole().split("-")[1];
+                if (role.equals("001")){
+                    Integer oldBreakTimer = studentService.getStudentByUid(item).getBreakTimer();
+                    Integer newBreakTimer = oldBreakTimer<4?oldBreakTimer+1:oldBreakTimer;
+                    studentService.updateBreakTimer(item,newBreakTimer);
+                }
+            });
+        }
     }
 }
-
-
 ///**
 // * Obtains the record specified by ID given.
 // *

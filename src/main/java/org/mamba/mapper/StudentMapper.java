@@ -27,6 +27,9 @@ public interface StudentMapper {
     @Select("SELECT COUNT(*) from mamba.student;")
     Integer count();
 
+    @Select("select * from mamba.student where uid=#{uid}")
+    Student getStudentByUid(Integer uid);
+
     /**
      * Insert a new student.
      */
@@ -118,7 +121,7 @@ public interface StudentMapper {
                 if (params.get("uid") != null) {
                     WHERE("uid = #{uid}");
                 } else {
-                    throw new IllegalArgumentException("Must contain: email");
+                    throw new IllegalArgumentException("Must contain: uid");
                 }
             }}.toString();
         }
