@@ -97,9 +97,11 @@ public interface RecordMapper {
             "      WHEN NOW() >= startTime - INTERVAL 10 MINUTE AND NOW() < startTime And hasCheckedIn = false THEN true  " +
             "      WHEN NOW() >= startTime THEN false  " +
             "      ELSE allowCheckIn " +
-            "    END;")
+            "    END "+
+            "WHERE userId != 1;")
     void updateRecordStatus();
-
+    @Select("SELECT userId FROM Record WHERE statusId = 5 AND NOW() - INTERVAL 1 MINUTE <= startTime")
+    List<Integer> getUsersWithNewStatus5();
 
     @Update("UPDATE mamba.record set allowCheckIn = false, statusId = 2, hasCheckedIn = true where id = #{id}")
     void checkIn(@Param("id") Integer id);
