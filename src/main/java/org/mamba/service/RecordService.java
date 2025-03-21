@@ -26,7 +26,7 @@ public interface RecordService {
 
     void updateRecordUserId(Integer roomId, Integer newUserId, LocalDateTime startTime, LocalDateTime endTime);
 
-
+    void reject(Integer roomId, Integer newUserId, LocalDateTime startTime, LocalDateTime endTime);
     /**
      * Obtains the record list based on the conditions given.
      *

@@ -68,6 +68,14 @@ public class RecordController {
         return Result.success();
     }
 
+    @DeleteMapping("/reject")
+    public Result reject(@RequestBody Map<String, Object> request) {
+        Integer roomId = (Integer) request.get("roomId");
+        LocalDateTime startTime = LocalDateTime.parse(request.get("startTime").toString());
+        LocalDateTime endTime = LocalDateTime.parse(request.get("endTime").toString());
+        recordService.reject(roomId, 0, startTime, endTime);
+        return Result.success();
+    }
     /**
      * Insert a new record.
      *
