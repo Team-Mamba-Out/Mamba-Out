@@ -45,7 +45,7 @@ public class RecordServiceImpl implements RecordService {
                 "Your reservation for room " + room.getRoomName() + " has been approved.",
                 LocalDateTime.now(),
                 false,
-                "1;JinhaoZhang",
+                "1;Jinhao Zhang",
                 0,
                 record.getRoomId()
         );
@@ -74,7 +74,7 @@ public class RecordServiceImpl implements RecordService {
                 "Your reservation for room " + room.getRoomName() + " has been rejected.",
                 LocalDateTime.now(),
                 false,
-                "1;JinhaoZhang",
+                "1;Jinhao Zhang",
                 0,
                 id
         );
@@ -217,7 +217,7 @@ public class RecordServiceImpl implements RecordService {
                 "Your room reservation for: " + room.getRoomName() + " has been successfully created. The reservation is from " + startTime + " to " + endTime + ". Please check in on time.",
                 recordTime,
                 false,
-                "1;JinhaoZhang",
+                "1;Jinhao Zhang",
                 0,
                 roomId
         );
@@ -234,6 +234,12 @@ public class RecordServiceImpl implements RecordService {
     @Override
     public void deleteRecordById(Integer id) {
         recordMapper.deleteRecordById(id);
+    }
+
+
+    @Override
+    public void updateRecordUserId(Integer recordId, Integer newUserId) {
+        recordMapper.updateRecordUserId(recordId, newUserId);
     }
 
     /**
@@ -260,7 +266,7 @@ public class RecordServiceImpl implements RecordService {
                 "Your room reservation for: " + room.getRoomName() + " has been successfully cancelled.",
                 LocalDateTime.now(),
                 false,
-                "1;JinhaoZhang",
+                "1;Jinhao Zhang",
                 0,
                 room.getId()
         );

@@ -24,6 +24,8 @@ public interface RecordService {
      */
     void rejectRestrictedRoomRecord(Integer id);
 
+    void updateRecordUserId(Integer recordId, Integer newUserId);
+
 
     /**
      * Obtains the record list based on the conditions given.

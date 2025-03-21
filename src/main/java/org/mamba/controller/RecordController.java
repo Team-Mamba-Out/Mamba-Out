@@ -52,6 +52,18 @@ public class RecordController {
             return Result.error("reserve failed");
         }
     }
+
+    /**
+     * Approves the record specified by ID.
+     *
+     * @return the result of the approval operation
+     */
+    @PutMapping("/updateUserId")
+    public Result updateRecordUserId(@RequestParam Integer recordId, @RequestParam Integer newUserId) {
+        recordService.updateRecordUserId(recordId, newUserId);
+        return Result.success();
+    }
+
     /**
      * Insert a new record.
      *

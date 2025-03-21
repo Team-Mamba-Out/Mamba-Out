@@ -158,9 +158,9 @@ public class RoomServiceImpl implements RoomService {
                 "A new room named '" + roomName + "' has been successfully created. Details: Capacity: " + capacity + ", Location: " + location,
                 LocalDateTime.now(),
                 false,
-                "1;JinhaoZhang",
-                roomMapper.getRoomByName(roomName).getId(),
-                3
+                "1;Jinhao Zhang",
+                0,
+                roomMapper.getRoomByName(roomName).getId()
         );
     }
 
@@ -216,7 +216,7 @@ public class RoomServiceImpl implements RoomService {
                         ", Description: " + description,
                 LocalDateTime.now(),
                 false,
-                "1;JinhaoZhang",
+                "1;Jinhao Zhang",
                 0,
                 id
         );
@@ -256,7 +256,7 @@ public class RoomServiceImpl implements RoomService {
                 "The room with ID " + id + " has been successfully deleted.",
                 LocalDateTime.now(),
                 false,
-                "1;JinhaoZhang",
+                "1;Jinhao Zhang",
                 0,
                 id
         );
