@@ -99,7 +99,7 @@ public class AdminServiceImpl implements AdminService {
                         ". The reason is: " + reason + ". Please check your reservation details.",
                 LocalDateTime.now(),
                 false,
-                "1;Admin",
+                "1;Jinhao Zhang",
                 0,
                 roomId
         );
@@ -235,7 +235,7 @@ public class AdminServiceImpl implements AdminService {
                             ". The reason is: " + reason + ". Please check your reservation details.",
                     LocalDateTime.now(),
                     false,
-                    "1;JinhaoZhang",
+                    "1;Jinhao Zhang",
                     0,
                     nearestRoom.getId()
             );

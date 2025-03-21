@@ -67,7 +67,7 @@ public class StudentServiceImpl implements StudentService {
                 "Dear " + name + ", your student account has been created successfully.",
                 LocalDateTime.now(),
                 false,
-                "1;JinhaoZhang",
+                "1;Jinhao Zhang",
                 0,
                 0
         );
@@ -92,7 +92,7 @@ public class StudentServiceImpl implements StudentService {
                 "Dear " + name + ", your student information has been successfully updated.",
                 LocalDateTime.now(),
                 false,
-                "1;JinhaoZhang",
+                "1;Jinhao Zhang",
                 0,
                 0
         );
@@ -113,7 +113,7 @@ public class StudentServiceImpl implements StudentService {
                 "Student account associated with the email " + email + " has been successfully deleted.",
                 LocalDateTime.now(),
                 false,
-                "1;JinhaoZhang",
+                "1;Jinhao Zhang",
                 0,
                 0
         );

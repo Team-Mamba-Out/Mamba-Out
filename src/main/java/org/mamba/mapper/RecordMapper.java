@@ -26,6 +26,9 @@ public interface RecordMapper {
                             @Param("offset") Integer offset,
                             @Param("isApproved") Boolean isApproved);
 
+    @Update("UPDATE mamba.record SET userId = #{newUserId} WHERE id = #{recordId}")
+    void updateRecordUserId(@Param("recordId") Integer recordId, @Param("newUserId") Integer newUserId);
+
     /**
      * Obtains the record specified by ID given.
      */

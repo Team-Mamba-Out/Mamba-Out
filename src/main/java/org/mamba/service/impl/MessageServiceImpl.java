@@ -131,7 +131,7 @@ public class MessageServiceImpl implements MessageService {
                     "Your reserved room " + record.getRoomId() + " is scheduled to start at " + record.getStartTime() + ". Please arrive on time.",
                     LocalDateTime.now(),  // Message creation time
                     false,  // Default to unread
-                    "1;JinhaoZhang"  // Sender
+                    "1;Jinhao Zhang"  // Sender
                     , 0, record.getRoomId()
             );
         }
