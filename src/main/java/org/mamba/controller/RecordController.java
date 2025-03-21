@@ -59,8 +59,12 @@ public class RecordController {
      * @return the result of the approval operation
      */
     @PutMapping("/updateUserId")
-    public Result updateRecordUserId(@RequestParam Integer recordId, @RequestParam Integer newUserId) {
-        recordService.updateRecordUserId(recordId, newUserId);
+    public Result updateRecordUserId(@RequestBody Map<String, Object> request) {
+        Integer roomId = (Integer) request.get("roomId");
+        Integer newUserId = (Integer) request.get("newUserId");
+        LocalDateTime startTime = LocalDateTime.parse(request.get("startTime").toString());
+        LocalDateTime endTime = LocalDateTime.parse(request.get("endTime").toString());
+        recordService.updateRecordUserId(roomId, newUserId, startTime, endTime);
         return Result.success();
     }
 

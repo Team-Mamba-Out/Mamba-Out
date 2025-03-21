@@ -24,7 +24,7 @@ public interface RecordService {
      */
     void rejectRestrictedRoomRecord(Integer id);
 
-    void updateRecordUserId(Integer recordId, Integer newUserId);
+    void updateRecordUserId(Integer roomId, Integer newUserId, LocalDateTime startTime, LocalDateTime endTime);
 
 
     /**
