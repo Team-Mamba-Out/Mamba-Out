@@ -239,9 +239,17 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     public void updateRecordUserId(Integer roomId, Integer newUserId, LocalDateTime startTime, LocalDateTime endTime) {
-        Record record = (Record) recordMapper.getRecords(null,roomId,0, startTime, endTime,null,null,null,null,null);
+        Record record =  recordMapper.getRecords(null,roomId,0, startTime, endTime,null,null,null,null,null).get(0);
         record.setUserId(newUserId);
+        recordMapper.updateRecordUserId(record.getId(), newUserId);
     }
+
+    @Override
+    public void reject(Integer roomId, Integer newUserId, LocalDateTime startTime, LocalDateTime endTime) {
+        Record record = recordMapper.getRecords(null,roomId,0, startTime, endTime,null,null,null,null,null).get(0);
+        recordMapper.deleteRecordById(record.getId());
+    }
+
     /**
      * Cancel the record specified by id.
      *

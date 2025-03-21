@@ -88,7 +88,7 @@ public class AdminServiceImpl implements AdminService {
         LocalDateTime newEndTime = LocalDateTime.parse(roomInfo[2]);
 
         recordService.cancelRecordById(recordId);
-        recordMapper.createRecord(nearestRoom.getId(), 0, newStartTime, newEndTime, LocalDateTime.now(),false, false, null);
+        recordMapper.createRecord(nearestRoom.getId(), 0, newStartTime, newEndTime, LocalDateTime.now(),false, true, null);
 
         // Send a notification message about the reassignment
         messageService.createMessage(
@@ -224,8 +224,7 @@ public class AdminServiceImpl implements AdminService {
 
                 throw new IllegalStateException("No available room found for user " + userId);
             }
-
-            recordMapper.createRecord(nearestRoom.getId(), 0, newStartTime, newEndTime, LocalDateTime.now(),false,false, null);
+            recordMapper.createRecord(nearestRoom.getId(), 0, newStartTime, newEndTime, LocalDateTime.now(),false,true, null);
 
             messageService.createMessage(
                     userId,
