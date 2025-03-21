@@ -466,6 +466,17 @@ public class RoomServiceImpl implements RoomService {
 //                    continue;
 //                }
 
+                List<Map<String, Object>> maintenance = getMaintenanceTimesById(room.getId());
+
+                // Check if the room is available based on busy times
+                boolean flag = true;
+                for (Map<String, Object> busyTime : maintenance) {
+                    if (startTime.isBefore((LocalDateTime) busyTime.get("endTime")) && endTime.isAfter((LocalDateTime) busyTime.get("startTime"))) {
+                        flag = false;
+                        break;
+                    }
+                }
+
                 // Get all busy times for this room
                 List<Map<String, Object>> busyTimes = getBusyTimesById(room.getId());
                 boolean isAvailable = true;
@@ -479,7 +490,7 @@ public class RoomServiceImpl implements RoomService {
                 }
 
                 // If the room is available, return it
-                if (isAvailable) {
+                if (isAvailable && flag) {
                     return room.getId() + "," + startTime + "," + endTime;
                 }
             }
