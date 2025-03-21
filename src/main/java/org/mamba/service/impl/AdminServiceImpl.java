@@ -87,7 +87,7 @@ public class AdminServiceImpl implements AdminService {
         LocalDateTime newStartTime = LocalDateTime.parse(roomInfo[1]);
         LocalDateTime newEndTime = LocalDateTime.parse(roomInfo[2]);
 
-        recordService.cancelRecordById(recordId);
+        recordService.cancelRecordByIdAdmin(recordId);
         recordMapper.createRecord(nearestRoom.getId(), 0, newStartTime, newEndTime, LocalDateTime.now(),false, true, null);
 
         // Send a notification message about the reassignment

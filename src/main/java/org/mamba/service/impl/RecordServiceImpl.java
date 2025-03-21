@@ -249,7 +249,6 @@ public class RecordServiceImpl implements RecordService {
         Record record = recordMapper.getRecords(null,roomId,0, startTime, endTime,null,null,null,null,null).get(0);
         recordMapper.deleteRecordById(record.getId());
     }
-
     /**
      * Cancel the record specified by id.
      *
@@ -268,6 +267,28 @@ public class RecordServiceImpl implements RecordService {
             Integer newBreakTimer = oldBreakTimer<4?oldBreakTimer+1:oldBreakTimer;
             studentService.updateBreakTimer(userId,newBreakTimer);
         }
+        messageService.createMessage(
+                record.getUserId(),
+                "Room Reservation Cancellation",
+                "Your room reservation for: " + room.getRoomName() + " has been successfully cancelled.",
+                LocalDateTime.now(),
+                false,
+                "1;Jinhao Zhang",
+                0,
+                room.getId()
+        );
+    }
+    /**
+     * Cancel the record specified by id.
+     *
+     * @param id the provided id
+     */
+    @Override
+    public void cancelRecordByIdAdmin(Integer id) {
+        Record record = recordMapper.getRecords(id, null, null, null, null, null, null, null, null, null).get(0);
+        Room room = roomMapper.getRoomById(record.getRoomId());
+        recordMapper.cancelRecordById(id);
+        Integer userId = record.getUserId();
         messageService.createMessage(
                 record.getUserId(),
                 "Room Reservation Cancellation",
