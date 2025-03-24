@@ -239,16 +239,17 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     public void updateRecordUserId(Integer roomId, Integer newUserId, LocalDateTime startTime, LocalDateTime endTime) {
-        Record record =  recordMapper.getRecords(null,roomId,0, startTime, endTime,null,null,null,null,null).get(0);
+        Record record = recordMapper.getRecords(null, roomId, 0, startTime, endTime, null, null, null, null, null).get(0);
         record.setUserId(newUserId);
         recordMapper.updateRecordUserId(record.getId(), newUserId);
     }
 
     @Override
     public void reject(Integer roomId, Integer newUserId, LocalDateTime startTime, LocalDateTime endTime) {
-        Record record = recordMapper.getRecords(null,roomId,0, startTime, endTime,null,null,null,null,null).get(0);
+        Record record = recordMapper.getRecords(null, roomId, 0, startTime, endTime, null, null, null, null, null).get(0);
         recordMapper.deleteRecordById(record.getId());
     }
+
     /**
      * Cancel the record specified by id.
      *
@@ -262,10 +263,10 @@ public class RecordServiceImpl implements RecordService {
         Integer userId = record.getUserId();
         String role = userService.getUserByUid(userId).getRole().split("-")[1];
 
-        if (role.equals("001")){
+        if (role.equals("001")) {
             Integer oldBreakTimer = studentService.getStudentByUid(userId).getBreakTimer();
-            Integer newBreakTimer = oldBreakTimer<4?oldBreakTimer+1:oldBreakTimer;
-            studentService.updateBreakTimer(userId,newBreakTimer);
+            Integer newBreakTimer = oldBreakTimer < 4 ? oldBreakTimer + 1 : oldBreakTimer;
+            studentService.updateBreakTimer(userId, newBreakTimer);
         }
         messageService.createMessage(
                 record.getUserId(),
@@ -278,6 +279,7 @@ public class RecordServiceImpl implements RecordService {
                 room.getId()
         );
     }
+
     /**
      * Cancel the record specified by id.
      *
@@ -382,12 +384,12 @@ public class RecordServiceImpl implements RecordService {
     @Override
     public void updateStatus() {
         List<Record> getNewStarts = recordMapper.getNewStarts();
-        if (!getNewStarts.isEmpty()){
+        if (!getNewStarts.isEmpty()) {
             for (Record record : getNewStarts) {
                 messageService.createMessage(
                         record.getUserId(),
                         "Room Reservation Beginning Soon",
-                        "Your reservation for " + roomService.getRoomById(record.getRoomId()).getRoomName()+ " will begin in 10 minutes. Please arrive in time and complete the check-in",
+                        "Your reservation for " + roomService.getRoomById(record.getRoomId()).getRoomName() + " will begin in 10 minutes. Please arrive in time and complete the check-in",
                         LocalDateTime.now(),
                         false,
                         "1;Jinhao Zhang",
@@ -396,37 +398,39 @@ public class RecordServiceImpl implements RecordService {
                 );
                 Room room = roomMapper.getRoomById(record.getRoomId());
                 record.setCorrespondingRoom(room);
-                EmailManager.sendCheckInEmail(userService.getUserByUid(record.getUserId()).getRole().split("-")[0],record);
+                // Email Notification - Booking begins soon
+                EmailManager.sendCheckInEmail(userService.getUserByUid(record.getUserId()).getRole().split("-")[0], record);
             }
 
         }
 
         List<Record> getNewEnds = recordMapper.getNewEnds();
-        if (!getNewEnds.isEmpty()){
+        if (!getNewEnds.isEmpty()) {
             for (Record record : getNewEnds) {
                 messageService.createMessage(
                         record.getUserId(),
                         "Room Reservation Ending Soon",
-                        "Your reservation for " + roomService.getRoomById(record.getRoomId()).getRoomName()+ " will end in 10 minutes. Please wrap up your activities and vacate the room on time. If you need to extend your reservation, please do so before it ends.",
+                        "Your reservation for " + roomService.getRoomById(record.getRoomId()).getRoomName() + " will end in 10 minutes. Please wrap up your activities and vacate the room on time. If you need to extend your reservation, please do so before it ends.",
                         LocalDateTime.now(),
                         false,
                         "1;Jinhao Zhang",
                         0,
                         record.getRoomId()
                 );
-                //TODO 加发结束邮件
+                // Email Notification - Booking time almost up
+                EmailManager.sendCheckInEmail(userService.getUserByUid(record.getUserId()).getRole().split("-")[0], record);
             }
 
         }
         List<Integer> updatedUids = recordMapper.getUsersWithNewStatus5();
         recordMapper.updateRecordStatus();
         if (!updatedUids.isEmpty()) {
-            updatedUids.forEach(item->{
+            updatedUids.forEach(item -> {
                 String role = userService.getUserByUid(item).getRole().split("-")[1];
-                if (role.equals("001")){
+                if (role.equals("001")) {
                     Integer oldBreakTimer = studentService.getStudentByUid(item).getBreakTimer();
-                    Integer newBreakTimer = oldBreakTimer<4?oldBreakTimer+1:oldBreakTimer;
-                    studentService.updateBreakTimer(item,newBreakTimer);
+                    Integer newBreakTimer = oldBreakTimer < 4 ? oldBreakTimer + 1 : oldBreakTimer;
+                    studentService.updateBreakTimer(item, newBreakTimer);
                 }
             });
         }

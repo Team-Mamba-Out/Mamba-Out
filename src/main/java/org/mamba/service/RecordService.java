@@ -27,6 +27,7 @@ public interface RecordService {
     void updateRecordUserId(Integer roomId, Integer newUserId, LocalDateTime startTime, LocalDateTime endTime);
 
     void reject(Integer roomId, Integer newUserId, LocalDateTime startTime, LocalDateTime endTime);
+
     /**
      * Obtains the record list based on the conditions given.
      *
@@ -74,12 +75,14 @@ public interface RecordService {
      * @param id the provided id
      */
     void cancelRecordById(Integer id);
+
     /**
      * Cancel the record specified by id.
      *
      * @param id the provided id
      */
     void cancelRecordByIdAdmin(Integer id);
+
     List<Record> getRestrictedRecords(Integer room_id);
 
     Map<String, Double> getCancellationReasonPercentagesByRoomAndTime(Integer roomId, Integer rangeType);

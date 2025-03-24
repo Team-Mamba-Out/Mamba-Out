@@ -11,7 +11,7 @@ public class RecordSerial {
 
         // Generate random number 4-digit
         Random random = new Random();
-        int randomPart = random.nextInt(10000); // 生成0到9999的随机数
+        int randomPart = random.nextInt(10000); // Generate a random number between 0-9999
 
         // Combine into 18-digit serial number
         String orderNumberStr = datePart + String.format("%04d", randomPart);
