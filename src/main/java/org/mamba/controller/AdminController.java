@@ -201,13 +201,13 @@ public class AdminController {
     }
 
     /**
-     * Get the room utilization report
+     * Get the room report
      *
      * @return Contains results for room utilization
      */
-    @GetMapping("/roomUtilization")
-    public Result getRoomUtilization() {
-        Map<String, Double> utilizationReport = roomService.calculateRoomUtilization();
+    @GetMapping("/roomReport")
+    public Result getRoomUtilization(Integer rangeType) {
+        List<Map<String, Object>> utilizationReport = adminService.roomReport(rangeType);
         return Result.success(utilizationReport);
     }
 }

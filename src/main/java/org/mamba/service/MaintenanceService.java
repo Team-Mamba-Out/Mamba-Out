@@ -28,6 +28,11 @@ public interface MaintenanceService {
      */
     Map<String, Object> getMaintenance(Integer id, Integer roomId, LocalDateTime scheduledStart, LocalDateTime scheduledEnd, Integer pageSize, Integer page);
 
+    int countMaintenanceByRoomAndTime(Integer roomId, Integer rangeType);
+
+
+    Double getTotalMaintenanceDuration(Integer roomId, Integer rangeType);
+
     /**
      * Add a new maintenance record
      *

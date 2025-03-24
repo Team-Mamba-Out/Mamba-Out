@@ -154,6 +154,14 @@ public interface RoomMapper {
             "ORDER BY r.startTime")
     List<Record> getPastRecords(@Param("id") Integer id, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 
+    @Select("SELECT * " +
+            "FROM mamba.record r " +
+            "WHERE r.roomId = #{id} " +
+            "AND r.startTime >= #{startTime} " +
+            "AND r.startTime <= NOW() " +
+            "ORDER BY r.startTime")
+    List<Record> getRecordsFromStartTime(@Param("id") Integer id,
+                                         @Param("startTime") LocalDateTime startTime);
 
     /**
      * Retrieves all rooms.

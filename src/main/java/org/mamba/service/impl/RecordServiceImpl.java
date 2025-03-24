@@ -431,6 +431,79 @@ public class RecordServiceImpl implements RecordService {
             });
         }
     }
+
+    @Override
+    public Map<String, Double> getCancellationReasonPercentagesByRoomAndTime(Integer roomId, Integer rangeType) {
+        LocalDateTime startTime;
+
+        if (rangeType.equals(1)) {
+            startTime = LocalDateTime.now().minusMonths(1);
+        } else if (rangeType.equals(2)) {
+            startTime = LocalDateTime.now().minusMonths(2);
+        } else if (rangeType.equals(3)) {
+            startTime = LocalDateTime.now().minusMonths(3);
+        } else {
+            throw new IllegalArgumentException("Invalid rangeType: " + rangeType);
+        }
+
+        List<Map<String, Object>> counts = recordMapper.countCancellationReasonsByRoomAndTime(roomId, startTime);
+        int totalCancellations = counts.stream()
+                .mapToInt(map -> ((Number) map.get("count")).intValue())
+                .sum();
+
+        Map<String, Double> percentages = new HashMap<>();
+
+        for (Map<String, Object> count : counts) {
+            String reason = count.containsKey("reason") ? (String) count.get("reason") : "UNKNOWN_REASON";
+            int reasonCount = ((Number) count.get("count")).intValue();
+            double percentage = (double) reasonCount / totalCancellations * 100;
+            percentages.put(reason, percentage);
+        }
+
+
+        return percentages;
+    }
+
+    @Override
+    public int countCancellationsByRoomAndTime(Integer roomId, Integer rangeType) {
+        LocalDateTime startTime;
+
+        if (rangeType.equals(1)) {
+            startTime = LocalDateTime.now().minusMonths(1);
+        } else if (rangeType.equals(2)) {
+            startTime = LocalDateTime.now().minusMonths(2);
+        } else if (rangeType.equals(3)) {
+            startTime = LocalDateTime.now().minusMonths(3);
+        } else {
+            throw new IllegalArgumentException("Invalid rangeType: " + rangeType);
+        }
+        return recordMapper.countCancellationsByRoomAndTime(roomId, startTime);
+    }
+
+    @Override
+    public double calculateCancellationRateByRoomAndTime(Integer roomId, Integer rangeType) {
+        LocalDateTime startTime;
+
+        if (rangeType.equals(1)) {
+            startTime = LocalDateTime.now().minusMonths(1);
+        } else if (rangeType.equals(2)) {
+            startTime = LocalDateTime.now().minusMonths(2);
+        } else if (rangeType.equals(3)) {
+            startTime = LocalDateTime.now().minusMonths(3);
+        } else {
+            throw new IllegalArgumentException("Invalid rangeType: " + rangeType);
+        }
+
+        int totalRecords = recordMapper.countTotalRecordsByRoomAndTime(roomId, startTime);
+        int cancellations = recordMapper.countCancellationsByRoomAndTime(roomId, startTime);
+
+        if (totalRecords == 0) {
+            return 0.0;
+        }
+
+        return (double) cancellations / totalRecords * 100;
+    }
+
 }
 ///**
 // * Obtains the record specified by ID given.

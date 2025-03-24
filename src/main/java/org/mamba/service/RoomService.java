@@ -186,5 +186,5 @@ public interface RoomService {
      *
      * @return Contains a map of room utilization
      */
-    Map<String, Double> calculateRoomUtilization();
+    Map<String, Double> calculateRoomUtilization(Integer roomId, Integer rangeType);
 }

@@ -82,6 +82,7 @@ public interface RecordService {
     void cancelRecordByIdAdmin(Integer id);
     List<Record> getRestrictedRecords(Integer room_id);
 
+    Map<String, Double> getCancellationReasonPercentagesByRoomAndTime(Integer roomId, Integer rangeType);
 
     /**
      * automatically updating
@@ -102,6 +103,7 @@ public interface RecordService {
      */
     int countStudentOrders();
 
+    int countCancellationsByRoomAndTime(Integer roomId, Integer startTime);
 
     /**
      * Counts the total number of completed orders.
@@ -133,6 +135,8 @@ public interface RecordService {
      * @return the list of records matching the criteria
      */
     Map<String, Object> getRecordsByRoomAndTime(String roomName, LocalDateTime startTime, LocalDateTime endTime);
+
+    double calculateCancellationRateByRoomAndTime(Integer roomId, Integer startTime);
 
     /**
      * Queries records based on room ID, start time, and end time.

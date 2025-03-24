@@ -53,6 +53,18 @@ public interface MaintenanceMapper {
     @Delete("DELETE FROM maintenance WHERE id = #{id}")
     void deleteMaintenanceById(@Param("id") Integer id);
 
+    @Select("SELECT COUNT(*) FROM maintenance WHERE roomId = #{roomId} AND scheduledStart >= #{startTime} AND scheduledEnd <= CURRENT_TIMESTAMP")
+    int countMaintenanceByRoomAndTime(@Param("roomId") Integer roomId, @Param("startTime") LocalDateTime startTime);
+
+    @Select("SELECT COALESCE(SUM(TIMESTAMPDIFF(MINUTE, scheduledStart, scheduledEnd)) / 60.0, 0) " +
+            "FROM maintenance " +
+            "WHERE roomId = #{roomId} " +
+            "AND scheduledStart >= #{startTime} " +
+            "AND scheduledEnd <= CURRENT_TIMESTAMP")
+    Double sumMaintenanceDuration(@Param("roomId") Integer roomId, @Param("startTime") LocalDateTime startTime);
+
+
+
     class MaintenanceSqlBuilder {
         public static String buildGetMaintenanceSql(Map<String, Object> params) {
             SQL sql = new SQL() {{

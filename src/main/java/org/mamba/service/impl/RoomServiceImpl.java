@@ -613,32 +613,53 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public Map<String, Double> calculateRoomUtilization() {
-        List<Room> rooms = roomMapper.getAllRooms();
+    public Map<String, Double> calculateRoomUtilization(Integer roomId, Integer rangeType) {
+        LocalDateTime startTime;
+        long totalMinutes;
         Map<String, Double> utilizationMap = new HashMap<>();
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDate today = now.toLocalDate();
-        LocalDateTime endOfDay = today.atStartOfDay(); // today
-        LocalDateTime startOfDay = today.minusDays(7).atStartOfDay(); // 7 days before
+        if (rangeType.equals(1)) {
+            startTime = LocalDateTime.now().minusMonths(1);
+            totalMinutes = 30 * 24 * 60;
+        } else if (rangeType.equals(2)) {
+            startTime = LocalDateTime.now().minusMonths(2);
+            totalMinutes = 60 * 24 * 60;
+        } else if (rangeType.equals(3)) {
+            startTime = LocalDateTime.now().minusMonths(3);
+            totalMinutes = 90 * 24 * 60;
+        } else {
+            throw new IllegalArgumentException("Invalid rangeType: " + rangeType);
+        }
 
-        for (Room room : rooms) {
-            List<Record> pastRecords = roomMapper.getPastRecords(room.getId(), startOfDay, endOfDay);
-            double totalBusyMinutes = 0;
+        List<Record> pastRecords = roomMapper.getRecordsFromStartTime(roomId, startTime);
+        double totalBusyMinutes = 0;
+        double totalClassTime = 0;
+        double totalBookingTime = 0;
 
-            for (Record record : pastRecords) {
-                if (record == null || record.getStartTime() == null || record.getEndTime() == null) {
-                    continue; // Skip invalid data to avoid NullPointerException
-                }
-                LocalDateTime start = record.getStartTime();
-                LocalDateTime end = record.getEndTime();
-                totalBusyMinutes += Duration.between(start, end).toMinutes();
+        for (Record record : pastRecords) {
+            if (record == null || record.getStartTime() == null || record.getEndTime() == null) {
+                continue; // Skip invalid data to avoid NullPointerException
             }
 
-            double totalMinutesInWeek = 7 * 24 * 14 ;
-            double utilization = (totalBusyMinutes / totalMinutesInWeek) * 100;
-            utilizationMap.put(room.getRoomName(), utilization);
+            LocalDateTime start = record.getStartTime();
+            LocalDateTime end = record.getEndTime();
+            double periodTime = Duration.between(start, end).toMinutes();
+
+            totalBusyMinutes += periodTime;
+            if(record.getUserId() == 1){
+                totalClassTime += periodTime;
+            }else {
+                totalBookingTime += periodTime;
+            }
         }
+
+        double totalUtilization = (totalBusyMinutes / totalMinutes) * 100;
+        double classUtilization = (totalClassTime / totalMinutes) * 100;
+        double bookingUtilization = (totalBookingTime / totalMinutes) * 100;
+
+        utilizationMap.put("totalUtilization", totalUtilization);
+        utilizationMap.put("classUtilization", classUtilization);
+        utilizationMap.put("bookingUtilization", bookingUtilization);
 
         return utilizationMap;
     }

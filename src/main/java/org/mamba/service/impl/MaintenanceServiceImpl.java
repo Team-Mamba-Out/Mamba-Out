@@ -36,8 +36,6 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         maintenanceMapper.setRoomUnderMaintenance();
     }
 
-
-
     @Override
     public Map<String, Object> getMaintenance(Integer id, Integer roomId, LocalDateTime scheduledStart, LocalDateTime scheduledEnd, Integer size, Integer page) {
         Integer offset = null;
@@ -119,4 +117,35 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         return freeResult;
     }
 
+    @Override
+    public int countMaintenanceByRoomAndTime(Integer roomId, Integer rangeType) {
+        LocalDateTime startTime;
+
+        if (rangeType.equals(1)) {
+            startTime = LocalDateTime.now().minusMonths(1);
+        } else if (rangeType.equals(2)) {
+            startTime = LocalDateTime.now().minusMonths(2);
+        } else if (rangeType.equals(3)) {
+            startTime = LocalDateTime.now().minusMonths(3);
+        } else {
+            throw new IllegalArgumentException("Invalid rangeType: " + rangeType);
+        }
+        return maintenanceMapper.countMaintenanceByRoomAndTime(roomId, startTime);
+    }
+
+    @Override
+    public Double getTotalMaintenanceDuration(Integer roomId, Integer rangeType) {
+        LocalDateTime startTime;
+
+        if (rangeType.equals(1)) {
+            startTime = LocalDateTime.now().minusMonths(1);
+        } else if (rangeType.equals(2)) {
+            startTime = LocalDateTime.now().minusMonths(2);
+        } else if (rangeType.equals(3)) {
+            startTime = LocalDateTime.now().minusMonths(3);
+        } else {
+            throw new IllegalArgumentException("Invalid rangeType: " + rangeType);
+        }
+        return maintenanceMapper.sumMaintenanceDuration(roomId, startTime);
+    }
 }
