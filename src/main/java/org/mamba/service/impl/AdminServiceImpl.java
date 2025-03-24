@@ -5,6 +5,7 @@ import org.mamba.entity.*;
 import org.mamba.entity.Record;
 import org.mamba.mapper.AdminMapper;
 import org.mamba.mapper.RecordMapper;
+import org.mamba.mapper.RoomMapper;
 import org.mamba.service.AdminService;
 import org.mamba.service.UserService;
 import org.mamba.service.MaintenanceService;
@@ -14,6 +15,7 @@ import org.mamba.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -37,6 +39,8 @@ public class AdminServiceImpl implements AdminService {
     private MaintenanceService maintenanceService;
     @Autowired
     private RecordMapper recordMapper;
+    @Autowired
+    private RoomMapper roomMapper;
 
     @Override
     public Map<String, Object> getAdmins(String email, Integer uid, String name, String phone, Integer size, Integer page) {
@@ -310,6 +314,30 @@ public class AdminServiceImpl implements AdminService {
         }
 
         return recordsWithRoomNames;
+    }
+
+    @Override
+    public List<Map<String, Object>> roomReport(Integer rangeType) {
+        List<Room> rooms = roomMapper.getAllRooms();
+        List<Map<String, Object>> reportList = new ArrayList<>();
+
+        for (Room room : rooms) {
+            Map<String, Object> report = new HashMap<>();
+            int roomId = room.getId();
+
+            report.put("roomId", roomId);
+            report.put("roomName", room.getRoomName());
+            report.put("Utilization", roomService.calculateRoomUtilization(roomId, rangeType));
+            report.put("maintenanceTime", maintenanceService.countMaintenanceByRoomAndTime(roomId, rangeType));
+            report.put("maintenanceDuration", maintenanceService.getTotalMaintenanceDuration(roomId, rangeType));
+            report.put("CancellationReasons", recordService.getCancellationReasonPercentagesByRoomAndTime(roomId, rangeType));
+            report.put("cancelTime", recordService.countCancellationsByRoomAndTime(roomId, rangeType));
+            report.put("cancellationRate", recordService.calculateCancellationRateByRoomAndTime(roomId, rangeType));
+
+            reportList.add(report);
+        }
+
+        return reportList;
     }
 
 

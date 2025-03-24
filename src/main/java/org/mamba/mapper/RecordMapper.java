@@ -122,6 +122,30 @@ public interface RecordMapper {
     @Select("SELECT COUNT(*) FROM mamba.record")
     int countRecords();
 
+    @Select("SELECT " +
+            "  CASE TRIM(LOWER(SUBSTRING_INDEX(TRIM(comment), ';', 1))) " +  // 去除空格并统一小写
+            "    WHEN '1' THEN 'Schedule Change' " +
+            "    WHEN '2' THEN 'Equipment Failure' " +
+            "    WHEN '3' THEN 'Mistake' " +
+            "    WHEN '4' THEN 'Emergency' " +
+            "    WHEN '5' THEN 'Other' " +
+            "    ELSE 'UNKNOWN_REASON' " +
+            "  END AS reason, " +
+            "  COUNT(*) AS count " +
+            "FROM mamba.record " +
+            "WHERE roomId = #{roomId} " +
+            "  AND startTime >= #{startTime} " +
+            "  AND endTime <= CURRENT_TIMESTAMP " +
+            "  AND statusId = 4 " +
+            "GROUP BY reason")
+    List<Map<String, Object>> countCancellationReasonsByRoomAndTime(@Param("roomId") Integer roomId, @Param("startTime") LocalDateTime startTime);
+
+    @Select("SELECT COUNT(*) FROM mamba.record WHERE roomId = #{roomId} AND startTime >= #{startTime} AND endTime <= CURRENT_TIMESTAMP AND statusId = 4")
+    int countCancellationsByRoomAndTime(@Param("roomId") Integer roomId, @Param("startTime") LocalDateTime startTime);
+
+    @Select("SELECT COUNT(*) FROM mamba.record WHERE roomId = #{roomId} AND startTime >= #{startTime} AND endTime <= CURRENT_TIMESTAMP")
+    int countTotalRecordsByRoomAndTime(@Param("roomId") Integer roomId, @Param("startTime") LocalDateTime startTime);
+
     /**
      * Counts the total number of orders for teachers.
      *
@@ -151,7 +175,7 @@ public interface RecordMapper {
      *
      * @return the total number of incomplete orders
      */
-    @Select("SELECT COUNT(*) FROM mamba.record WHERE statusId == 1 or statusId == 2")
+    @Select("SELECT COUNT(*) FROM mamba.record WHERE statusId = 1 or statusId = 2")
     int countIncompleteOrders();
 
     /**
