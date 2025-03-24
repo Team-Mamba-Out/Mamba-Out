@@ -377,10 +377,47 @@ public class RecordServiceImpl implements RecordService {
     /**
      * automatically updating
      */
-    @Scheduled(cron = "0 * * * * ?") // 每分钟执行一次
+    @Scheduled(cron = "0 * * * * ?")
     @Transactional
     @Override
     public void updateStatus() {
+        List<Record> getNewStarts = recordMapper.getNewStarts();
+        if (!getNewStarts.isEmpty()){
+            for (Record record : getNewStarts) {
+                messageService.createMessage(
+                        record.getUserId(),
+                        "Room Reservation Beginning Soon",
+                        "Your reservation for " + roomService.getRoomById(record.getRoomId()).getRoomName()+ " will begin in 10 minutes. Please arrive in time and complete the check-in",
+                        LocalDateTime.now(),
+                        false,
+                        "1;Jinhao Zhang",
+                        0,
+                        record.getRoomId()
+                );
+                Room room = roomMapper.getRoomById(record.getRoomId());
+                record.setCorrespondingRoom(room);
+                EmailManager.sendCheckInEmail(userService.getUserByUid(record.getUserId()).getRole().split("-")[0],record);
+            }
+
+        }
+
+        List<Record> getNewEnds = recordMapper.getNewEnds();
+        if (!getNewEnds.isEmpty()){
+            for (Record record : getNewEnds) {
+                messageService.createMessage(
+                        record.getUserId(),
+                        "Room Reservation Ending Soon",
+                        "Your reservation for " + roomService.getRoomById(record.getRoomId()).getRoomName()+ " will end in 10 minutes. Please wrap up your activities and vacate the room on time. If you need to extend your reservation, please do so before it ends.",
+                        LocalDateTime.now(),
+                        false,
+                        "1;Jinhao Zhang",
+                        0,
+                        record.getRoomId()
+                );
+                //TODO 加发结束邮件
+            }
+
+        }
         List<Integer> updatedUids = recordMapper.getUsersWithNewStatus5();
         recordMapper.updateRecordStatus();
         if (!updatedUids.isEmpty()) {

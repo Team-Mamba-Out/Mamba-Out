@@ -15,4 +15,5 @@ public class Message {
     private LocalDateTime createTime;
     private boolean isRead;
     private String sender;
+    private Boolean isOperated;
 }
