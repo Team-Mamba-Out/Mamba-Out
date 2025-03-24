@@ -376,51 +376,67 @@ public class RoomServiceImpl implements RoomService {
      */
     @Override
     public List<List<LocalDateTime>> getFreeTimesById(Integer id) {
-        // Get the current time
+        // 获取当前时间
         LocalDateTime now = LocalDateTime.now();
-
         LocalDate today = now.toLocalDate();
-        LocalDateTime startOfDay = today.atStartOfDay(); // to 00:00
-        LocalDateTime endOfDay = today.plusDays(7).atStartOfDay(); // 7 days later
+        LocalDateTime startOfDay = today.atStartOfDay();  // 00:00
+        LocalDateTime endOfDay = today.plusDays(7).atStartOfDay();  // 7 天后
 
-        // Get all the records of the next 7 days
-        List<Record> records = roomMapper.getFutureRecords(id, startOfDay, endOfDay);
-        // Get busy times first
-        List<List<LocalDateTime>> busyTimes = new ArrayList<>();
+        // 获取未来 7 天的所有预约记录
+        List<Record> records = roomMapper.getFutureCourses(id, startOfDay, endOfDay);
 
-        // Put all the record time periods into the busy times list (each contains start/end time)
+        // 使用 TreeMap 记录每天的忙碌时间段，方便按日期查找
+        Map<LocalDate, List<List<LocalDateTime>>> busyMap = new TreeMap<>();
+
         for (Record record : records) {
-            busyTimes.add(Arrays.asList(record.getStartTime(), record.getEndTime()));
-        }
-
-        Map<LocalDate, Set<LocalDateTime>> busyMap = new HashMap<>();
-        for (List<LocalDateTime> busyTimeSlot : busyTimes) {
-            if (busyTimeSlot.size() != 2) continue;
-            LocalDateTime start = busyTimeSlot.get(0);
-            LocalDate date = start.toLocalDate();
-            busyMap.computeIfAbsent(date, k -> new HashSet<>()).add(start);
+            LocalDate date = record.getStartTime().toLocalDate();
+            busyMap.computeIfAbsent(date, k -> new ArrayList<>())
+                    .add(Arrays.asList(record.getStartTime(), record.getEndTime()));
         }
 
         List<List<LocalDateTime>> freeResult = new ArrayList<>();
 
-        // 7 consecutive days
+        // 遍历未来 7 天
         for (int i = 0; i < 7; i++) {
-            LocalDate currentDate = now.toLocalDate().plusDays(i);
+            LocalDate currentDate = today.plusDays(i);
             LocalDateTime dayStart = LocalDateTime.of(currentDate, LocalTime.of(DAILY_START_HOUR, 0));
             LocalDateTime dayEnd = LocalDateTime.of(currentDate, LocalTime.of(DAILY_END_HOUR, 0));
 
-            for (LocalDateTime slotStart = dayStart; !slotStart.plusMinutes(PERIOD_MINUTE).isAfter(dayEnd); slotStart = slotStart.plusMinutes(PERIOD_MINUTE)) {
-                if (!busyMap.getOrDefault(currentDate, Collections.emptySet()).contains(slotStart)) {
-                    List<LocalDateTime> freeSlot = new ArrayList<>();
-                    freeSlot.add(slotStart);
-                    freeSlot.add(slotStart.plusMinutes(PERIOD_MINUTE));
-                    freeResult.add(freeSlot);
+            List<List<LocalDateTime>> busySlots = busyMap.getOrDefault(currentDate, new ArrayList<>());
+
+            // 按时间排序，确保 busySlots 是有序的
+            busySlots.sort(Comparator.comparing(slot -> slot.get(0)));
+
+            LocalDateTime slotStart = dayStart;
+
+            for (List<LocalDateTime> busySlot : busySlots) {
+                LocalDateTime busyStart = busySlot.get(0);
+                LocalDateTime busyEnd = busySlot.get(1);
+
+                // 如果当前 slotStart 早于 busyStart，则这个时间段是空闲的
+                if (slotStart.isBefore(busyStart)) {
+                    while (slotStart.plusMinutes(PERIOD_MINUTE).isBefore(busyStart) || slotStart.plusMinutes(PERIOD_MINUTE).equals(busyStart)) {
+                        freeResult.add(Arrays.asList(slotStart, slotStart.plusMinutes(PERIOD_MINUTE)));
+                        slotStart = slotStart.plusMinutes(PERIOD_MINUTE);
+                    }
                 }
+
+                // 更新 slotStart 为当前 busy 结束时间，继续找下一个空闲时间
+                if (slotStart.isBefore(busyEnd)) {
+                    slotStart = busyEnd;
+                }
+            }
+
+            // 检查 busySlots 之后是否还有空闲时间
+            while (slotStart.plusMinutes(PERIOD_MINUTE).isBefore(dayEnd) || slotStart.plusMinutes(PERIOD_MINUTE).equals(dayEnd)) {
+                freeResult.add(Arrays.asList(slotStart, slotStart.plusMinutes(PERIOD_MINUTE)));
+                slotStart = slotStart.plusMinutes(PERIOD_MINUTE);
             }
         }
 
         return freeResult;
     }
+
 
     @Override
     public Room getRoomById(Integer id) {

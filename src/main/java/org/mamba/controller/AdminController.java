@@ -24,6 +24,11 @@ public class AdminController {
     @Autowired
     private RoomServiceImpl roomService;
 
+    @GetMapping("/getFreeMaintainTime")
+    public Result getFreeMaintainTime(@RequestParam Integer roomId) {
+        return Result.success(adminService.getFreeMaintainTime(roomId));
+    }
+
     /**
      * Obtains the admin list.
      *

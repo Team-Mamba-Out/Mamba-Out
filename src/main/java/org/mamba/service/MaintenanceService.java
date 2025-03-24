@@ -4,6 +4,7 @@ import org.mamba.entity.Maintenance;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public interface MaintenanceService {
@@ -11,6 +12,8 @@ public interface MaintenanceService {
      * Automatically update the maintenance status of the room
      */
     void updateMaintenanceStatus();
+
+    List<Map<String, Object>> getFreeTimesById(Integer id);
 
     /**
      * Get maintenance records based on the given conditions

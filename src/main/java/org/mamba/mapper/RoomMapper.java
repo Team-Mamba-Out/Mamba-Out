@@ -120,6 +120,16 @@ public interface RoomMapper {
     List<Record> getFutureRecords(@Param("id") Integer id, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 
     @Select("SELECT * " +
+            "FROM mamba.record r " +
+            "WHERE r.roomId = #{id} " +
+            "AND r.startTime >= #{startOfDay} " +
+            "AND r.startTime <= #{endOfDay} " +
+            "AND r.statusId != 4 " +
+            "AND r.userId = 1 " +
+            "ORDER BY r.startTime")
+    List<Record> getFutureCourses(@Param("id") Integer id, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
+
+    @Select("SELECT * " +
             "FROM mamba.maintenance m " +
             "WHERE m.roomId = #{id} " +
             "AND m.scheduledStart >= #{startOfDay} " +
