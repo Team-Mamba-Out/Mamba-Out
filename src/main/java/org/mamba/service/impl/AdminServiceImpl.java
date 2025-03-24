@@ -99,7 +99,7 @@ public class AdminServiceImpl implements AdminService {
         messageService.createMessage(
                 userID,
                 "Room Reassignment Notification",
-                "Your reserved room at " + oldStartTime + " is no longer available. " +
+                "Your reserved room(" + roomService.getRoomById(record.getRoomId()).getRoomName()  + ")  at " + oldStartTime + " is no longer available. " +
                         "You have been reassigned to room " + nearestRoom.getRoomName() + " from " + newStartTime + " to " + newEndTime +
                         ". The reason is: " + reason + ". Please check your reservation details.",
                 LocalDateTime.now(),
@@ -268,8 +268,8 @@ public class AdminServiceImpl implements AdminService {
             messageService.createMessage(
                     userId,
                     "Room Reassignment Notification",
-                    "Your reserved room at " + record.getStartTime() + " is no longer available. " +
-                            "You have been reassigned to room " + nearestRoom.getRoomName() + " from " + newStartTime + " to " + newEndTime +
+                    "Your reserved room(" + roomService.getRoomById(roomId).getRoomName() + ")  at " + record.getStartTime() + " is no longer available. " +
+                            "You have been reassigned to room" + nearestRoom.getRoomName() + " from " + newStartTime + " to " + newEndTime +
                             ". The reason is: " + reason + ". Please check your reservation details.",
                     LocalDateTime.now(),
                     false,
