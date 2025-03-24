@@ -339,6 +339,55 @@ public class EmailManager {
     }
 
     /**
+     * Sends an email that notifies the user that the booking is almost over.
+     *
+     * @param userEmail the user's email
+     * @param record    the corresponding record
+     */
+    public static void sendBookingAlmostOverEmail(String userEmail, Record record) {
+        // Set email server properties
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");            // enable authentication
+        props.put("mail.smtp.starttls.enable", "true"); // enable TLS
+        props.put("mail.smtp.host", "smtp.qq.com");     // email server address
+        props.put("mail.smtp.port", "587");             // email server port
+
+        // Create new session
+        Session session = Session.getInstance(props, new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(SMTP_SENDER_USERNAME, SMTP_SENDER_PASSWORD);
+            }
+        });
+
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(SMTP_SENDER_USERNAME, "DIICSU Room Booking System")); // Set sender // Set sender
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(userEmail)); // Set receiver
+
+            // Create a new email
+            message.setSubject("Your booking will end soon"); // Set subject
+
+            String bookingAlmostOverText = "Hi,\n\n"
+                    + "This is a kind reminder that your booking for " + record.getCorrespondingRoom().getRoomName()
+                    + " has only ten minutes left.\n\n"
+                    + "If you need to, you can extend your booking on the webpage or mini program. "
+                    + "If you are not seeking for an extension, "
+                    + "please take care to leave in a timely manner so as not to disrupt others' use.";
+
+            message.setText(bookingAlmostOverText);  // Set text
+            // Send email
+            Transport.send(message);
+
+            System.out.println("EMAIL SENT SUCCESSFULLY");
+
+        } catch (MessagingException e) {
+            throw new RuntimeException("EMAIL SENDING FAILURE: " + e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * test only, do not call from outside
      *
      * @param args arguments
@@ -356,6 +405,6 @@ public class EmailManager {
         testRoom.setRoomName("Laoda's 208");
         testRecord.setCorrespondingRoom(testRoom);
 
-        sendBookSuccessfulEmail("2542682@dundee.ac.uk", testRecord, false);
+        sendBookingAlmostOverEmail("2542682@dundee.ac.uk", testRecord);
     }
 }

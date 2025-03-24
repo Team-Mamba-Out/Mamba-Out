@@ -47,6 +47,7 @@ public class CalendarManager {
 
     /**
      * MAIN FUNCTION FOR TESTING ONLY - NEVER CALL FROM OUTSIDE
+     *
      * @param args arguments
      */
     public static void main(String[] args) {
