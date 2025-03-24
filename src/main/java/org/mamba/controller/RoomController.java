@@ -178,7 +178,7 @@ public class RoomController {
      * @return the list containing several lists, each of which contains start time and end time
      */
     @GetMapping("/getFreeTime/{id}")
-    public Result getFreeTimesById(Integer id) {
+    public Result getFreeTimesById(@PathVariable Integer id) {
         List<List<LocalDateTime>> freeTimesList = roomService.getFreeTimesById(id);
         return Result.success(freeTimesList);
     }
