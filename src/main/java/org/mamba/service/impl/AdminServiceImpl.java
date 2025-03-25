@@ -340,6 +340,8 @@ public class AdminServiceImpl implements AdminService {
             report.put("cancelTime", recordService.countCancellationsByRoomAndTime(roomId, rangeType));
             report.put("cancellationRate", recordService.calculateCancellationRateByRoomAndTime(roomId, rangeType));
 
+            report.put("suggestion", roomService.generateSuggestions(report, rangeType));
+
             reportList.add(report);
         }
 
