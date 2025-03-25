@@ -167,7 +167,7 @@ public interface RecordMapper {
      *
      * @return the total number of completed orders
      */
-    @Select("SELECT COUNT(*) FROM mamba.record WHERE statusId = 3")
+    @Select("SELECT COUNT(*) FROM mamba.record WHERE statusId = 3 or statusId = 4 or statusId = 5")
     int countCompletedOrders();
 
     /**
