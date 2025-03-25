@@ -37,6 +37,17 @@ public class MessageController {
     }
 
     /**
+     * Counts the number of unread messages for a given user ID.
+     * @param receiver the user ID
+     * @return a success result containing the number of unread messages
+     */
+    @GetMapping("/countUnreadMessages")
+    public Result countUnreadMessages(@RequestParam Integer receiver) {
+        int count = messageService.countUnreadMessage(receiver);
+        return Result.success(count);
+    }
+
+    /**
      * Deletes a message by its ID.
      *
      * @param id the ID of the message to delete
