@@ -657,11 +657,97 @@ public class RoomServiceImpl implements RoomService {
         double classUtilization = (totalClassTime / totalMinutes) * 100;
         double bookingUtilization = (totalBookingTime / totalMinutes) * 100;
 
-        utilizationMap.put("totalUtilization", totalUtilization);
-        utilizationMap.put("classUtilization", classUtilization);
-        utilizationMap.put("bookingUtilization", bookingUtilization);
+        utilizationMap.put("totalUtilization", Math.round(totalUtilization * 100.0) / 100.0);
+        utilizationMap.put("classUtilization", Math.round(classUtilization * 100.0) / 100.0);
+        utilizationMap.put("bookingUtilization", Math.round(bookingUtilization * 100.0) / 100.0);
 
         return utilizationMap;
+    }
+
+    /**
+     * Generates automated suggestions based on room utilization and cancellation statistics.
+     * @param roomReport the room report containing various statistics
+     * @return a map containing improvement suggestions
+     */
+    public Map<String, Object> generateSuggestions(Map<String, Object> roomReport, Integer rangeType) {
+        Map<String, Object> suggestions = new LinkedHashMap<>();
+
+        double period;
+
+        if (rangeType.equals(1)) {
+            period = 30;
+        } else if (rangeType.equals(2)) {
+            period = 60;
+        } else if (rangeType.equals(3)) {
+            period = 90;
+        } else {
+            throw new IllegalArgumentException("Invalid rangeType: " + rangeType);
+        }
+
+        double totalUtilization = ((Number) ((Map<String, Object>) roomReport.get("Utilization")).get("totalUtilization")).doubleValue();
+        double cancellationRate = ((Number) roomReport.get("cancellationRate")).doubleValue();
+        int maintenanceTime = ((Number) roomReport.get("maintenanceTime")).intValue();
+        double maintenanceDuration = ((Number) roomReport.get("maintenanceDuration")).doubleValue();
+        int cancelTime = ((Number) roomReport.get("cancelTime")).intValue();
+        Map<String, Double> cancellationReasons = (Map<String, Double>) roomReport.get("CancellationReasons");
+
+        if (totalUtilization < 20) {
+            suggestions.put("Increase Utilization", "Utilization is low (" + String.format("%.2f", totalUtilization) + "%). Optimize scheduling to improve usage.");
+        } else if (totalUtilization > 60 && totalUtilization <= 80) {
+            suggestions.put("Optimize Scheduling", "Utilization is high (" + String.format("%.2f", totalUtilization) + "%). Check for overuse and optimize scheduling.");
+        } else if (totalUtilization > 80) {
+            suggestions.put("Consider Expansion", "Utilization is very high (" + String.format("%.2f", totalUtilization) + "%). Consider expanding facilities or adding backup options.");
+        } else {
+            suggestions.put("Utilization in Moderate Range", "Utilization is within a moderate range (" + String.format("%.2f", totalUtilization) + "%). Ensure balance between availability and usage.");
+        }
+
+        // High cancellation rate
+        if (cancellationRate > 20) {
+            suggestions.put("Reduce Cancellations", "Cancellation rate is high (" + String.format("%.2f", cancellationRate) + "%) And the cancel time is " + cancelTime + ". Please check the room facilities to ensure the quality of the room.");
+        }
+
+        // Find max cancellation percentage
+        double maxCancellationPercentage = 0.0;
+        for (Map.Entry<String, Double> entry : cancellationReasons.entrySet()) {
+            double currentPercentage = entry.getValue();
+            if (currentPercentage > maxCancellationPercentage) {
+                maxCancellationPercentage = currentPercentage;
+            }
+        }
+
+        // Suggest based on cancellation reasons with 5% tolerance
+        for (Map.Entry<String, Double> entry : cancellationReasons.entrySet()) {
+            double currentPercentage = entry.getValue();
+            if (Math.abs(currentPercentage - maxCancellationPercentage) <= 5) {  // Compare with max percentage +/- 5%
+                switch (entry.getKey()) {
+                    case "Schedule Change":
+                        suggestions.put("Plan Change Management", "The cancellation reason 'Schedule Change' is significant (" + String.format("%.2f", currentPercentage) + "%). Consider offering more flexible booking options or better communication with users.");
+                        break;
+                    case "Equipment Failure":
+                        suggestions.put("Equipment Management", "The cancellation reason 'Equipment Failure' is significant (" + String.format("%.2f", currentPercentage) + "%). Ensure better maintenance and timely equipment checks to prevent failures.");
+                        break;
+                    case "Mistake":
+                        suggestions.put("Booking Confirmation", "The cancellation reason 'Mistake' is significant (" + String.format("%.2f", currentPercentage) + "%). Improve the booking confirmation process to avoid user errors.");
+                        break;
+                    case "Emergency":
+                        suggestions.put("Emergency Response", "The cancellation reason 'Emergency' is significant (" + String.format("%.2f", currentPercentage) + "%). Consider building a more flexible emergency response system for last-minute cancellations.");
+                        break;
+                    case "Other":
+                        suggestions.put("Review 'Other' Cancellations", "The cancellation reason 'Other' is significant (" + String.format("%.2f", currentPercentage) + "%). Review 'Other' cancellations to identify patterns and take proactive measures.");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        if (maintenanceTime / period > 0.2) {
+            suggestions.put("Reduce Maintenance Time", "Maintenance time is " + maintenanceTime +
+                    " and the total maintenance time is " + String.format("%.2f", maintenanceDuration) +
+                    " hours during the " + (int) (period / 30) + " months. Check room facilities in detail to ensure room availability.");
+        }
+
+        return suggestions;
     }
 
 }
