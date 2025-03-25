@@ -32,6 +32,8 @@ public interface AdminService {
      */
     String getNameByUid(Integer uid);
 
+    void normalCancel(Integer id,String reason);
+
     void cancelRecordAndReassign(Integer id, String reason);
 
     /**

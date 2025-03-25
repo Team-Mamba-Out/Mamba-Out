@@ -74,14 +74,15 @@ public interface RecordService {
      *
      * @param id the provided id
      */
-    void cancelRecordById(Integer id);
+    void cancelRecordById(Integer id, String reason);
 
     /**
      * Cancel the record specified by id.
      *
      * @param id the provided id
+     * @param comment the reason why record is cancelled
      */
-    void cancelRecordByIdAdmin(Integer id);
+    void cancelRecordByIdAdmin(Integer id,String comment);
 
     List<Record> getRestrictedRecords(Integer room_id);
 

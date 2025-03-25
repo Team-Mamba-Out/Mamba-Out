@@ -256,10 +256,10 @@ public class RecordServiceImpl implements RecordService {
      * @param id the provided id
      */
     @Override
-    public void cancelRecordById(Integer id) {
+    public void cancelRecordById(Integer id, String reason) {
         Record record = recordMapper.getRecords(id, null, null, null, null, null, null, null, null, null).get(0);
         Room room = roomMapper.getRoomById(record.getRoomId());
-        recordMapper.cancelRecordById(id);
+        recordMapper.cancelRecordById(id,reason);
         Integer userId = record.getUserId();
         String role = userService.getUserByUid(userId).getRole().split("-")[1];
 
@@ -286,15 +286,15 @@ public class RecordServiceImpl implements RecordService {
      * @param id the provided id
      */
     @Override
-    public void cancelRecordByIdAdmin(Integer id) {
+    public void cancelRecordByIdAdmin(Integer id,String comment) {
         Record record = recordMapper.getRecords(id, null, null, null, null, null, null, null, null, null).get(0);
         Room room = roomMapper.getRoomById(record.getRoomId());
-        recordMapper.cancelRecordById(id);
+        recordMapper.cancelRecordById(id,comment);
         Integer userId = record.getUserId();
         messageService.createMessage(
                 record.getUserId(),
-                "Room Reservation Cancellation",
-                "Your room reservation for: " + room.getRoomName() + " has been successfully cancelled.",
+                "Room Reservation Cancelled By Admin",
+                "Your room reservation for: " + room.getRoomName() + " has been successfully cancelled. " + "The reason is: " + comment,
                 LocalDateTime.now(),
                 false,
                 "1;Jinhao Zhang",
