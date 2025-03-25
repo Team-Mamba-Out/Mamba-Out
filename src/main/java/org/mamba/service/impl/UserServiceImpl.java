@@ -141,10 +141,17 @@ public class UserServiceImpl implements UserService {
     public Integer getUserId(String email) {
         Integer result = userMapper.getUserIdByEmail(email);
         if (result == null) {
+
             //this means that it is the first time of the user login
-            userMapper.createUser(email + "-001");
-            result = userMapper.getUserIdByEmail(email);
-            userMapper.createStudent(result, email);
+            if (email.split("@")[0].matches(".*[a-zA-Z].*")){
+                userMapper.createUser(email + "-002");
+                result = userMapper.getUserIdByEmail(email);
+                userMapper.createLecturer(result, email);
+            }else{
+                userMapper.createUser(email + "-001");
+                result = userMapper.getUserIdByEmail(email);
+                userMapper.createStudent(result, email);
+            }
         }
         return result;
 
