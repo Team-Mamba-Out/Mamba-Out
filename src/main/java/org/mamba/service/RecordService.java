@@ -165,6 +165,7 @@ public interface RecordService {
 
     boolean allowReserve(Integer roomId, Integer userId);
 
+    List<Map<String, Object>> countOrdersByDayOfWeek();
 }
 
 

@@ -123,7 +123,7 @@ public interface RecordMapper {
     int countRecords();
 
     @Select("SELECT " +
-            "  CASE TRIM(LOWER(SUBSTRING_INDEX(TRIM(comment), ';', 1))) " +  // 去除空格并统一小写
+            "  CASE TRIM(LOWER(SUBSTRING_INDEX(TRIM(comment), ';', 1))) " +
             "    WHEN '1' THEN 'Schedule Change' " +
             "    WHEN '2' THEN 'Equipment Failure' " +
             "    WHEN '3' THEN 'Mistake' " +
@@ -139,6 +139,17 @@ public interface RecordMapper {
             "  AND statusId = 4 " +
             "GROUP BY reason")
     List<Map<String, Object>> countCancellationReasonsByRoomAndTime(@Param("roomId") Integer roomId, @Param("startTime") LocalDateTime startTime);
+
+    @Select("SELECT " +
+            "  DATE(startTime) as date, " +
+            "  SUM(CASE WHEN userId IN (SELECT uid FROM mamba.user WHERE role LIKE '%-001') THEN 1 ELSE 0 END) AS studentOrders, " +
+            "  SUM(CASE WHEN userId IN (SELECT uid FROM mamba.user WHERE role LIKE '%-002') THEN 1 ELSE 0 END) AS teacherOrders " +
+            "FROM mamba.record " +
+            "WHERE startTime >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) " +
+            "  AND startTime < DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 7 DAY) " +
+            "GROUP BY DATE(startTime)")
+    List<Map<String, Object>> countOrdersByDayOfWeek();
+
 
     @Select("SELECT COUNT(*) FROM mamba.record WHERE roomId = #{roomId} AND startTime >= #{startTime} AND endTime <= CURRENT_TIMESTAMP AND statusId = 4")
     int countCancellationsByRoomAndTime(@Param("roomId") Integer roomId, @Param("startTime") LocalDateTime startTime);

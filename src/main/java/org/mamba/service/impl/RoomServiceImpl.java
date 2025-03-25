@@ -324,6 +324,7 @@ public class RoomServiceImpl implements RoomService {
 
     /**
      * Cancel the room by id.
+     *
      * @param id the provided id
      */
     @Override
@@ -542,7 +543,7 @@ public class RoomServiceImpl implements RoomService {
      */
     @Override
     public String findNearestAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime,
-                                         Integer uid) {
+                                           Integer uid) {
         // Get the list of all rooms
         List<Room> allRooms = roomMapper.getAllRooms();
 
@@ -646,9 +647,9 @@ public class RoomServiceImpl implements RoomService {
             double periodTime = Duration.between(start, end).toMinutes();
 
             totalBusyMinutes += periodTime;
-            if(record.getUserId() == 1){
+            if (record.getUserId() == 1) {
                 totalClassTime += periodTime;
-            }else {
+            } else {
                 totalBookingTime += periodTime;
             }
         }
@@ -666,6 +667,7 @@ public class RoomServiceImpl implements RoomService {
 
     /**
      * Generates automated suggestions based on room utilization and cancellation statistics.
+     *
      * @param roomReport the room report containing various statistics
      * @return a map containing improvement suggestions
      */
@@ -673,7 +675,6 @@ public class RoomServiceImpl implements RoomService {
         Map<String, Object> suggestions = new LinkedHashMap<>();
 
         double period;
-
         if (rangeType.equals(1)) {
             period = 30;
         } else if (rangeType.equals(2)) {
@@ -701,44 +702,45 @@ public class RoomServiceImpl implements RoomService {
             suggestions.put("Utilization in Moderate Range", "Utilization is within a moderate range (" + String.format("%.2f", totalUtilization) + "%). Ensure balance between availability and usage.");
         }
 
-        // High cancellation rate
         if (cancellationRate > 20) {
-            suggestions.put("Reduce Cancellations", "Cancellation rate is high (" + String.format("%.2f", cancellationRate) + "%) And the cancel time is " + cancelTime + ". Please check the room facilities to ensure the quality of the room.");
-        }
+            Map<String, String> cancellationSuggestions = new LinkedHashMap<>();
+            cancellationSuggestions.put("Summary", "Cancellation rate is high (" + String.format("%.2f", cancellationRate) + "%) and the cancel time is " + cancelTime + ". Please check the room facilities to ensure the quality of the room.");
 
-        // Find max cancellation percentage
-        double maxCancellationPercentage = 0.0;
-        for (Map.Entry<String, Double> entry : cancellationReasons.entrySet()) {
-            double currentPercentage = entry.getValue();
-            if (currentPercentage > maxCancellationPercentage) {
-                maxCancellationPercentage = currentPercentage;
-            }
-        }
-
-        // Suggest based on cancellation reasons with 5% tolerance
-        for (Map.Entry<String, Double> entry : cancellationReasons.entrySet()) {
-            double currentPercentage = entry.getValue();
-            if (Math.abs(currentPercentage - maxCancellationPercentage) <= 5) {  // Compare with max percentage +/- 5%
-                switch (entry.getKey()) {
-                    case "Schedule Change":
-                        suggestions.put("Plan Change Management", "The cancellation reason 'Schedule Change' is significant (" + String.format("%.2f", currentPercentage) + "%). Consider offering more flexible booking options or better communication with users.");
-                        break;
-                    case "Equipment Failure":
-                        suggestions.put("Equipment Management", "The cancellation reason 'Equipment Failure' is significant (" + String.format("%.2f", currentPercentage) + "%). Ensure better maintenance and timely equipment checks to prevent failures.");
-                        break;
-                    case "Mistake":
-                        suggestions.put("Booking Confirmation", "The cancellation reason 'Mistake' is significant (" + String.format("%.2f", currentPercentage) + "%). Improve the booking confirmation process to avoid user errors.");
-                        break;
-                    case "Emergency":
-                        suggestions.put("Emergency Response", "The cancellation reason 'Emergency' is significant (" + String.format("%.2f", currentPercentage) + "%). Consider building a more flexible emergency response system for last-minute cancellations.");
-                        break;
-                    case "Other":
-                        suggestions.put("Review 'Other' Cancellations", "The cancellation reason 'Other' is significant (" + String.format("%.2f", currentPercentage) + "%). Review 'Other' cancellations to identify patterns and take proactive measures.");
-                        break;
-                    default:
-                        break;
+            double maxCancellationPercentage = 0.0;
+            for (Map.Entry<String, Double> entry : cancellationReasons.entrySet()) {
+                double currentPercentage = entry.getValue();
+                if (currentPercentage > maxCancellationPercentage) {
+                    maxCancellationPercentage = currentPercentage;
                 }
             }
+
+            // Suggest based on cancellation reasons with 5% tolerance
+            for (Map.Entry<String, Double> entry : cancellationReasons.entrySet()) {
+                double currentPercentage = entry.getValue();
+                if (Math.abs(currentPercentage - maxCancellationPercentage) <= 5) {
+                    switch (entry.getKey()) {
+                        case "Schedule Change":
+                            cancellationSuggestions.put("Schedule Change", "The cancellation reason 'Schedule Change' is significant (" + String.format("%.2f", currentPercentage) + "%). Consider offering more flexible booking options or better communication with users.");
+                            break;
+                        case "Equipment Failure":
+                            cancellationSuggestions.put("Equipment Failure", "The cancellation reason 'Equipment Failure' is significant (" + String.format("%.2f", currentPercentage) + "%). Ensure better maintenance and timely equipment checks to prevent failures.");
+                            break;
+                        case "Mistake":
+                            cancellationSuggestions.put("User Mistake ", "The cancellation reason 'Mistake' is significant (" + String.format("%.2f", currentPercentage) + "%). Improve the booking confirmation process to avoid user errors.");
+                            break;
+                        case "Emergency":
+                            cancellationSuggestions.put("Emergency", "The cancellation reason 'Emergency' is significant (" + String.format("%.2f", currentPercentage) + "%). Consider building a more flexible emergency response system for last-minute cancellations.");
+                            break;
+                        case "Other":
+                            cancellationSuggestions.put("Other", "The cancellation reason 'Other' is significant (" + String.format("%.2f", currentPercentage) + "%). Review 'Other' cancellations to identify patterns and take proactive measures.");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            suggestions.put("Reduce Cancellations", cancellationSuggestions);
         }
 
         if (maintenanceTime / period > 0.2) {
@@ -749,5 +751,6 @@ public class RoomServiceImpl implements RoomService {
 
         return suggestions;
     }
+
 
 }

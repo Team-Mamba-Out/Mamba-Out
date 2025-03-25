@@ -171,4 +171,10 @@ public class RecordController {
         int count = recordService.countIncompleteOrders();
         return Result.success(count);
     }
+
+    @GetMapping("/countOrdersByDayOfWeek")
+    public Result countOrdersByDayOfWeek() {
+        List<Map<String, Object>> ordersCount = recordService.countOrdersByDayOfWeek();
+        return Result.success(ordersCount);
+    }
 }
