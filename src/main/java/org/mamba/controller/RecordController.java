@@ -107,8 +107,8 @@ public class RecordController {
      * @return the result of the cancellation operation
      */
     @PutMapping("/cancel")
-    public Result cancelRecordById(Integer id) {
-        recordService.cancelRecordById(id);
+    public Result cancelRecordById(Integer id, String reason) {
+        recordService.cancelRecordById(id,reason);
         return Result.success();
     }
     @PutMapping("/checkin")

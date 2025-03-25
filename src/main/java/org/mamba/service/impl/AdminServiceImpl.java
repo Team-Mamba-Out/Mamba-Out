@@ -63,6 +63,12 @@ public class AdminServiceImpl implements AdminService {
         return adminMapper.getNameByEmailAndRole(result[0], result[1]);
     }
 
+    @Override
+    public void normalCancel(Integer id, String reason) {
+        Record record = recordService.getRecordById(id);
+        recordService.cancelRecordByIdAdmin(id,record.getComment());
+    }
+
     /**
      * Cancel a record and reassign the user to a new room.
      *
@@ -92,7 +98,7 @@ public class AdminServiceImpl implements AdminService {
         LocalDateTime newStartTime = LocalDateTime.parse(roomInfo[1]);
         LocalDateTime newEndTime = LocalDateTime.parse(roomInfo[2]);
 
-        recordService.cancelRecordByIdAdmin(recordId);
+        recordService.cancelRecordByIdAdmin(recordId,record.getComment());
         recordMapper.createRecord(nearestRoom.getId(), 0, newStartTime, newEndTime, LocalDateTime.now(),false, true, null);
 
         // Send a notification message about the reassignment
@@ -245,7 +251,7 @@ public class AdminServiceImpl implements AdminService {
 
             Integer userId = record.getUserId();
 
-            recordMapper.cancelRecordById(record.getId());
+            recordMapper.cancelRecordById(record.getId(),null);
 
             String nearestRoomInfo = roomService.findNearestAvailableRoom(roomId, record.getStartTime(), record.getEndTime(), userId);
 

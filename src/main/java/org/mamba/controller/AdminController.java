@@ -46,6 +46,12 @@ public class AdminController {
         return Result.success(adminsResult);
     }
 
+    @PostMapping("/normalCancel")
+    public Result normalCancelByAdmin(@PathVariable Integer id,@RequestBody String reason) {
+        adminService.normalCancel(id,reason);
+        return Result.success();
+    }
+
     @DeleteMapping("/cancelRecordAndReassign/{id}")
     public Result cancelRecordAndReassign(@PathVariable Integer id, @RequestBody String reason) {
         adminService.cancelRecordAndReassign(id, reason);

@@ -91,7 +91,7 @@ public interface RecordMapper {
             "    CASE " +
             "      WHEN statusId = 4 THEN statusId  " +
             "      WHEN NOW() >= startTime AND hasCheckedIn = false THEN 5  " +
-            "      WHEN NOW() >= startTime AND hasCheckedIn = true THEN 2  " +
+            "      WHEN NOW() >= startTime AND NOW() < endTime AND hasCheckedIn = true THEN 2  " +
             "      WHEN statusId = 2 AND NOW() > endTime THEN 3  " +
             "      ELSE statusId  " +
             "    END,  " +
@@ -116,8 +116,8 @@ public interface RecordMapper {
     @Update("UPDATE mamba.record set allowCheckIn = false, statusId = 2, hasCheckedIn = true where id = #{id}")
     void checkIn(@Param("id") Integer id);
 
-    @Update("UPDATE mamba.record SET statusId = 4 WHERE id = #{id}")
-    void cancelRecordById(@Param("id") Integer id);
+    @Update("UPDATE mamba.record SET statusId = 4, comment = #{comment} WHERE id = #{id}")
+    void cancelRecordById(@Param("id") Integer id,@Param("comment") String comment);
 
     @Select("SELECT COUNT(*) FROM mamba.record")
     int countRecords();
