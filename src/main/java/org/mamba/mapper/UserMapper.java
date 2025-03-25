@@ -64,6 +64,9 @@ public interface UserMapper {
 
     @Insert("INSERT INTO student (uid,email)values (#{uid},#{email})")
     void createStudent(Integer uid, String email);
+
+    @Insert("INSERT INTO lecturer (uid,email)values (#{uid},#{email})")
+    void createLecturer(Integer uid, String email);
     /**
      * Static class for building SQL queries.
      */
