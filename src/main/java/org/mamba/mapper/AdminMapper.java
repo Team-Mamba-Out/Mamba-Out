@@ -60,8 +60,9 @@ public interface AdminMapper {
      * Get the account of the users;
      * @return the corresponding count.
      */
-    @Select("SELECT COUNT(*) mamba.user")
-    int userAccount();
+    @Select("SELECT COUNT(*) FROM mamba.user")
+    int userCount();
+
     class AdminSqlBuilder {
         /**
          * Dynamic SQL: Queries the lecturer list

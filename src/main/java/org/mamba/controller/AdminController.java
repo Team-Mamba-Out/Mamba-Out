@@ -29,6 +29,7 @@ public class AdminController {
         return Result.success(adminService.getFreeMaintainTime(roomId));
     }
 
+
     /**
      * Obtains the admin list.
      *
@@ -170,10 +171,15 @@ public class AdminController {
         return Result.success(recordsResult);
     }
 
-    @GetMapping("/getUserAccount")
-    public Result getUserAccount() {
-        return Result.success(adminService.getUserAccount());
+    /**
+     * Get the number of users.
+     * @return the number of users
+     */
+    @GetMapping("/getUserCount")
+    public Result getUserCount() {
+        return Result.success(adminService.getUserCount());
     }
+
     /**
      * Deletes records for a specified room within a given time range and reassigns users to new rooms.
      *
@@ -189,6 +195,7 @@ public class AdminController {
         adminService.occupyAndReassignRoom(roomId, newStartTime, newEndTime, reason);
         return Result.success();
     }
+
     /**
      * Retrieves all records with their corresponding room names.
      *

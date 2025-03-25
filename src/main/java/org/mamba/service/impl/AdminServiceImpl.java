@@ -230,8 +230,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public int getUserAccount() {
-        return adminMapper.userAccount();
+    public int getUserCount() {
+        return adminMapper.userCount();
     }
 
 
