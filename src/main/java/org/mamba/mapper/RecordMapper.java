@@ -151,6 +151,7 @@ public interface RecordMapper {
     List<Map<String, Object>> countOrdersByDayOfWeek();
 
 
+
     @Select("SELECT COUNT(*) FROM mamba.record WHERE roomId = #{roomId} AND startTime >= #{startTime} AND endTime <= CURRENT_TIMESTAMP AND statusId = 4")
     int countCancellationsByRoomAndTime(@Param("roomId") Integer roomId, @Param("startTime") LocalDateTime startTime);
 
