@@ -61,7 +61,7 @@ public interface AdminService {
      */
     void updateAdminByEmail(String email, Integer uid, String name, String phone);
 
-    int getUserAccount();
+    int getUserCount();
 
     void occupyAndReassignRoom(Integer roomId, LocalDateTime newStartTime, LocalDateTime newEndTime, String reason);
 
