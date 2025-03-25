@@ -376,6 +376,11 @@ public class RecordServiceImpl implements RecordService {
         createRecord(room.getId(), 1, startTime, endTime, true, null);
     }
 
+    @Override
+    public List<Map<String, Object>> countOrdersByDayOfWeek() {
+        return recordMapper.countOrdersByDayOfWeek();
+    }
+
     /**
      * automatically updating
      */
@@ -459,6 +464,9 @@ public class RecordServiceImpl implements RecordService {
 
         for (Map<String, Object> count : counts) {
             String reason = count.containsKey("reason") ? (String) count.get("reason") : "UNKNOWN_REASON";
+            if ("UNKNOWN_REASON".equals(reason)) {
+                continue;
+            }
             int reasonCount = ((Number) count.get("count")).intValue();
             double percentage = Math.round(((double) reasonCount / totalCancellations * 100) * 100.0) / 100.0;
             percentages.put(reason, percentage);
