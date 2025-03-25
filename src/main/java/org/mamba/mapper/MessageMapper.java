@@ -35,6 +35,9 @@ public interface MessageMapper {
                        @Param("type") Integer type,
                        @Param("roomId") Integer roomId);
 
+    @Select("SELECT COUNT(*) from mamba.message where receiver = #{receiver} and isRead = FALSE")
+    int countUnreadMessage(@Param("receiver") Integer receiver);
+
     /**
      * Deletes a message from the database by its ID.
      *

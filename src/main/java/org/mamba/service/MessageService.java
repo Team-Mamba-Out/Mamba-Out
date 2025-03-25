@@ -22,6 +22,7 @@ public interface MessageService {
      */
     void createMessage(Integer receiver, String title, String text, LocalDateTime createTime, Boolean isRead,String sender,Integer type,Integer roomId);
 
+    int countUnreadMessage(Integer receiver);
     /**
      * Deletes a message by its ID.
      *

@@ -74,6 +74,11 @@ public class MessageServiceImpl implements MessageService {
         return result;
     }
 
+    @Override
+    public int countUnreadMessage(Integer receiver) {
+        return messageMapper.countUnreadMessage(receiver);
+    }
+
 
     /**
      * Retrieves a paginated list of messages for a given user ID.
