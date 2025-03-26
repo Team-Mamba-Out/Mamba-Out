@@ -159,38 +159,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
 
-    @Override
-    public List<List<LocalDateTime>> getFreeMaintainTime(Integer roomId){
-        List<Map<String, Object>> maintenances = maintenanceService.getFreeTimesById(roomId);
-        List<List<LocalDateTime>> records = roomService.getFreeTimesById(roomId);
 
-        List<List<LocalDateTime>> intersection = new ArrayList<>();
-
-        for (Map<String, Object> maintenance : maintenances) {
-            LocalDateTime maintenanceStart = (LocalDateTime) maintenance.get("startTime");
-            LocalDateTime maintenanceEnd = (LocalDateTime) maintenance.get("endTime");
-
-            for (List<LocalDateTime> record : records) {
-                LocalDateTime recordStart = record.get(0);
-                LocalDateTime recordEnd = record.get(1);
-
-                // Check if the intervals overlap
-                if (maintenanceStart.isBefore(recordEnd) && recordStart.isBefore(maintenanceEnd)) {
-                    // Calculate the intersection
-                    LocalDateTime start = maintenanceStart.isAfter(recordStart) ? maintenanceStart : recordStart;
-                    LocalDateTime end = maintenanceEnd.isBefore(recordEnd) ? maintenanceEnd : recordEnd;
-
-                    // Add the intersection to the result list
-                    List<LocalDateTime> interval = new ArrayList<>();
-                    interval.add(start);
-                    interval.add(end);
-                    intersection.add(interval);
-                }
-            }
-        }
-
-        return intersection;
-    }
 
     /**
      * Reject a record.

@@ -3,11 +3,14 @@ package org.mamba.controller;
 import org.mamba.entity.Maintenance;
 import org.mamba.entity.Result;
 import org.mamba.entity.Maintenance;
+import org.mamba.service.AdminService;
 import org.mamba.service.MaintenanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +21,8 @@ public class MaintenanceController {
 
     @Autowired
     private MaintenanceService maintenanceService;
+    @Autowired
+    private AdminService adminService;
 
     /**
      * Get maintenance records based on the given conditions
