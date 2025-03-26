@@ -104,7 +104,7 @@ public interface RecordMapper {
             "WHERE userId != 1;")
     void updateRecordStatus();
 
-    @Select("select * from record where NOW() = endTime - INTERVAL 10 MINUTE and statusId != 4 ")
+    @Select("select * from record where NOW() = endTime - INTERVAL 10 MINUTE and statusId = 2 ")
     List<Record> getNewEnds();
 
     @Select("select * from record where NOW() = startTime - INTERVAL 10 MINUTE and statusId != 4 ")
