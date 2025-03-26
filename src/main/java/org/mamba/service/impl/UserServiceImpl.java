@@ -115,6 +115,7 @@ public class UserServiceImpl implements UserService {
                 result.put("email", a.getEmail());
                 result.put("phone", a.getPhone());
                 result.put("uid", a.getUid());
+                break;
             default:
                 return null;
         }
