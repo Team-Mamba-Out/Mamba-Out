@@ -2,15 +2,20 @@ package org.mamba.service.impl;
 
 import org.mamba.entity.Maintenance;
 import org.mamba.entity.Record;
+import org.mamba.entity.Result;
 import org.mamba.mapper.MaintenanceMapper;
 import org.mamba.mapper.RoomMapper;
+import org.mamba.service.AdminService;
 import org.mamba.service.MaintenanceService;
+import org.mamba.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -23,7 +28,15 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     private MaintenanceMapper maintenanceMapper;
 
     @Autowired
+    @Lazy
+    private MaintenanceService maintenanceService;
+
+    @Autowired
     private RoomMapper roomMapper;
+
+    @Autowired
+    @Lazy
+    private RoomService roomService;
 
     private final int DAILY_START_HOUR = 8;
     private final int DAILY_END_HOUR = 22;
@@ -57,9 +70,72 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     }
 
     @Override
+    public List<List<LocalDateTime>> getFreeMaintainTime(Integer roomId){
+        List<Map<String, Object>> maintenances = maintenanceService.getFreeTimesById(roomId);
+        List<List<LocalDateTime>> records = roomService.getFreeTimesById(roomId);
+
+        List<List<LocalDateTime>> intersection = new ArrayList<>();
+
+        for (Map<String, Object> maintenance : maintenances) {
+            LocalDateTime maintenanceStart = (LocalDateTime) maintenance.get("startTime");
+            LocalDateTime maintenanceEnd = (LocalDateTime) maintenance.get("endTime");
+
+            for (List<LocalDateTime> record : records) {
+                LocalDateTime recordStart = record.get(0);
+                LocalDateTime recordEnd = record.get(1);
+
+                // Check if the intervals overlap
+                if (maintenanceStart.isBefore(recordEnd) && recordStart.isBefore(maintenanceEnd)) {
+                    // Calculate the intersection
+                    LocalDateTime start = maintenanceStart.isAfter(recordStart) ? maintenanceStart : recordStart;
+                    LocalDateTime end = maintenanceEnd.isBefore(recordEnd) ? maintenanceEnd : recordEnd;
+
+                    // Add the intersection to the result list
+                    List<LocalDateTime> interval = new ArrayList<>();
+                    interval.add(start);
+                    interval.add(end);
+                    intersection.add(interval);
+                }
+            }
+        }
+
+        return intersection;
+    }
+
+    @Override
     @Transactional
     public void createMaintenance(int roomId, LocalDateTime ScheduledStart, LocalDateTime  ScheduledEnd, String description) {
-        maintenanceMapper.insertMaintenance(roomId, ScheduledStart, ScheduledEnd, description);
+        List<List<LocalDateTime>> freeTimes = maintenanceService.getFreeMaintainTime(roomId);
+        Duration maintenanceDuration = Duration.between(ScheduledStart, ScheduledEnd);
+
+        List<List<LocalDateTime>> mergedFreeTimes = new ArrayList<>();
+        List<LocalDateTime> currentInterval = freeTimes.get(0);
+
+        for (int i = 1; i < freeTimes.size(); i++) {
+            List<LocalDateTime> nextInterval = freeTimes.get(i);
+
+            if (currentInterval.get(1).equals(nextInterval.get(0))) {
+                currentInterval.set(1, nextInterval.get(1));
+            } else {
+                mergedFreeTimes.add(new ArrayList<>(currentInterval));
+                currentInterval = nextInterval;
+            }
+        }
+
+        mergedFreeTimes.add(currentInterval);
+
+        for (List<LocalDateTime> freeTime : mergedFreeTimes) {
+            LocalDateTime freeStart = freeTime.get(0);
+            LocalDateTime freeEnd = freeTime.get(1);
+
+            if (!ScheduledStart.isBefore(freeStart) && !ScheduledEnd.isAfter(freeEnd))
+            {
+                maintenanceMapper.insertMaintenance(roomId, ScheduledStart, ScheduledEnd, description);
+                return;
+            }else {
+                throw new IllegalArgumentException("The maintenance duration exceeds the available free time.");
+            }
+        }
     }
 
     @Override

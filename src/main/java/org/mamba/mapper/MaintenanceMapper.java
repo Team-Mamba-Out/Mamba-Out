@@ -43,7 +43,7 @@ public interface MaintenanceMapper {
                          @Param("scheduledEnd") LocalDateTime scheduledEnd);
 
 
-    @Insert("INSERT INTO maintenance (roomId, scheduledStart, scheduledEnd, description) " +
+    @Insert("INSERT INTO mamba.maintenance (roomId, scheduledStart, scheduledEnd, description) " +
             "VALUES (#{roomId}, #{scheduledStart}, #{scheduledEnd}, #{description})")
     void insertMaintenance(@Param("roomId") Integer roomId,
                            @Param("scheduledStart") LocalDateTime scheduledStart,

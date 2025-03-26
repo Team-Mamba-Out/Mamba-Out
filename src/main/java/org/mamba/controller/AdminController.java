@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.mamba.entity.Admin;
 import org.mamba.entity.Result;
 import org.mamba.service.impl.AdminServiceImpl;
+import org.mamba.service.impl.MaintenanceServiceImpl;
 import org.mamba.service.impl.RecordServiceImpl;
 import org.mamba.service.impl.RoomServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,12 @@ public class AdminController {
     private RecordServiceImpl recordService;
     @Autowired
     private RoomServiceImpl roomService;
+    @Autowired
+    private MaintenanceServiceImpl maintenanceService;
 
     @GetMapping("/getFreeMaintainTime")
     public Result getFreeMaintainTime(@RequestParam Integer roomId) {
-        return Result.success(adminService.getFreeMaintainTime(roomId));
+        return Result.success(maintenanceService.getFreeMaintainTime(roomId));
     }
 
 

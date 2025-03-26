@@ -33,6 +33,7 @@ public interface MaintenanceService {
 
     Double getTotalMaintenanceDuration(Integer roomId, Integer rangeType);
 
+    List<List<LocalDateTime>> getFreeMaintainTime(Integer roomId);
     /**
      * Add a new maintenance record
      *
