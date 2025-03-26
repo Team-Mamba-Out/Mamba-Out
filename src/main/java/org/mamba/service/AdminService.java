@@ -74,7 +74,6 @@ public interface AdminService {
      */
     List<Map<String, Object>> getAllRecordsWithRoomNames();
 
-    List<List<LocalDateTime>> getFreeMaintainTime(Integer roomId);
     List<Map<String, Object>> roomReport(Integer rangeType);
 
 }
