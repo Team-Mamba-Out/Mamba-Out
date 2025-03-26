@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -455,12 +456,18 @@ public class RecordServiceImpl implements RecordService {
             throw new IllegalArgumentException("Invalid rangeType: " + rangeType);
         }
 
+        List<String> allReasons = Arrays.asList("Schedule Change", "Mistake", "Equipment Failure", "Other", "User Request");
+
         List<Map<String, Object>> counts = recordMapper.countCancellationReasonsByRoomAndTime(roomId, startTime);
+
         int totalCancellations = counts.stream()
                 .mapToInt(map -> ((Number) map.get("count")).intValue())
                 .sum();
 
         Map<String, Double> percentages = new HashMap<>();
+        for (String reason : allReasons) {
+            percentages.put(reason, 0.0);
+        }
 
         for (Map<String, Object> count : counts) {
             String reason = count.containsKey("reason") ? (String) count.get("reason") : "UNKNOWN_REASON";
@@ -468,12 +475,13 @@ public class RecordServiceImpl implements RecordService {
                 continue;
             }
             int reasonCount = ((Number) count.get("count")).intValue();
-            double percentage = Math.round(((double) reasonCount / totalCancellations * 100) * 100.0) / 100.0;
+            double percentage = totalCancellations > 0 ? Math.round(((double) reasonCount / totalCancellations * 100) * 100.0) / 100.0 : 0.0;
             percentages.put(reason, percentage);
         }
 
         return percentages;
     }
+
 
     @Override
     public int countCancellationsByRoomAndTime(Integer roomId, Integer rangeType) {
