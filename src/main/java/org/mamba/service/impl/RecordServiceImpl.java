@@ -100,7 +100,7 @@ public class RecordServiceImpl implements RecordService {
         Integer statusId = null;
         if (status != null) {
             switch (status) {
-                case "Pending":
+                case "Not Started":
                     statusId = 1;
                     break;
                 case "Ongoing":
@@ -151,7 +151,7 @@ public class RecordServiceImpl implements RecordService {
     private String convertStatus(Integer statusId) {
         switch (statusId) {
             case 1:
-                return "Pending";
+                return "Not Started";
             case 2:
                 return "Ongoing";
             case 3:
@@ -204,13 +204,13 @@ public class RecordServiceImpl implements RecordService {
         if (room.isRequireApproval() && !role.contains("003")) {
             recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, false, comment);
 
-            // Send email: booking successful, pending approval
+            // Send email: booking successful, Not Started approval
             EmailManager.sendBookSuccessfulEmail(email, temp, true);
 
             messageService.createMessage(
                     userId,
-                    "Reservation Request Room successfully",
-                    "Your room reservation request for: " + room.getRoomName() + " has been successfully created. Now please wait admin to approve the record. The reservation request is from " + startTime + " to " + endTime + ". Please check in on time.",
+                    "Room Reservation Request Successfully Submitted",
+                    "Your room reservation request for: " + room.getRoomName() + " has been successfully submitted. The reservation request is from " + startTime + " to " + endTime + ". Please wait for the administrator to approve the request.",
                     recordTime,
                     false,
                     "1;Jinhao Zhang",
