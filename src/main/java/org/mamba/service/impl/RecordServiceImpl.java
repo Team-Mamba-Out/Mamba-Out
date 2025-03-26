@@ -207,6 +207,17 @@ public class RecordServiceImpl implements RecordService {
             // Send email: booking successful, pending approval
             EmailManager.sendBookSuccessfulEmail(email, temp, true);
 
+            messageService.createMessage(
+                    userId,
+                    "Reservation Request Room successfully",
+                    "Your room reservation request for: " + room.getRoomName() + " has been successfully created. Now please wait admin to approve the record. The reservation request is from " + startTime + " to " + endTime + ". Please check in on time.",
+                    recordTime,
+                    false,
+                    "1;Jinhao Zhang",
+                    0,
+                    roomId
+            );
+
             throw new IllegalArgumentException("Booking this room needs to get the approval from the admin, please wait for the admin to approve your request.");
         }
 
