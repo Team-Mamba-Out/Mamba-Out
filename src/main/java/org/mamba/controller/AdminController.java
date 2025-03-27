@@ -55,7 +55,7 @@ public class AdminController {
         return Result.success();
     }
 
-    @DeleteMapping("/cancelRecordAndReassign/{id}")
+    @PostMapping("/cancelRecordAndReassign/{id}")
     public Result cancelRecordAndReassign(@PathVariable Integer id, @RequestBody String reason) {
         adminService.cancelRecordAndReassign(id, reason);
         return Result.success();
