@@ -304,7 +304,7 @@ public class RoomServiceImpl implements RoomService {
         LocalDateTime now = LocalDateTime.now();
         LocalDate today = now.toLocalDate();
         LocalDateTime startOfDay = today.atStartOfDay();  // 00:00
-        LocalDateTime endOfDay = today.plusDays(100).atStartOfDay();  // 7 天后
+        LocalDateTime endOfDay = today.plusDays(30).atStartOfDay();  // 7 天后
 
         // 获取未来 7 天的所有预约记录
         List<Record> records = roomMapper.getFutureRecords(roomId, startOfDay, endOfDay);
