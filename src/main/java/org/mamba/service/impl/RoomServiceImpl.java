@@ -765,7 +765,7 @@ public class RoomServiceImpl implements RoomService {
         } else if (totalUtilization > 80) {
             suggestions.put("Consider Expansion", "Utilization is very high (" + String.format("%.2f", totalUtilization) + "%). Consider expanding facilities or adding backup options.");
         } else {
-            suggestions.put("Utilization in Moderate Range", "Utilization is within a moderate range (" + String.format("%.2f", totalUtilization) + "%). Ensure balance between availability and usage.");
+            suggestions.put("Utilization in Moderate Range", "Utilization is within a moderate range (" + String.format("%.2f", totalUtilization) + "%). Keep ensuring balance between availability and usage.");
         }
 
         if (cancellationRate > 20) {
