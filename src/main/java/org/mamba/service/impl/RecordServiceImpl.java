@@ -279,27 +279,6 @@ public class RecordServiceImpl implements RecordService {
             throw new IllegalArgumentException("The requested booking time is outside the valid time window.");
         }
 
-        //if the room requires admin's approval and the user is not the admin
-        if (room.isRequireApproval() && !role.contains("003")) {
-            recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, false, comment);
-
-            // Send email: booking successful, Not Started approval
-            EmailManager.sendBookSuccessfulEmail(email, temp, true);
-
-            messageService.createMessage(
-                    userId,
-                    "Room Reservation Request Successfully Submitted",
-                    "Your room reservation request for: " + room.getRoomName() + " has been successfully submitted. The reservation request is from " + startTime + " to " + endTime + ". Please wait for the administrator to approve the request.",
-                    recordTime,
-                    false,
-                    "1;Jinhao Zhang",
-                    0,
-                    roomId
-            );
-
-            throw new IllegalArgumentException("Booking this room needs to get the approval from the admin, please wait for the admin to approve your request.");
-        }
-
         // Obtain the current time
         recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, true, comment);
         messageService.createMessage(
