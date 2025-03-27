@@ -32,9 +32,20 @@ public interface AdminService {
      */
     String getNameByUid(Integer uid);
 
+    /**
+     * Retrieves the list of all administrators.
+     * @param id the id of the record
+     * @param reason  the reason of the cancel
+     */
     void normalCancel(Integer id,String reason);
 
+    /**
+     * Retrieves the list of all administrators.
+     * @param id the id of the record
+     * @param reason  the reason of the cancel
+     */
     void cancelRecordAndReassign(Integer id, String reason);
+
 
     /**
      * Retrieves the list of all administrators.

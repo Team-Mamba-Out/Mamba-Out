@@ -13,11 +13,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class RecordServiceImpl implements RecordService {
@@ -33,6 +31,8 @@ public class RecordServiceImpl implements RecordService {
     private UserService userService;
     @Autowired
     private RoomService roomService;
+    @Autowired
+    private MaintenanceService maintenanceService;
 
 
     @Override
@@ -81,6 +81,57 @@ public class RecordServiceImpl implements RecordService {
         );
 
     }
+
+
+
+    private List<List<LocalDateTime>> get7daysAfterFreeTime(Integer roomId) {
+        List<List<LocalDateTime>> maintenances = maintenanceService.getFreeTimesById(roomId);
+        List<List<LocalDateTime>> records = roomService.get7DaysAfterTime(roomId);
+
+        List<List<LocalDateTime>> intersection = new ArrayList<>();
+
+        for (List<LocalDateTime> maintenance : maintenances) {
+            LocalDateTime maintenanceStart = maintenance.get(0);
+            LocalDateTime maintenanceEnd =maintenance.get(1);
+
+            for (List<LocalDateTime> record : records) {
+                LocalDateTime recordStart = record.get(0);
+                LocalDateTime recordEnd = record.get(1);
+
+                // Check if the intervals overlap
+                if (maintenanceStart.isBefore(recordEnd) && recordStart.isBefore(maintenanceEnd)) {
+                    // Calculate the intersection
+                    LocalDateTime start = maintenanceStart.isAfter(recordStart) ? maintenanceStart : recordStart;
+                    LocalDateTime end = maintenanceEnd.isBefore(recordEnd) ? maintenanceEnd : recordEnd;
+
+                    // Add the intersection to the result list
+                    List<LocalDateTime> interval = new ArrayList<>();
+                    interval.add(start);
+                    interval.add(end);
+                    intersection.add(interval);
+                }
+            }
+        }
+
+        List<List<LocalDateTime>> mergedFreeTimes = new ArrayList<>();
+        List<LocalDateTime> currentInterval = intersection.get(0);
+
+        for (int i = 1; i < intersection.size(); i++) {
+            List<LocalDateTime> nextInterval = intersection.get(i);
+
+            if (currentInterval.get(1).equals(nextInterval.get(0))) {
+                currentInterval.set(1, nextInterval.get(1));
+            } else {
+                mergedFreeTimes.add(new ArrayList<>(currentInterval));
+                currentInterval = nextInterval;
+            }
+        }
+
+        mergedFreeTimes.add(currentInterval);
+
+        return mergedFreeTimes;
+    }
+
 
     /**
      * Obtains the record list based on the conditions given.
@@ -187,6 +238,86 @@ public class RecordServiceImpl implements RecordService {
      * @param comment      the user's request message
      */
     @Override
+    public void createRecordAdmin(Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, String comment) {
+        User user = userService.getUserByUid(userId);
+        String role = user.getRole();
+        Room room = roomService.getRoomById(roomId);
+
+        String email = role.split("-")[0];
+        Record temp = new Record();
+        temp.setCorrespondingRoom(room);
+        temp.setStartTime(startTime);
+        temp.setEndTime(endTime);
+
+        LocalDateTime recordTime = LocalDateTime.now();
+
+        // Check if the booking is within the valid time slots
+        boolean isValidTimeSlot = false;
+
+        List<List<LocalDateTime>> day7afterFreeTime = get7daysAfterFreeTime(roomId);
+
+        // Iterate over the 7 days after free time slots
+        for (List<LocalDateTime> daySlots : day7afterFreeTime) {
+            for (int i = 0; i < daySlots.size(); i += 2) {
+                LocalDateTime availableStartTime = daySlots.get(i);
+                LocalDateTime availableEndTime = daySlots.get(i + 1);
+
+                // Check if the requested time slot is within any of the available time slots
+                if ((startTime.isEqual(availableStartTime) || startTime.isAfter(availableStartTime)) &&
+                        (endTime.isEqual(availableEndTime) || endTime.isBefore(availableEndTime))) {
+                    isValidTimeSlot = true;
+                    break;
+                }
+            }
+            if (isValidTimeSlot) {
+                break;
+            }
+        }
+
+        if (!isValidTimeSlot) {
+            throw new IllegalArgumentException("The requested booking time is outside the valid time window.");
+        }
+
+        //if the room requires admin's approval and the user is not the admin
+        if (room.isRequireApproval() && !role.contains("003")) {
+            recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, false, comment);
+
+            // Send email: booking successful, Not Started approval
+            EmailManager.sendBookSuccessfulEmail(email, temp, true);
+
+            messageService.createMessage(
+                    userId,
+                    "Room Reservation Request Successfully Submitted",
+                    "Your room reservation request for: " + room.getRoomName() + " has been successfully submitted. The reservation request is from " + startTime + " to " + endTime + ". Please wait for the administrator to approve the request.",
+                    recordTime,
+                    false,
+                    "1;Jinhao Zhang",
+                    0,
+                    roomId
+            );
+
+            throw new IllegalArgumentException("Booking this room needs to get the approval from the admin, please wait for the admin to approve your request.");
+        }
+
+        // Obtain the current time
+        recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, true, comment);
+        messageService.createMessage(
+                userId,
+                "Reserve Room successfully",
+                "Your room reservation for: " + room.getRoomName() + " has been successfully created. The reservation is from " + startTime + " to " + endTime + ". Please check in on time.",
+                recordTime,
+                false,
+                "1;Jinhao Zhang",
+                0,
+                roomId
+        );
+
+        // Send email on booking created
+        EmailManager.sendBookSuccessfulEmail(email, temp, false);
+    }
+
+
+    @Override
     public void createRecord(Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, String comment) {
         User user = userService.getUserByUid(userId);
         String role = user.getRole();
@@ -237,6 +368,7 @@ public class RecordServiceImpl implements RecordService {
         // Send email on booking created
         EmailManager.sendBookSuccessfulEmail(email, temp, false);
     }
+
 
     /**
      * Deletes the record specified by id.

@@ -24,9 +24,26 @@ public interface RecordService {
      */
     void rejectRestrictedRoomRecord(Integer id);
 
+    /**
+     * Updates the record specified by ID.
+     * @param roomId the room id
+     * @param newUserId the new user id
+     * @param startTime the start time
+     * @param endTime the end time
+     */
     void updateRecordUserId(Integer roomId, Integer newUserId, LocalDateTime startTime, LocalDateTime endTime);
 
+    /**
+     * Rejects the record specified by ID.
+     * @param roomId the room id
+     * @param newUserId the new user id
+     * @param startTime the start time
+     * @param endTime the end time
+     */
     void reject(Integer roomId, Integer newUserId, LocalDateTime startTime, LocalDateTime endTime);
+
+
+    void createRecordAdmin(Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, String comment);
 
     /**
      * Obtains the record list based on the conditions given.

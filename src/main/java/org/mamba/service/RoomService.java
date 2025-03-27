@@ -97,6 +97,8 @@ public interface RoomService {
      */
     List<Map<String, Object>> getMaintenanceTimesById(Integer id);
 
+    List<List<LocalDateTime>> get7DaysAfterTime(Integer roomId);
+
     /**
      * Get the BUSY times of the room by id.
      * Returns all the BUSY time periods of the room in the next 7 days.
@@ -140,6 +142,7 @@ public interface RoomService {
      * @return the nearest available room, or null if none found
      */
     String findNearestAvailableRoom(Integer currentRoomId, LocalDateTime startTime, LocalDateTime endTime, Integer uid);
+
 
     /**
      * Set the permission of a user in a room.
