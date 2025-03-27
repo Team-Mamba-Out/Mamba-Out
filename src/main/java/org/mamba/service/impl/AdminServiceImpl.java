@@ -13,18 +13,25 @@ import org.mamba.service.MessageService;
 import org.mamba.service.RecordService;
 import org.mamba.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@EnableAsync
 @Service
 public class AdminServiceImpl implements AdminService {
+    private static final ExecutorService emailExecutor = Executors.newFixedThreadPool(10);
     @Autowired
     private RoomService roomService;
     @Autowired
@@ -208,7 +215,7 @@ public class AdminServiceImpl implements AdminService {
         return adminMapper.userCount();
     }
 
-
+    @Transactional
     @Override
     public void occupyAndReassignRoom(Integer roomId, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime, String reason) {
         maintenanceService.createMaintenance(roomId,occupyStartTime,occupyEndTime,reason);
@@ -232,10 +239,16 @@ public class AdminServiceImpl implements AdminService {
             LocalDateTime newEndTime = LocalDateTime.parse(roomInfo[2]);
 
             if (nearestRoom == null) {
-                // email logic: cancelled because reassignment failed
-                EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userId).getRole().split("-")[0], false);
-
-                throw new IllegalStateException("No available room found for user " + userId);
+                try {
+                    if (userId != 0) {
+                        CompletableFuture.runAsync(() -> {
+                            EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userId).getRole().split("-")[0], false);
+                        }, emailExecutor);
+                    }
+                }catch (Exception e){
+                    System.out.println("No available room found for user " + userId);
+                }
+                continue;
             }
             recordMapper.createRecord(nearestRoom.getId(), 0, newStartTime, newEndTime, LocalDateTime.now(),false,true, reason);
 
@@ -251,8 +264,21 @@ public class AdminServiceImpl implements AdminService {
                     0,
                     nearestRoom.getId()
             );
-            // email logic: cancel and reassign
-            EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userId).getRole().split("-")[0], true);
+
+            if (userId != 0) {
+
+                if (nearestRoom == null) {
+                    try {
+                        if (userId != 0) {
+                            CompletableFuture.runAsync(() -> {
+                                EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userId).getRole().split("-")[0], true);
+                            }, emailExecutor);
+                        }
+                    } catch (Exception e) {
+                        System.out.println("No available room found for user " + userId);
+                    }
+                }
+            }
         }
 
     }
