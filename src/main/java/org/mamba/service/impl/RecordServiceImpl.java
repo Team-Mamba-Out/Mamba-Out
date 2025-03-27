@@ -52,6 +52,7 @@ public class RecordServiceImpl implements RecordService {
         );
         Integer userId = record.getUserId();
         String email = userService.getUserByUid(userId).getRole().split("-")[0];
+        record.setCorrespondingRoom(room);
         // Send email: approval
         EmailManager.sendRequestApprovedEmail(email, record);
     }
