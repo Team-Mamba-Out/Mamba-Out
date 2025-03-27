@@ -704,7 +704,7 @@ public class RoomServiceImpl implements RoomService {
 
         if (cancellationRate > 20) {
             Map<String, String> cancellationSuggestions = new LinkedHashMap<>();
-            cancellationSuggestions.put("Summary", "Cancellation rate is high (" + String.format("%.2f", cancellationRate) + "%) and the cancel time is " + cancelTime + ". Please check the room facilities to ensure the quality of the room.");
+            cancellationSuggestions.put("Summary", "Cancellation rate is high (" + String.format("%.2f", cancellationRate) + "%) and the cancel times is " + cancelTime + ". Please check the room facilities to ensure the quality of the room.");
 
             double maxCancellationPercentage = 0.0;
             for (Map.Entry<String, Double> entry : cancellationReasons.entrySet()) {
@@ -744,7 +744,7 @@ public class RoomServiceImpl implements RoomService {
         }
 
         if (maintenanceTime / period > 0.2) {
-            suggestions.put("Reduce Maintenance Time", "Maintenance time is " + maintenanceTime +
+            suggestions.put("Reduce Maintenance Times", "Maintenance time is " + maintenanceTime +
                     " and the total maintenance time is " + String.format("%.2f", maintenanceDuration) +
                     " hours during the " + (int) (period / 30) + " months. Check room facilities in detail to ensure room availability.");
         }

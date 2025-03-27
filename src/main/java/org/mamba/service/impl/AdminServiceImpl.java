@@ -65,8 +65,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void normalCancel(Integer id, String reason) {
-        Record record = recordService.getRecordById(id);
-        recordService.cancelRecordByIdAdmin(id,record.getComment());
+        recordService.cancelRecordByIdAdmin(id,reason);
     }
 
     /**
