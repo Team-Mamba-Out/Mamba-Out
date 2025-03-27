@@ -43,6 +43,15 @@ public class RecordController {
         Map<String, Object> recordsResult = recordService.getRecords(id, roomId, userId, startTime, endTime,hasCheckedIn,status, size, page, isApproved);
         return Result.success(recordsResult);
     }
+
+    @PostMapping("/extend")
+    public Result extendRecord(@RequestBody Map<String, Object> request) {
+        Integer recordId = Integer.parseInt(request.get("id").toString());
+        LocalDateTime newEndTime = LocalDateTime.parse(request.get("endTime").toString());
+        recordService.extend(recordId,newEndTime);
+        return Result.success();
+    }
+
     @RequestMapping("/allowReserve")
     public Result allowReserve(Integer roomId, Integer userId) {
         boolean result = recordService.allowReserve(roomId, userId);

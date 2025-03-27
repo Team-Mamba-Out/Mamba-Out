@@ -97,7 +97,7 @@ public class AdminServiceImpl implements AdminService {
         LocalDateTime newStartTime = LocalDateTime.parse(roomInfo[1]);
         LocalDateTime newEndTime = LocalDateTime.parse(roomInfo[2]);
 
-        recordService.cancelRecordByIdAdmin(recordId,record.getComment());
+        recordService.cancelRecordByIdAdmin(recordId,reason);
         recordMapper.createRecord(nearestRoom.getId(), 0, newStartTime, newEndTime, LocalDateTime.now(),false, true, reason);
 
         // Send a notification message about the reassignment
@@ -219,7 +219,7 @@ public class AdminServiceImpl implements AdminService {
 
             Integer userId = record.getUserId();
 
-            recordMapper.cancelRecordById(record.getId(),null);
+            recordMapper.cancelRecordById(record.getId(),reason);
 
             String nearestRoomInfo = roomService.findNearestAvailableRoom(roomId, record.getStartTime(), record.getEndTime(), userId);
 
