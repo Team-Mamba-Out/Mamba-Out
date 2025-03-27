@@ -219,7 +219,7 @@ public class AdminServiceImpl implements AdminService {
 
             Integer userId = record.getUserId();
 
-            recordMapper.cancelRecordById(record.getId(),null);
+            recordMapper.cancelRecordById(record.getId(),reason);
 
             String nearestRoomInfo = roomService.findNearestAvailableRoom(roomId, record.getStartTime(), record.getEndTime(), userId);
 

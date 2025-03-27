@@ -316,6 +316,11 @@ public class RecordServiceImpl implements RecordService {
     }
 
     @Override
+    public void extend(Integer id, LocalDateTime endTime) {
+        recordMapper.extend(id,endTime);
+    }
+
+    @Override
     public List<Record> findRecordsByRoomAndTimeRange(Integer roomId, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime) {
         return recordMapper.findRecordsByRoomAndTimeRange(roomId, occupyStartTime, occupyEndTime);
     }
@@ -435,6 +440,8 @@ public class RecordServiceImpl implements RecordService {
                         record.getRoomId()
                 );
                 // Email Notification - Booking time almost up
+                Room room = roomMapper.getRoomById(record.getRoomId());
+                record.setCorrespondingRoom(room);
                 EmailManager.sendCheckInEmail(userService.getUserByUid(record.getUserId()).getRole().split("-")[0], record);
             }
 
