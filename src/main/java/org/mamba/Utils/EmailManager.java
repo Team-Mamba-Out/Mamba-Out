@@ -4,6 +4,7 @@ import org.mamba.entity.Record;
 import org.mamba.entity.Room;
 import org.mamba.service.impl.RoomServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.mail.*;
@@ -284,6 +285,7 @@ public class EmailManager {
      * @param userEmail          the user's email
      * @param reassignSuccessful if the reassignment is successful or not
      */
+
     public static void sendRecordCancelledEmail(String userEmail, boolean reassignSuccessful) {
         // Set email server properties
         Properties props = new Properties();

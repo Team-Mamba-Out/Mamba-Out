@@ -560,11 +560,11 @@ public class RoomServiceImpl implements RoomService {
 
             if (startTime.toLocalTime().isBefore(LocalTime.of(8, 0))) {
                 startTime = startTime.toLocalDate().atTime(8, 0);
-                endTime = endTime.plusMinutes(durationMinutes);
+                endTime = startTime.plusMinutes(durationMinutes);
                 continue;
             } else if (endTime.toLocalTime().isAfter(LocalTime.of(22, 0))) {
                 startTime = startTime.toLocalDate().plusDays(1).atTime(8, 0);
-                endTime = endTime.plusMinutes(durationMinutes);
+                endTime = startTime.plusMinutes(durationMinutes);
                 continue;
             }
 
