@@ -84,6 +84,7 @@ public interface RecordService {
      */
     void cancelRecordByIdAdmin(Integer id,String comment);
 
+    void extend(Integer id, LocalDateTime endTime);
     List<Record> getRestrictedRecords(Integer room_id);
 
     Map<String, Double> getCancellationReasonPercentagesByRoomAndTime(Integer roomId, Integer rangeType);

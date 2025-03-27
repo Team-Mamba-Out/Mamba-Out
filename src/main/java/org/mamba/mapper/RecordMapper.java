@@ -104,6 +104,9 @@ public interface RecordMapper {
             "WHERE userId != 1;")
     void updateRecordStatus();
 
+    @Update("UPDATE record set endTime = #{newEndTime} where id = #{id}")
+    void extend(Integer id, LocalDateTime newEndTime);
+
     @Select("select * from record where NOW() = endTime - INTERVAL 10 MINUTE and statusId = 2 ")
     List<Record> getNewEnds();
 
@@ -137,6 +140,7 @@ public interface RecordMapper {
             "  AND startTime >= #{startTime} " +
             "  AND endTime <= CURRENT_TIMESTAMP " +
             "  AND statusId = 4 " +
+            "  AND userId != 0 " +
             "GROUP BY reason")
     List<Map<String, Object>> countCancellationReasonsByRoomAndTime(@Param("roomId") Integer roomId, @Param("startTime") LocalDateTime startTime);
 

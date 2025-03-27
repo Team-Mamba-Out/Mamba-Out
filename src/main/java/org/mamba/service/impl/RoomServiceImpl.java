@@ -744,8 +744,8 @@ public class RoomServiceImpl implements RoomService {
         }
 
         if (maintenanceTime / period > 0.2) {
-            suggestions.put("Reduce Maintenance Times", "Maintenance time is " + maintenanceTime +
-                    " and the total maintenance time is " + String.format("%.2f", maintenanceDuration) +
+            suggestions.put("Reduce Maintenance Time", "Maintenance time is " + maintenanceTime +
+                    " and the total maintenance times is " + String.format("%.2f", maintenanceDuration) +
                     " hours during the " + (int) (period / 30) + " months. Check room facilities in detail to ensure room availability.");
         }
 
