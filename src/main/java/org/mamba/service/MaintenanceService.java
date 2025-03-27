@@ -13,7 +13,7 @@ public interface MaintenanceService {
      */
     void updateMaintenanceStatus();
 
-    List<Map<String, Object>> getFreeTimesById(Integer id);
+    List<List<LocalDateTime>> getFreeTimesById(Integer id);
 
     /**
      * Get maintenance records based on the given conditions
