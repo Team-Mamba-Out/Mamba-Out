@@ -71,14 +71,14 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
     @Override
     public List<List<LocalDateTime>> getFreeMaintainTime(Integer roomId){
-        List<Map<String, Object>> maintenances = maintenanceService.getFreeTimesById(roomId);
+        List<List<LocalDateTime>> maintenances = maintenanceService.getFreeTimesById(roomId);
         List<List<LocalDateTime>> records = roomService.getFreeTimesById(roomId);
 
         List<List<LocalDateTime>> intersection = new ArrayList<>();
 
-        for (Map<String, Object> maintenance : maintenances) {
-            LocalDateTime maintenanceStart = (LocalDateTime) maintenance.get("startTime");
-            LocalDateTime maintenanceEnd = (LocalDateTime) maintenance.get("endTime");
+        for (List<LocalDateTime> maintenance : maintenances) {
+            LocalDateTime maintenanceStart = maintenance.get(0);
+            LocalDateTime maintenanceEnd =maintenance.get(1);
 
             for (List<LocalDateTime> record : records) {
                 LocalDateTime recordStart = record.get(0);
@@ -99,20 +99,11 @@ public class MaintenanceServiceImpl implements MaintenanceService {
             }
         }
 
-        return intersection;
-    }
-
-    @Override
-    @Transactional
-    public void createMaintenance(int roomId, LocalDateTime ScheduledStart, LocalDateTime  ScheduledEnd, String description) {
-        List<List<LocalDateTime>> freeTimes = maintenanceService.getFreeMaintainTime(roomId);
-        Duration maintenanceDuration = Duration.between(ScheduledStart, ScheduledEnd);
-
         List<List<LocalDateTime>> mergedFreeTimes = new ArrayList<>();
-        List<LocalDateTime> currentInterval = freeTimes.get(0);
+        List<LocalDateTime> currentInterval = intersection.get(0);
 
-        for (int i = 1; i < freeTimes.size(); i++) {
-            List<LocalDateTime> nextInterval = freeTimes.get(i);
+        for (int i = 1; i < intersection.size(); i++) {
+            List<LocalDateTime> nextInterval = intersection.get(i);
 
             if (currentInterval.get(1).equals(nextInterval.get(0))) {
                 currentInterval.set(1, nextInterval.get(1));
@@ -124,7 +115,32 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
         mergedFreeTimes.add(currentInterval);
 
-        for (List<LocalDateTime> freeTime : mergedFreeTimes) {
+        return mergedFreeTimes;
+    }
+
+    @Override
+    @Transactional
+    public void createMaintenance(int roomId, LocalDateTime ScheduledStart, LocalDateTime  ScheduledEnd, String description) {
+        List<List<LocalDateTime>> freeTimes = maintenanceService.getFreeMaintainTime(roomId);
+//        Duration maintenanceDuration = Duration.between(ScheduledStart, ScheduledEnd);
+//
+//        List<List<LocalDateTime>> mergedFreeTimes = new ArrayList<>();
+//        List<LocalDateTime> currentInterval = freeTimes.get(0);
+//
+//        for (int i = 1; i < freeTimes.size(); i++) {
+//            List<LocalDateTime> nextInterval = freeTimes.get(i);
+//
+//            if (currentInterval.get(1).equals(nextInterval.get(0))) {
+//                currentInterval.set(1, nextInterval.get(1));
+//            } else {
+//                mergedFreeTimes.add(new ArrayList<>(currentInterval));
+//                currentInterval = nextInterval;
+//            }
+//        }
+//
+//        mergedFreeTimes.add(currentInterval);
+
+        for (List<LocalDateTime> freeTime : freeTimes) {
             LocalDateTime freeStart = freeTime.get(0);
             LocalDateTime freeEnd = freeTime.get(1);
 
@@ -132,10 +148,11 @@ public class MaintenanceServiceImpl implements MaintenanceService {
             {
                 maintenanceMapper.insertMaintenance(roomId, ScheduledStart, ScheduledEnd, description);
                 return;
-            }else {
-                throw new IllegalArgumentException("The maintenance duration exceeds the available free time.");
             }
         }
+
+        throw new IllegalArgumentException("The maintenance duration exceeds the available free time.");
+
     }
 
     @Override
@@ -145,48 +162,62 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     }
 
     @Override
-    public List<Map<String, Object>> getFreeTimesById(Integer id) {
-        // Get the current time
+    public List<List<LocalDateTime>> getFreeTimesById(Integer id) {
+        // 获取当前时间
         LocalDateTime now = LocalDateTime.now();
-
         LocalDate today = now.toLocalDate();
-        LocalDateTime startOfDay = today.atStartOfDay(); // to 00:00
-        LocalDateTime endOfDay = today.plusDays(7).atStartOfDay(); // 7 days later
+        LocalDateTime startOfDay = today.atStartOfDay();  // 00:00
+        LocalDateTime endOfDay = today.plusDays(7).atStartOfDay();  // 7 天后
 
-        // Get all the records of the next 7 days
-        List<Maintenance> maintenances = roomMapper.getFutureMaintenances(id, startOfDay, endOfDay);
-        // Get busy times first
-        List<List<LocalDateTime>> busyTimes = new ArrayList<>();
+        // 获取未来 7 天的所有预约记录
+        List<Maintenance> records = roomMapper.getFutureMaintenances(id, startOfDay, endOfDay);
 
-        // Put all the record time periods into the busy times list (each contains start/end time)
-        for (Maintenance maintenance : maintenances) {
-            busyTimes.add(Arrays.asList(maintenance.getScheduledStart(), maintenance.getScheduledEnd()));
+        // 使用 TreeMap 记录每天的忙碌时间段，方便按日期查找
+        Map<LocalDate, List<List<LocalDateTime>>> busyMap = new TreeMap<>();
+
+        for (Maintenance record : records) {
+            LocalDate date = record.getScheduledStart().toLocalDate();
+            busyMap.computeIfAbsent(date, k -> new ArrayList<>())
+                    .add(Arrays.asList(record.getScheduledStart(), record.getScheduledEnd()));
         }
 
-        Map<LocalDate, Set<LocalDateTime>> busyMap = new HashMap<>();
-        for (List<LocalDateTime> busyTimeSlot : busyTimes) {
-            if (busyTimeSlot.size() != 2) continue;
-            LocalDateTime start = busyTimeSlot.get(0);
-            LocalDate date = start.toLocalDate();
-            busyMap.computeIfAbsent(date, k -> new HashSet<>()).add(start);
-        }
+        List<List<LocalDateTime>> freeResult = new ArrayList<>();
 
-
-        List<Map<String, Object>> freeResult = new ArrayList<>();
-
-        // 7 consecutive days
+        // 遍历未来 7 天
         for (int i = 0; i < 7; i++) {
-            LocalDate currentDate = now.toLocalDate().plusDays(i);
+            LocalDate currentDate = today.plusDays(i);
             LocalDateTime dayStart = LocalDateTime.of(currentDate, LocalTime.of(DAILY_START_HOUR, 0));
             LocalDateTime dayEnd = LocalDateTime.of(currentDate, LocalTime.of(DAILY_END_HOUR, 0));
 
-            for (LocalDateTime slotStart = dayStart; !slotStart.plusMinutes(PERIOD_MINUTE).isAfter(dayEnd); slotStart = slotStart.plusMinutes(PERIOD_MINUTE)) {
-                if (!busyMap.getOrDefault(currentDate, Collections.emptySet()).contains(slotStart)) {
-                    Map<String, Object> freeSlot = new HashMap<>();
-                    freeSlot.put("startTime",slotStart);
-                    freeSlot.put("endTime", slotStart.plusMinutes(PERIOD_MINUTE));
-                    freeResult.add(freeSlot);
+            List<List<LocalDateTime>> busySlots = busyMap.getOrDefault(currentDate, new ArrayList<>());
+
+            // 按时间排序，确保 busySlots 是有序的
+            busySlots.sort(Comparator.comparing(slot -> slot.get(0)));
+
+            LocalDateTime slotStart = dayStart;
+
+            for (List<LocalDateTime> busySlot : busySlots) {
+                LocalDateTime busyStart = busySlot.get(0);
+                LocalDateTime busyEnd = busySlot.get(1);
+
+                // 如果当前 slotStart 早于 busyStart，则这个时间段是空闲的
+                if (slotStart.isBefore(busyStart)) {
+                    while (slotStart.plusMinutes(PERIOD_MINUTE).isBefore(busyStart) || slotStart.plusMinutes(PERIOD_MINUTE).equals(busyStart)) {
+                        freeResult.add(Arrays.asList(slotStart, slotStart.plusMinutes(PERIOD_MINUTE)));
+                        slotStart = slotStart.plusMinutes(PERIOD_MINUTE);
+                    }
                 }
+
+                // 更新 slotStart 为当前 busy 结束时间，继续找下一个空闲时间
+                if (slotStart.isBefore(busyEnd)) {
+                    slotStart = busyEnd;
+                }
+            }
+
+            // 检查 busySlots 之后是否还有空闲时间
+            while (slotStart.plusMinutes(PERIOD_MINUTE).isBefore(dayEnd) || slotStart.plusMinutes(PERIOD_MINUTE).equals(dayEnd)) {
+                freeResult.add(Arrays.asList(slotStart, slotStart.plusMinutes(PERIOD_MINUTE)));
+                slotStart = slotStart.plusMinutes(PERIOD_MINUTE);
             }
         }
 
