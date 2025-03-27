@@ -3,6 +3,7 @@ package org.mamba.controller;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.mamba.entity.Admin;
+import org.mamba.entity.Record;
 import org.mamba.entity.Result;
 import org.mamba.service.impl.AdminServiceImpl;
 import org.mamba.service.impl.MaintenanceServiceImpl;
@@ -27,11 +28,21 @@ public class AdminController {
     @Autowired
     private MaintenanceServiceImpl maintenanceService;
 
+    /**
+     * get Fre eMaintain Time
+     * @param roomId the room id
+     * @return the free time
+     */
     @GetMapping("/getFreeMaintainTime")
     public Result getFreeMaintainTime(@RequestParam Integer roomId) {
         return Result.success(maintenanceService.getFreeMaintainTime(roomId));
     }
 
+    @PostMapping("/getRecordAdmin")
+    public Result createRecord(@RequestBody Record record) {
+        recordService.createRecordAdmin(record.getRoomId(), record.getUserId(), record.getStartTime(), record.getEndTime(), record.isHasCheckedIn(), record.getComment());
+        return Result.success();
+    }
 
     /**
      * Obtains the admin list.

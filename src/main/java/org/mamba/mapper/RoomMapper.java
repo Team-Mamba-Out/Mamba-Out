@@ -119,6 +119,13 @@ public interface RoomMapper {
             "ORDER BY r.startTime")
     List<Record> getFutureRecords(@Param("id") Integer id, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 
+    /**
+     * Gets all the records related to a room in the next 7 days.
+     * @param id the id of the room to be checked
+     * @param startOfDay the current day at 0am
+     * @param endOfDay 7 days later at 0am
+     * @return the list containing all the records in 7 days
+     */
     @Select("SELECT * " +
             "FROM mamba.record r " +
             "WHERE r.roomId = #{id} " +
