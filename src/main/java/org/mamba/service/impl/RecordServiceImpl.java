@@ -558,7 +558,7 @@ public class RecordServiceImpl implements RecordService {
                 // Email Notification - Booking time almost up
                 Room room = roomMapper.getRoomById(record.getRoomId());
                 record.setCorrespondingRoom(room);
-                EmailManager.sendCheckInEmail(userService.getUserByUid(record.getUserId()).getRole().split("-")[0], record);
+                EmailManager.sendBookingAlmostOverEmail(userService.getUserByUid(record.getUserId()).getRole().split("-")[0], record);
             }
 
         }
