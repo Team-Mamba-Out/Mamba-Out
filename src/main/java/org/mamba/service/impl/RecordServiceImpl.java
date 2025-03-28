@@ -37,8 +37,6 @@ public class RecordServiceImpl implements RecordService {
     @Autowired
     private MaintenanceService maintenanceService;
 
-    // 使用 ConcurrentHashMap 存储不同 roomId 的信号量
-    private final ConcurrentHashMap<Integer, Semaphore> roomLocks = new ConcurrentHashMap<>();
 
 
     @Override
@@ -304,53 +302,29 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     public void createRecord(Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, String comment) {
-        // 获取或创建信号量（每个 roomId 共享同一个 Semaphore）
-        Semaphore semaphore = roomLocks.computeIfAbsent(roomId, key -> new Semaphore(1));
+        User user = userService.getUserByUid(userId);
+        String role = user.getRole();
+        Room room = roomService.getRoomById(roomId);
 
-        try {
-            // 获取信号量，防止多个线程同时处理同一个 roomId 的预订请求
-            if (!semaphore.tryAcquire(5, TimeUnit.SECONDS)) {
-                throw new RuntimeException("Another reservation is in progress for this room. Please try again later.");
-            }
-            User user = userService.getUserByUid(userId);
-            String role = user.getRole();
-            Room room = roomService.getRoomById(roomId);
+        String email = role.split("-")[0];
+        Record temp = new Record();
+        temp.setCorrespondingRoom(room);
+        temp.setStartTime(startTime);
+        temp.setEndTime(endTime);
 
-            String email = role.split("-")[0];
-            Record temp = new Record();
-            temp.setCorrespondingRoom(room);
-            temp.setStartTime(startTime);
-            temp.setEndTime(endTime);
+        LocalDateTime recordTime = LocalDateTime.now();
 
-            LocalDateTime recordTime = LocalDateTime.now();
+        //if the room requires admin's approval and the user is not the admin
+        if (room.isRequireApproval() && !role.contains("003")) {
+            recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, false, comment);
 
-//        //if the room requires admin's approval and the user is not the admin
-//        if (room.isRequireApproval() && !role.contains("003")) {
-//            recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, false, comment);
-//
-//            // Send email: booking successful, Not Started approval
-//            EmailManager.sendBookSuccessfulEmail(email, temp, true);
-//
-//            messageService.createMessage(
-//                    userId,
-//                    "Room Reservation Request Successfully Submitted",
-//                    "Your room reservation request for: " + room.getRoomName() + " has been successfully submitted. The reservation request is from " + startTime + " to " + endTime + ". Please wait for the administrator to approve the request.",
-//                    recordTime,
-//                    false,
-//                    "1;Jinhao Zhang",
-//                    0,
-//                    roomId
-//            );
-//
-//            throw new IllegalArgumentException("Booking this room needs to get the approval from the admin, please wait for the admin to approve your request.");
-//        }
+            // Send email: booking successful, Not Started approval
+            EmailManager.sendBookSuccessfulEmail(email, temp, true);
 
-            // Obtain the current time
-            recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, true, comment);
             messageService.createMessage(
                     userId,
-                    "Reserve Room successfully",
-                    "Your room reservation for: " + room.getRoomName() + " has been successfully created. The reservation is from " + startTime + " to " + endTime + ". Please check in on time.",
+                    "Room Reservation Request Successfully Submitted",
+                    "Your room reservation request for: " + room.getRoomName() + " has been successfully submitted. The reservation request is from " + startTime + " to " + endTime + ". Please wait for the administrator to approve the request.",
                     recordTime,
                     false,
                     "1;Jinhao Zhang",
@@ -358,15 +332,24 @@ public class RecordServiceImpl implements RecordService {
                     roomId
             );
 
-            // Send email on booking created
-            EmailManager.sendBookSuccessfulEmail(email, temp, false);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Failed to acquire lock for room booking", e);
-        } finally {
-            // 释放信号量
-            semaphore.release();
+            throw new IllegalArgumentException("Booking this room needs to get the approval from the admin, please wait for the admin to approve your request.");
         }
+
+        // Obtain the current time
+        recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, true, comment);
+        messageService.createMessage(
+                userId,
+                "Reserve Room successfully",
+                "Your room reservation for: " + room.getRoomName() + " has been successfully created. The reservation is from " + startTime + " to " + endTime + ". Please check in on time.",
+                recordTime,
+                false,
+                "1;Jinhao Zhang",
+                0,
+                roomId
+        );
+
+        // Send email on booking created
+        EmailManager.sendBookSuccessfulEmail(email, temp, false);
 
     }
 
