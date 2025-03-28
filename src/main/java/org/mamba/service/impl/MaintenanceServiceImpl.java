@@ -162,6 +162,69 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     }
 
     @Override
+    public List<List<LocalDateTime>> get7DaysFreeTimesById(Integer id){
+        // 获取当前时间
+        LocalDateTime now = LocalDateTime.now();
+        LocalDate today = now.toLocalDate();
+        LocalDateTime startOfDay = today.atStartOfDay();  // 00:00
+        LocalDateTime endOfDay = today.plusDays(60).atStartOfDay();  // 7 天后
+
+        // 获取未来 7 天的所有预约记录
+        List<Maintenance> records = roomMapper.getFutureMaintenances(id, startOfDay, endOfDay);
+
+        // 使用 TreeMap 记录每天的忙碌时间段，方便按日期查找
+        Map<LocalDate, List<List<LocalDateTime>>> busyMap = new TreeMap<>();
+
+        for (Maintenance record : records) {
+            LocalDate date = record.getScheduledStart().toLocalDate();
+            busyMap.computeIfAbsent(date, k -> new ArrayList<>())
+                    .add(Arrays.asList(record.getScheduledStart(), record.getScheduledEnd()));
+        }
+
+        List<List<LocalDateTime>> freeResult = new ArrayList<>();
+
+        // 遍历未来 7 天
+        for (int i = 0; i < 60; i++) {
+            LocalDate currentDate = today.plusDays(i);
+            LocalDateTime dayStart = LocalDateTime.of(currentDate, LocalTime.of(DAILY_START_HOUR, 0));
+            LocalDateTime dayEnd = LocalDateTime.of(currentDate, LocalTime.of(DAILY_END_HOUR, 0));
+
+            List<List<LocalDateTime>> busySlots = busyMap.getOrDefault(currentDate, new ArrayList<>());
+
+            // 按时间排序，确保 busySlots 是有序的
+            busySlots.sort(Comparator.comparing(slot -> slot.get(0)));
+
+            LocalDateTime slotStart = dayStart;
+
+            for (List<LocalDateTime> busySlot : busySlots) {
+                LocalDateTime busyStart = busySlot.get(0);
+                LocalDateTime busyEnd = busySlot.get(1);
+
+                // 如果当前 slotStart 早于 busyStart，则这个时间段是空闲的
+                if (slotStart.isBefore(busyStart)) {
+                    while (slotStart.plusMinutes(PERIOD_MINUTE).isBefore(busyStart) || slotStart.plusMinutes(PERIOD_MINUTE).equals(busyStart)) {
+                        freeResult.add(Arrays.asList(slotStart, slotStart.plusMinutes(PERIOD_MINUTE)));
+                        slotStart = slotStart.plusMinutes(PERIOD_MINUTE);
+                    }
+                }
+
+                // 更新 slotStart 为当前 busy 结束时间，继续找下一个空闲时间
+                if (slotStart.isBefore(busyEnd)) {
+                    slotStart = busyEnd;
+                }
+            }
+
+            // 检查 busySlots 之后是否还有空闲时间
+            while (slotStart.plusMinutes(PERIOD_MINUTE).isBefore(dayEnd) || slotStart.plusMinutes(PERIOD_MINUTE).equals(dayEnd)) {
+                freeResult.add(Arrays.asList(slotStart, slotStart.plusMinutes(PERIOD_MINUTE)));
+                slotStart = slotStart.plusMinutes(PERIOD_MINUTE);
+            }
+        }
+
+        return freeResult;
+    }
+
+    @Override
     public List<List<LocalDateTime>> getFreeTimesById(Integer id) {
         // 获取当前时间
         LocalDateTime now = LocalDateTime.now();

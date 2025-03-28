@@ -165,8 +165,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
 
-
-
     /**
      * Reject a record.
      *
