@@ -16,9 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+
+import static org.mamba.service.impl.AdminServiceImpl.emailExecutor;
 
 @Service
 public class RecordServiceImpl implements RecordService {
@@ -38,7 +41,7 @@ public class RecordServiceImpl implements RecordService {
     private MaintenanceService maintenanceService;
 
 
-
+    @Transactional
     @Override
     public void approveRestrictedRoomRecord(Integer id) {
         Record record = recordMapper.getRecords(id, null, null, null, null, null, null, null, null, null).get(0);
@@ -57,18 +60,36 @@ public class RecordServiceImpl implements RecordService {
         Integer userId = record.getUserId();
         String email = userService.getUserByUid(userId).getRole().split("-")[0];
         record.setCorrespondingRoom(room);
+        try {
+
+            CompletableFuture.runAsync(() -> {
+                EmailManager.sendRequestApprovedEmail(email, record);
+            }, emailExecutor);
+
+        } catch (Exception e) {
+            System.out.println("Send email failed");
+        }
         // Send email: approval
-        EmailManager.sendRequestApprovedEmail(email, record);
     }
 
+    @Transactional
     @Override
     public void rejectRestrictedRoomRecord(Integer id) {
         Record record = recordMapper.getRecords(id, null, null, null, null, null, null, null, null, null).get(0);
 
         Integer userId = record.getUserId();
         String email = userService.getUserByUid(userId).getRole().split("-")[0];
+
+        try {
+
+            CompletableFuture.runAsync(() -> {
+                EmailManager.sendRequestRejectedEmail(email, record);
+            }, emailExecutor);
+
+        } catch (Exception e) {
+            System.out.println("Send email failed");
+        }
         // Send email: reject
-        EmailManager.sendRequestRejectedEmail(email, record);
         Room room = roomMapper.getRoomById(record.getRoomId());
 
 
@@ -241,6 +262,7 @@ public class RecordServiceImpl implements RecordService {
      * @param hasCheckedIn whether the user has checked in
      * @param comment      the user's request message
      */
+    @Transactional
     @Override
     public void createRecordAdmin(Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, String comment) {
         User user = userService.getUserByUid(userId);
@@ -295,11 +317,20 @@ public class RecordServiceImpl implements RecordService {
                 roomId
         );
 
+        try {
+
+            CompletableFuture.runAsync(() -> {
+                EmailManager.sendBookSuccessfulEmail(email, temp, false);
+                }, emailExecutor);
+
+        } catch (Exception e) {
+            System.out.println("Send email failed");
+        }
         // Send email on booking created
-        EmailManager.sendBookSuccessfulEmail(email, temp, false);
+
     }
 
-
+    @Transactional
     @Override
     public void createRecord(Integer roomId, Integer userId, LocalDateTime startTime, LocalDateTime endTime, Boolean hasCheckedIn, String comment) {
         User user = userService.getUserByUid(userId);
@@ -318,8 +349,16 @@ public class RecordServiceImpl implements RecordService {
         if (room.isRequireApproval() && !role.contains("003")) {
             recordMapper.createRecord(roomId, userId, startTime, endTime, recordTime, hasCheckedIn, false, comment);
 
+            try {
+
+                CompletableFuture.runAsync(() -> {
+                    EmailManager.sendBookSuccessfulEmail(email, temp, true);
+                }, emailExecutor);
+
+            } catch (Exception e) {
+                System.out.println("Send email failed");
+            }
             // Send email: booking successful, Not Started approval
-            EmailManager.sendBookSuccessfulEmail(email, temp, true);
 
             messageService.createMessage(
                     userId,
@@ -348,8 +387,16 @@ public class RecordServiceImpl implements RecordService {
                 roomId
         );
 
+        try {
+
+            CompletableFuture.runAsync(() -> {
+                EmailManager.sendBookSuccessfulEmail(email, temp, false);
+            }, emailExecutor);
+
+        } catch (Exception e) {
+            System.out.println("Send email failed");
+        }
         // Send email on booking created
-        EmailManager.sendBookSuccessfulEmail(email, temp, false);
 
     }
 
@@ -536,8 +583,16 @@ public class RecordServiceImpl implements RecordService {
                 );
                 Room room = roomMapper.getRoomById(record.getRoomId());
                 record.setCorrespondingRoom(room);
+                try {
+
+                    CompletableFuture.runAsync(() -> {
+                        EmailManager.sendCheckInEmail(userService.getUserByUid(record.getUserId()).getRole().split("-")[0], record);
+                    }, emailExecutor);
+
+                } catch (Exception e) {
+                    System.out.println("Send email failed");
+                }
                 // Email Notification - Booking begins soon
-                EmailManager.sendCheckInEmail(userService.getUserByUid(record.getUserId()).getRole().split("-")[0], record);
             }
 
         }
@@ -558,7 +613,15 @@ public class RecordServiceImpl implements RecordService {
                 // Email Notification - Booking time almost up
                 Room room = roomMapper.getRoomById(record.getRoomId());
                 record.setCorrespondingRoom(room);
-                EmailManager.sendBookingAlmostOverEmail(userService.getUserByUid(record.getUserId()).getRole().split("-")[0], record);
+                try {
+
+                    CompletableFuture.runAsync(() -> {
+                        EmailManager.sendBookingAlmostOverEmail(userService.getUserByUid(record.getUserId()).getRole().split("-")[0], record);
+                    }, emailExecutor);
+
+                } catch (Exception e) {
+                    System.out.println("Send email failed");
+                }
             }
 
         }
