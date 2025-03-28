@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 @EnableAsync
 @Service
 public class AdminServiceImpl implements AdminService {
-    private static final ExecutorService emailExecutor = Executors.newFixedThreadPool(10);
+    static final ExecutorService emailExecutor = Executors.newFixedThreadPool(10);
     @Autowired
     private RoomService roomService;
     @Autowired
@@ -72,7 +72,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void normalCancel(Integer id, String reason) {
-        recordService.cancelRecordByIdAdmin(id,reason);
+        recordService.cancelRecordByIdAdmin(id, reason);
     }
 
     /**
@@ -81,17 +81,26 @@ public class AdminServiceImpl implements AdminService {
      * @param recordId the ID of the record to cancel
      * @param reason   the reason for the cancellation
      */
+    @Transactional
     @Override
     public void cancelRecordAndReassign(Integer recordId, String reason) {
         Record record = recordService.getRecordById(recordId);
         User user = userService.getUserByUid(record.getUserId());
         Integer userID = user.getUid();
         LocalDateTime oldStartTime = record.getStartTime();
-        String nearestRoomInfo = roomService.findNearAvailableRoom(record.getRoomId(),record.getStartTime(), record.getEndTime(), user.getUid());
+        String nearestRoomInfo = roomService.findNearAvailableRoom(record.getRoomId(), record.getStartTime(), record.getEndTime(), user.getUid());
 
         if (nearestRoomInfo == null) {
+            try {
+
+                CompletableFuture.runAsync(() -> {
+                    EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userID).getRole().split("-")[0], false);
+                }, emailExecutor);
+
+            } catch (Exception e) {
+                System.out.println("Send email failed");
+            }
             // email logic: cancelled because reassignment failed
-            EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userID).getRole().split("-")[0], false);
 
             throw new IllegalStateException("No available room found for user " + userID);
         }
@@ -104,8 +113,8 @@ public class AdminServiceImpl implements AdminService {
         LocalDateTime newStartTime = LocalDateTime.parse(roomInfo[1]);
         LocalDateTime newEndTime = LocalDateTime.parse(roomInfo[2]);
 
-        recordService.cancelRecordByIdAdmin(recordId,reason);
-        recordMapper.createRecord(nearestRoom.getId(), 0, newStartTime, newEndTime, LocalDateTime.now(),false, true, reason);
+        recordService.cancelRecordByIdAdmin(recordId, reason);
+        recordMapper.createRecord(nearestRoom.getId(), 0, newStartTime, newEndTime, LocalDateTime.now(), false, true, reason);
 
         // Send a notification message about the reassignment
         messageService.createMessage(
@@ -121,13 +130,22 @@ public class AdminServiceImpl implements AdminService {
                 roomId
         );
 
+        try {
+
+            CompletableFuture.runAsync(() -> {
+                EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userID).getRole().split("-")[0], true);
+            }, emailExecutor);
+
+        } catch (Exception e) {
+            System.out.println("Send email failed");
+        }
         // email logic: cancel and reassign
-        EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userID).getRole().split("-")[0], true);
 
     }
 
     /**
      * Parse the room information.
+     *
      * @param roomInfo the room information
      * @return the room information
      */
@@ -137,6 +155,7 @@ public class AdminServiceImpl implements AdminService {
 
     /**
      * Parse the email and code.
+     *
      * @param role the role
      * @return the email and code
      */
@@ -216,7 +235,7 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     @Override
     public void occupyAndReassignRoom(Integer roomId, LocalDateTime occupyStartTime, LocalDateTime occupyEndTime, String reason) {
-        maintenanceService.createMaintenance(roomId,occupyStartTime,occupyEndTime,reason);
+        maintenanceService.createMaintenance(roomId, occupyStartTime, occupyEndTime, reason);
         // Retrieve the list of records within the specified time range for the given room
         List<Record> list = recordService.findRecordsByRoomAndTimeRange(roomId, occupyStartTime, occupyEndTime);
 
@@ -224,7 +243,7 @@ public class AdminServiceImpl implements AdminService {
 
             Integer userId = record.getUserId();
 
-            recordMapper.cancelRecordById(record.getId(),reason);
+            recordMapper.cancelRecordById(record.getId(), reason);
 
             String nearestRoomInfo = roomService.findNearestAvailableRoom(roomId, record.getStartTime(), record.getEndTime(), userId);
 
@@ -243,12 +262,12 @@ public class AdminServiceImpl implements AdminService {
                             EmailManager.sendRecordCancelledEmail(userService.getUserByUid(userId).getRole().split("-")[0], false);
                         }, emailExecutor);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     System.out.println("No available room found for user " + userId);
                 }
                 continue;
             }
-            recordMapper.createRecord(nearestRoom.getId(), 0, newStartTime, newEndTime, LocalDateTime.now(),false,true, reason);
+            recordMapper.createRecord(nearestRoom.getId(), 0, newStartTime, newEndTime, LocalDateTime.now(), false, true, reason);
 
             messageService.createMessage(
                     userId,
