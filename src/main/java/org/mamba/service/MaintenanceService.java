@@ -15,6 +15,7 @@ public interface MaintenanceService {
 
     List<List<LocalDateTime>> getFreeTimesById(Integer id);
 
+    List<List<LocalDateTime>> get7DaysFreeTimesById(Integer id);
     /**
      * Get maintenance records based on the given conditions
      *
